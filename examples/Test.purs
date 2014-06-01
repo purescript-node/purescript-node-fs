@@ -1,6 +1,7 @@
 module Main where
 
-import Node.FS
+import Node.FS.Async
+import Node.FS.Stats
 import Control.Apply ((*>))
 import Data.Either
 import Debug.Trace
@@ -20,4 +21,28 @@ main = do
 
   stat "examples\\Test.purs" $ \x -> do
     trace "\n\nstat, isFile result:"
-    either trace' (trace' <<< show) x -- <<< isFile) x
+    either trace' (trace' <<< show <<< isFile) x
+
+  stat "examples\\Test.purs" $ \x -> do
+    trace "\n\nstat, isDirectory result:"
+    either trace' (trace' <<< show <<< isDirectory) x
+
+  stat "examples\\Test.purs" $ \x -> do
+    trace "\n\nstat, isBlockDevice result:"
+    either trace' (trace' <<< show <<< isBlockDevice) x
+
+  stat "examples\\Test.purs" $ \x -> do
+    trace "\n\nstat, isCharacterDevice result:"
+    either trace' (trace' <<< show <<< isCharacterDevice) x
+
+  stat "examples\\Test.purs" $ \x -> do
+    trace "\n\nstat, isFIFO result:"
+    either trace' (trace' <<< show <<< isFIFO) x
+
+  stat "examples\\Test.purs" $ \x -> do
+    trace "\n\nstat, isSocket result:"
+    either trace' (trace' <<< show <<< isSocket) x
+
+  stat "examples\\Test.purs" $ \x -> do
+    trace "\n\nstat, isSymbolicLink result:"
+    either trace' (trace' <<< show <<< isSymbolicLink) x
