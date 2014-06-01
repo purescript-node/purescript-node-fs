@@ -8,9 +8,14 @@ module Node.FS.Stats
   , isFIFO
   , isSocket
   , isSymbolicLink
+  , accessedTime
+  , modifiedTime
+  , statusChangedTime
   ) where
 
+import Data.Date
 import Data.Function
+import Data.Maybe.Unsafe (fromJust)
 
 type StatsObj =
   { dev :: Number
@@ -21,9 +26,9 @@ type StatsObj =
   , rdev :: Number
   , ino :: Number
   , size :: Number
-  -- , atime :: DateTime
-  -- , mtime :: DateTime
-  -- , ctime :: DateTime
+  , atime :: JSDate
+  , mtime :: JSDate
+  , ctime :: JSDate
   , isFile :: Fn0 Boolean
   , isDirectory :: Fn0 Boolean
   , isBlockDevice :: Fn0 Boolean
@@ -70,3 +75,12 @@ isSocket (Stats s) = runFn2 statsMethod "isSocket" s
 
 isSymbolicLink :: Stats -> Boolean
 isSymbolicLink (Stats s) = runFn2 statsMethod "isSymbolicLink" s
+
+accessedTime :: Stats -> Date
+accessedTime (Stats s) = fromJust (fromJSDate s.atime)
+
+modifiedTime :: Stats -> Date
+modifiedTime (Stats s) = fromJust (fromJSDate s.mtime)
+
+statusChangedTime :: Stats -> Date
+statusChangedTime (Stats s) = fromJust (fromJSDate s.ctime)

@@ -23,6 +23,7 @@
     "purescript-foreign": "~0.1.1",
     "purescript-node-buffer": "*",
     "purescript-node-path": "*",
-    "purescript-globals": "~0.1.3"
+    "purescript-globals": "~0.1.3",
+    "purescript-datetime": "*"
   }
 }

@@ -46,3 +46,15 @@ main = do
   stat "examples\\Test.purs" $ \x -> do
     trace "\n\nstat, isSymbolicLink result:"
     either trace' (trace' <<< show <<< isSymbolicLink) x
+    
+  stat "examples\\Test.purs" $ \x -> do
+    trace "\n\nstat, modifiedTime result:"
+    either trace' (trace' <<< show <<< modifiedTime) x
+    
+  stat "examples\\Test.purs" $ \x -> do
+    trace "\n\nstat, accessedTime result:"
+    either trace' (trace' <<< show <<< accessedTime) x
+    
+  stat "examples\\Test.purs" $ \x -> do
+    trace "\n\nstat, statusChangedTime result:"
+    either trace' (trace' <<< show <<< statusChangedTime) x
