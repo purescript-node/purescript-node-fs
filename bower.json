@@ -18,12 +18,13 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-either": "~0.1.2",
-    "purescript-maybe": "~0.1.3",
-    "purescript-foreign": "~0.1.1",
+    "purescript-either": ">=0.1.2",
+    "purescript-maybe": ">=0.1.3",
+    "purescript-foreign": ">=0.1.1",
     "purescript-node-buffer": "*",
     "purescript-node-path": "*",
-    "purescript-globals": "~0.1.3",
-    "purescript-datetime": "*"
+    "purescript-globals": ">=0.1.3",
+    "purescript-datetime": "*",
+    "purescript-exceptions": ">=0.1.0"
   }
 }
