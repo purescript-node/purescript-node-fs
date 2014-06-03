@@ -2,6 +2,7 @@ module Node.FS.Sync
   ( rename
   , truncate
   , chown
+  , chmod
   , readFile
   , readTextFile
   ) where
@@ -20,6 +21,7 @@ foreign import fs "var fs = require('fs');" ::
   { renameSync :: Fn2 FilePath FilePath Unit
   , truncateSync :: Fn2 FilePath Number Unit
   , chownSync :: Fn3 FilePath Number Number Unit
+  , chmodSync :: Fn2 FilePath Number Unit
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   }
 
@@ -58,6 +60,16 @@ chown :: forall eff. FilePath
 
 chown file uid gid = mkEff $ \_ -> runFn3
   fs.chownSync file uid gid
+
+-- |
+-- Changes the permissions of a file.
+--
+chmod :: forall eff. FilePath
+                  -> Number
+                  -> Eff (fs :: FS, err :: Exception Error | eff) Unit
+
+chmod file mode = mkEff $ \_ -> runFn2
+  fs.chmodSync file mode
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.

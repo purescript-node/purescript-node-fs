@@ -16,6 +16,8 @@
 
 ### Values
 
+    chmod :: forall eff. FilePath -> Number -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
+
     chown :: forall eff. FilePath -> Number -> Number -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 
     readFile :: forall eff. FilePath -> Callback eff Buffer -> Eff (fs :: FS | eff) Unit
@@ -74,6 +76,8 @@
 ## Module Node.FS.Sync
 
 ### Values
+
+    chmod :: forall eff. FilePath -> Number -> Eff (err :: Exception Error, fs :: FS | eff) Unit
 
     chown :: forall eff. FilePath -> Number -> Number -> Eff (err :: Exception Error, fs :: FS | eff) Unit
 

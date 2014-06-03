@@ -3,6 +3,7 @@ module Node.FS.Async
   , rename
   , truncate
   , chown
+  , chmod
   , readFile
   , readTextFile
   , writeFile
@@ -39,6 +40,7 @@ foreign import fs "var fs = require('fs');" ::
   { rename :: Fn3 FilePath FilePath (JSCallback Unit) Unit
   , truncate :: Fn3 FilePath Number (JSCallback Unit) Unit
   , chown :: Fn4 FilePath Number Number (JSCallback Unit) Unit
+  , chmod :: Fn3 FilePath Number (JSCallback Unit) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   , stat :: Fn2 FilePath (JSCallback StatsObj) Unit
@@ -82,6 +84,17 @@ chown :: forall eff. FilePath
 
 chown file uid gid cb = return $ runFn4
   fs.chown file uid gid (handleCallback cb)
+
+-- |
+-- Changes the permissions of a file.
+--
+chmod :: forall eff. FilePath
+                  -> Number
+                  -> Callback eff Unit
+                  -> Eff (fs :: FS | eff) Unit
+
+chmod file mode cb = return $ runFn3
+  fs.chmod file mode (handleCallback cb)
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
