@@ -22,7 +22,8 @@ module.exports = function(grunt) {
     
     psc: {
       options: {
-        main: true
+        main: true,
+        modules: "Main"
       },
       example: {
         src: ["examples/Test.purs", "<%=libFiles%>"],

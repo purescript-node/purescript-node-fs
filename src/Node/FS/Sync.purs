@@ -16,14 +16,19 @@ import Global (Error(..))
 foreign import fs "var fs = require('fs');" :: 
   { readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   }
-
+  
+foreign import mkEff
+  "function mkEff(x) {\
+  \  return x;\
+  \}" :: forall eff a. (Unit -> a) -> Eff eff a
+ 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
 -- 
 readFile :: forall eff. FilePath 
                      -> Eff (fs :: FS, err :: Exception Error | eff) Buffer
 
-readFile file = return $ runFn2
+readFile file = mkEff $ \_ -> runFn2
   fs.readFileSync file {}
 
 -- |
@@ -33,5 +38,5 @@ readTextFile :: forall eff. Encoding
                          -> FilePath 
                          -> Eff (fs :: FS, err :: Exception Error | eff) String
 
-readTextFile encoding file = return $ runFn2
+readTextFile encoding file = mkEff $ \_ -> runFn2
   fs.readFileSync file { encoding: show encoding }

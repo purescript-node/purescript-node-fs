@@ -11,29 +11,30 @@
 
 ### Types
 
-    type Callback eff a = Either Prim.String a -> Eff eff Unit
+    type Callback eff a = Either String a -> Eff eff Unit
 
 
 ### Values
 
     readFile :: forall eff. FilePath -> Callback eff Buffer -> Eff (fs :: FS | eff) Unit
 
-    readTextFile :: forall eff. Encoding -> FilePath -> Callback eff Prim.String -> Eff (fs :: FS | eff) Unit
+    readTextFile :: forall eff. Encoding -> FilePath -> Callback eff String -> Eff (fs :: FS | eff) Unit
 
     stat :: forall eff. FilePath -> Callback eff Stats -> Eff (fs :: FS | eff) Unit
 
     writeFile :: forall eff. FilePath -> Buffer -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 
-    writeTextFile :: forall eff. Encoding -> FilePath -> Prim.String -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
+    writeTextFile :: forall eff. Encoding -> FilePath -> String -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 
 
 ## Module Node.FS.Stats
 
 ### Types
 
-    data Stats  where
+    data Stats where
+      Stats :: StatsObj -> Stats
 
-    type StatsObj  = { isSocket :: Fn0 Prim.Boolean, isFIFO :: Fn0 Prim.Boolean, isCharacterDevice :: Fn0 Prim.Boolean, isBlockDevice :: Fn0 Prim.Boolean, isDirectory :: Fn0 Prim.Boolean, isFile :: Fn0 Prim.Boolean, size :: Prim.Number, ino :: Prim.Number, rdev :: Prim.Number, gid :: Prim.Number, uid :: Prim.Number, nlink :: Prim.Number, mode :: Prim.Number, dev :: Prim.Number }
+    type StatsObj  = { isSocket :: Fn0 Boolean, isFIFO :: Fn0 Boolean, isCharacterDevice :: Fn0 Boolean, isBlockDevice :: Fn0 Boolean, isDirectory :: Fn0 Boolean, isFile :: Fn0 Boolean, ctime :: JSDate, mtime :: JSDate, atime :: JSDate, size :: Number, ino :: Number, rdev :: Number, gid :: Number, uid :: Number, nlink :: Number, mode :: Number, dev :: Number }
 
 
 ### Type Class Instances
@@ -43,14 +44,31 @@
 
 ### Values
 
-    isBlockDevice :: Stats -> Prim.Boolean
+    accessedTime :: Stats -> Date
 
-    isCharacterDevice :: Stats -> Prim.Boolean
+    isBlockDevice :: Stats -> Boolean
 
-    isDirectory :: Stats -> Prim.Boolean
+    isCharacterDevice :: Stats -> Boolean
 
-    isFIFO :: Stats -> Prim.Boolean
+    isDirectory :: Stats -> Boolean
 
-    isFile :: Stats -> Prim.Boolean
+    isFIFO :: Stats -> Boolean
 
-    isSocket :: Stats -> Prim.Boolean
+    isFile :: Stats -> Boolean
+
+    isSocket :: Stats -> Boolean
+
+    isSymbolicLink :: Stats -> Boolean
+
+    modifiedTime :: Stats -> Date
+
+    statusChangedTime :: Stats -> Date
+
+
+## Module Node.FS.Sync
+
+### Values
+
+    readFile :: forall eff. FilePath -> Eff (err :: Exception Error, fs :: FS | eff) Buffer
+
+    readTextFile :: forall eff. Encoding -> FilePath -> Eff (err :: Exception Error, fs :: FS | eff) String
