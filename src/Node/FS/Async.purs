@@ -4,11 +4,11 @@ module Node.FS.Async
   , truncate
   , chown
   , chmod
+  , stat
   , readFile
   , readTextFile
   , writeFile
   , writeTextFile
-  , stat
   ) where
 
 import Control.Monad.Eff
@@ -97,6 +97,16 @@ chmod file mode cb = return $ runFn3
   fs.chmod file mode (handleCallback cb)
 
 -- |
+-- Gets file statistics.
+--
+stat :: forall eff. FilePath
+                 -> Callback eff Stats
+                 -> Eff (fs :: FS | eff) Unit
+
+stat file cb = return $ runFn2
+  fs.stat file (handleCallback $ cb <<< (<$>) Stats)
+
+-- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
 --
 readFile :: forall eff. FilePath
@@ -139,13 +149,3 @@ writeTextFile :: forall eff. Encoding
 
 writeTextFile encoding file buff cb = return $ runFn4
   fs.writeFile file buff { encoding: show encoding } (handleCallback cb)
-
--- |
--- Gets file statistics.
---
-stat :: forall eff. FilePath
-                 -> Callback eff Stats
-                 -> Eff (fs :: FS | eff) Unit
-
-stat file cb = return $ runFn2
-  fs.stat file (handleCallback $ cb <<< (<$>) Stats)

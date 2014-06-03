@@ -25,6 +25,29 @@ main = do
   S.rename "tmp\\Test.js" "tmp\\Test1.js"
 
   S.truncate "tmp\\Test1.js" 1000
+  
+  stats <- S.stat "tmp\\Test1.js"
+  trace "\n\nS.stat:"
+  trace' "isFile:"
+  trace' $ show $ isFile stats
+  trace' "isDirectory:"
+  trace' $ show $ isDirectory stats
+  trace' "isBlockDevice:"
+  trace' $ show $ isBlockDevice stats
+  trace' "isCharacterDevice:"
+  trace' $ show $ isCharacterDevice stats
+  trace' "isFIFO:"
+  trace' $ show $ isFIFO stats
+  trace' "isSocket:"
+  trace' $ show $ isSocket stats
+  trace' "isSymbolicLink:"
+  trace' $ show $ isSymbolicLink stats
+  trace' "modifiedTime:"
+  trace' $ show $ modifiedTime stats
+  trace' "accessedTime:"
+  trace' $ show $ accessedTime stats
+  trace' "statusChangedTime:"
+  trace' $ show $ statusChangedTime stats
 
   A.rename "tmp\\Test1.js" "tmp\\Test.js" $ \x -> do
     trace "\n\nrename result:"

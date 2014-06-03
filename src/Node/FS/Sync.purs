@@ -3,6 +3,7 @@ module Node.FS.Sync
   , truncate
   , chown
   , chmod
+  , stat
   , readFile
   , readTextFile
   ) where
@@ -22,6 +23,7 @@ foreign import fs "var fs = require('fs');" ::
   , truncateSync :: Fn2 FilePath Number Unit
   , chownSync :: Fn3 FilePath Number Number Unit
   , chmodSync :: Fn2 FilePath Number Unit
+  , statSync :: Fn1 FilePath StatsObj
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   }
 
@@ -70,6 +72,15 @@ chmod :: forall eff. FilePath
 
 chmod file mode = mkEff $ \_ -> runFn2
   fs.chmodSync file mode
+
+-- |
+-- Gets file statistics.
+--
+stat :: forall eff. FilePath
+                 -> Eff (fs :: FS, err :: Exception Error | eff) Stats
+
+stat file = mkEff $ \_ -> Stats $ runFn1
+  fs.statSync file
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.

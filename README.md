@@ -87,4 +87,6 @@
 
     rename :: forall eff. FilePath -> FilePath -> Eff (err :: Exception Error, fs :: FS | eff) Unit
 
+    stat :: forall eff. FilePath -> Eff (err :: Exception Error, fs :: FS | eff) Stats
+
     truncate :: forall eff. FilePath -> Number -> Eff (err :: Exception Error, fs :: FS | eff) Unit
