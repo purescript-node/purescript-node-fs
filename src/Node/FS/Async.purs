@@ -1,6 +1,7 @@
 module Node.FS.Async
   ( Callback (..)
   , rename
+  , truncate
   , readFile
   , readTextFile
   , writeFile
@@ -33,8 +34,9 @@ handleCallback f = mkFn2 $ \err x -> runCallbackEff $ f case parseForeign read e
   Right (Just err') -> Left $ show (err' :: Error)
   Right Nothing -> Right x
 
-foreign import fs "var fs = require('fs');" :: 
+foreign import fs "var fs = require('fs');" ::
   { rename :: Fn3 FilePath FilePath (JSCallback Unit) Unit
+  , truncate :: Fn3 FilePath Number (JSCallback Unit) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   , stat :: Fn2 FilePath (JSCallback StatsObj) Unit
@@ -47,8 +49,8 @@ type Callback eff a = Either String a -> Eff eff Unit
 
 -- |
 -- Renames a file.
--- 
-rename :: forall eff. FilePath 
+--
+rename :: forall eff. FilePath
                    -> FilePath
                    -> Callback eff Unit
                    -> Eff (fs :: FS | eff) Unit
@@ -57,9 +59,20 @@ rename oldFile newFile cb = return $ runFn3
   fs.rename oldFile newFile (handleCallback cb)
 
 -- |
+-- Truncates a file to the specified length.
+--
+truncate :: forall eff. FilePath
+                     -> Number
+                     -> Callback eff Unit
+                     -> Eff (fs :: FS | eff) Unit
+
+truncate file len cb = return $ runFn3
+  fs.truncate file len (handleCallback cb)
+
+-- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
--- 
-readFile :: forall eff. FilePath 
+--
+readFile :: forall eff. FilePath
                      -> Callback eff Buffer
                      -> Eff (fs :: FS | eff) Unit
 
@@ -68,10 +81,10 @@ readFile file cb = return $ runFn3
 
 -- |
 -- Reads the entire contents of a text file with the specified encoding.
--- 
-readTextFile :: forall eff. Encoding 
-                         -> FilePath 
-                         -> Callback eff String 
+--
+readTextFile :: forall eff. Encoding
+                         -> FilePath
+                         -> Callback eff String
                          -> Eff (fs :: FS | eff) Unit
 
 readTextFile encoding file cb = return $ runFn3
@@ -79,31 +92,31 @@ readTextFile encoding file cb = return $ runFn3
 
 -- |
 -- Writes a buffer to a file.
--- 
-writeFile :: forall eff. FilePath 
-                      -> Buffer 
-                      -> Callback eff Unit 
+--
+writeFile :: forall eff. FilePath
+                      -> Buffer
+                      -> Callback eff Unit
                       -> Eff (fs :: FS | eff) Unit
 
-writeFile file buff cb = return $ runFn4 
+writeFile file buff cb = return $ runFn4
   fs.writeFile file buff {} (handleCallback cb)
 
 -- |
 -- Writes text to a file using the specified encoding.
--- 
-writeTextFile :: forall eff. Encoding 
-                          -> FilePath 
-                          -> String 
-                          -> Callback eff Unit 
+--
+writeTextFile :: forall eff. Encoding
+                          -> FilePath
+                          -> String
+                          -> Callback eff Unit
                           -> Eff (fs :: FS | eff) Unit
 
-writeTextFile encoding file buff cb = return $ runFn4 
+writeTextFile encoding file buff cb = return $ runFn4
   fs.writeFile file buff { encoding: show encoding } (handleCallback cb)
 
 -- |
 -- Gets file statistics.
--- 
-stat :: forall eff. FilePath 
+--
+stat :: forall eff. FilePath
                  -> Callback eff Stats
                  -> Eff (fs :: FS | eff) Unit
 

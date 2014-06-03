@@ -24,6 +24,8 @@
 
     stat :: forall eff. FilePath -> Callback eff Stats -> Eff (fs :: FS | eff) Unit
 
+    truncate :: forall eff. FilePath -> Number -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
+
     writeFile :: forall eff. FilePath -> Buffer -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 
     writeTextFile :: forall eff. Encoding -> FilePath -> String -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
@@ -76,3 +78,5 @@
     readTextFile :: forall eff. Encoding -> FilePath -> Eff (err :: Exception Error, fs :: FS | eff) String
 
     rename :: forall eff. FilePath -> FilePath -> Eff (fs :: FS | eff) Unit
+
+    truncate :: forall eff. FilePath -> Number -> Eff (fs :: FS | eff) Unit
