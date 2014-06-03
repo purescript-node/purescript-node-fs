@@ -33,7 +33,7 @@ foreign import mkEff
 --
 rename :: forall eff. FilePath
                    -> FilePath
-                   -> Eff (fs :: FS | eff) Unit
+                   -> Eff (fs :: FS, err :: Exception Error | eff) Unit
 
 rename oldFile newFile = mkEff $ \_ -> runFn2
   fs.renameSync oldFile newFile
@@ -43,7 +43,7 @@ rename oldFile newFile = mkEff $ \_ -> runFn2
 --
 truncate :: forall eff. FilePath
                      -> Number
-                     -> Eff (fs :: FS | eff) Unit
+                     -> Eff (fs :: FS, err :: Exception Error | eff) Unit
 
 truncate file len = mkEff $ \_ -> runFn2
   fs.truncateSync file len
@@ -56,7 +56,7 @@ chown :: forall eff. FilePath
                   -> Number
                   -> Eff (fs :: FS, err :: Exception Error | eff) Unit
 
-chown file uid gid = return $ runFn3
+chown file uid gid = mkEff $ \_ -> runFn3
   fs.chownSync file uid gid
 
 -- |

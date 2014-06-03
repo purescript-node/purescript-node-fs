@@ -81,6 +81,6 @@
 
     readTextFile :: forall eff. Encoding -> FilePath -> Eff (err :: Exception Error, fs :: FS | eff) String
 
-    rename :: forall eff. FilePath -> FilePath -> Eff (fs :: FS | eff) Unit
+    rename :: forall eff. FilePath -> FilePath -> Eff (err :: Exception Error, fs :: FS | eff) Unit
 
-    truncate :: forall eff. FilePath -> Number -> Eff (fs :: FS | eff) Unit
+    truncate :: forall eff. FilePath -> Number -> Eff (err :: Exception Error, fs :: FS | eff) Unit
