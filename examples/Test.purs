@@ -23,6 +23,10 @@ main = do
     return ""
     
   S.rename "tmp\\Test.js" "tmp\\Test1.js"
+  
+  A.rename "tmp\\Test1.js" "tmp\\Test.js" $ \x -> do
+    trace "\n\nrename result:"
+    either trace' (trace' <<< show) x
     
   A.readFile "examples\\Test.purs" $ \x -> do
     trace "\n\nreadFile result:"

@@ -15,7 +15,7 @@ import Node.Path (FilePath())
 import Global (Error(..))
 
 foreign import fs "var fs = require('fs');" :: 
-  { rename :: forall a. Fn2 FilePath FilePath Unit
+  { renameSync :: forall a. Fn2 FilePath FilePath Unit
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   }
   
@@ -32,7 +32,7 @@ rename :: forall eff. FilePath
                    -> Eff (fs :: FS | eff) Unit
 
 rename oldFile newFile = mkEff $ \_ -> runFn2
-  fs.rename oldFile newFile
+  fs.renameSync oldFile newFile
  
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
