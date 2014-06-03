@@ -2,6 +2,7 @@ module Node.FS.Async
   ( Callback (..)
   , rename
   , truncate
+  , chown
   , readFile
   , readTextFile
   , writeFile
@@ -37,6 +38,7 @@ handleCallback f = mkFn2 $ \err x -> runCallbackEff $ f case parseForeign read e
 foreign import fs "var fs = require('fs');" ::
   { rename :: Fn3 FilePath FilePath (JSCallback Unit) Unit
   , truncate :: Fn3 FilePath Number (JSCallback Unit) Unit
+  , chown :: Fn4 FilePath Number Number (JSCallback Unit) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   , stat :: Fn2 FilePath (JSCallback StatsObj) Unit
@@ -68,6 +70,18 @@ truncate :: forall eff. FilePath
 
 truncate file len cb = return $ runFn3
   fs.truncate file len (handleCallback cb)
+
+-- |
+-- Changes the ownership of a file.
+--
+chown :: forall eff. FilePath
+                  -> Number
+                  -> Number
+                  -> Callback eff Unit
+                  -> Eff (fs :: FS | eff) Unit
+
+chown file uid gid cb = return $ runFn4
+  fs.chown file uid gid (handleCallback cb)
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.

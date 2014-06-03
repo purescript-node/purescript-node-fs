@@ -1,6 +1,7 @@
 module Node.FS.Sync
   ( rename
   , truncate
+  , chown
   , readFile
   , readTextFile
   ) where
@@ -18,6 +19,7 @@ import Global (Error(..))
 foreign import fs "var fs = require('fs');" ::
   { renameSync :: Fn2 FilePath FilePath Unit
   , truncateSync :: Fn2 FilePath Number Unit
+  , chownSync :: Fn3 FilePath Number Number Unit
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   }
 
@@ -45,6 +47,17 @@ truncate :: forall eff. FilePath
 
 truncate file len = mkEff $ \_ -> runFn2
   fs.truncateSync file len
+
+-- |
+-- Changes the ownership of a file.
+--
+chown :: forall eff. FilePath
+                  -> Number
+                  -> Number
+                  -> Eff (fs :: FS, err :: Exception Error | eff) Unit
+
+chown file uid gid = return $ runFn3
+  fs.chownSync file uid gid
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
