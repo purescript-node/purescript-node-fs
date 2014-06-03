@@ -6,6 +6,8 @@ module Node.FS.Sync
   , stat
   , readFile
   , readTextFile
+  , writeFile
+  , writeTextFile
   ) where
 
 import Control.Monad.Eff
@@ -25,6 +27,7 @@ foreign import fs "var fs = require('fs');" ::
   , chmodSync :: Fn2 FilePath Number Unit
   , statSync :: Fn1 FilePath StatsObj
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
+  , writeFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   }
 
 foreign import mkEff
@@ -100,3 +103,24 @@ readTextFile :: forall eff. Encoding
 
 readTextFile encoding file = mkEff $ \_ -> runFn2
   fs.readFileSync file { encoding: show encoding }
+
+-- |
+-- Writes a buffer to a file.
+--
+writeFile :: forall eff. FilePath
+                      -> Buffer
+                      -> Eff (fs :: FS, err :: Exception Error | eff) Unit
+
+writeFile file buff = mkEff $ \_ -> runFn3
+  fs.writeFileSync file buff {}
+
+-- |
+-- Writes text to a file using the specified encoding.
+--
+writeTextFile :: forall eff. Encoding
+                          -> FilePath
+                          -> String
+                          -> Eff (fs :: FS, err :: Exception Error | eff) Unit
+
+writeTextFile encoding file buff = mkEff $ \_ -> runFn3
+  fs.writeFileSync file buff { encoding: show encoding }
