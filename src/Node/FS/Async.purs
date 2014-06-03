@@ -20,24 +20,24 @@ import Node.FS.Stats
 import Node.Path (FilePath())
 import Global (Error(..))
 
-type JSCallback = Fn2 Foreign
+type JSCallback a = Fn2 Foreign a Unit
 
 foreign import runCallbackEff
   "function runCallbackEff (f) {\
   \  return f(); \
   \}" :: forall eff a. Eff eff a -> a
 
-handleCallback :: forall eff a b. (Callback eff a) -> JSCallback a Unit
+handleCallback :: forall eff a b. (Callback eff a) -> JSCallback a
 handleCallback f = mkFn2 $ \err x -> runCallbackEff $ f case parseForeign read err of
   Left err -> Left $ "handleCallback failed: " ++ err
   Right (Just err') -> Left $ show (err' :: Error)
   Right Nothing -> Right x
 
 foreign import fs "var fs = require('fs');" :: 
-  { rename :: forall a. Fn3 FilePath FilePath (JSCallback Unit a) Unit
-  , readFile :: forall a b opts. Fn3 FilePath { | opts } (JSCallback a b) Unit
-  , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit Unit) Unit
-  , stat :: forall a. Fn2 FilePath (JSCallback StatsObj a) Unit
+  { rename :: Fn3 FilePath FilePath (JSCallback Unit) Unit
+  , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
+  , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
+  , stat :: Fn2 FilePath (JSCallback StatsObj) Unit
   }
 
 -- |
