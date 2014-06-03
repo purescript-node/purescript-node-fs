@@ -12,10 +12,6 @@ import Node.Encoding
 trace' x = trace x *> return unit
 
 main = do
-
-  A.readFile "examples\\Test.purs" $ \x -> do
-    trace "\n\nreadFile result:"
-    either trace' (trace' <<< show) x
     
   file <- S.readTextFile UTF8 "examples\\Test.purs"
   trace' "\n\nreadTextFile sync result:"
@@ -25,6 +21,12 @@ main = do
     trace' "Caught readTextFile exception:" 
     trace' $ show e
     return ""
+    
+  S.rename "tmp\\Test.js" "tmp\\Test1.js"
+    
+  A.readFile "examples\\Test.purs" $ \x -> do
+    trace "\n\nreadFile result:"
+    either trace' (trace' <<< show) x
     
   A.readTextFile UTF8 "examples\\Test.purs" $ \x -> do
     trace "\n\nreadTextFile result:"

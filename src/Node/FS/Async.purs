@@ -1,5 +1,6 @@
 module Node.FS.Async
   ( Callback (..)
+  , rename
   , readFile
   , readTextFile
   , writeFile
@@ -33,7 +34,8 @@ handleCallback f = mkFn2 $ \err x -> runCallbackEff $ f case parseForeign read e
   Right Nothing -> Right x
 
 foreign import fs "var fs = require('fs');" :: 
-  { readFile :: forall a b opts. Fn3 FilePath { | opts } (JSCallback a b) Unit
+  { rename :: forall a. Fn3 FilePath FilePath (JSCallback Unit a) Unit
+  , readFile :: forall a b opts. Fn3 FilePath { | opts } (JSCallback a b) Unit
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit Unit) Unit
   , stat :: forall a. Fn2 FilePath (JSCallback StatsObj a) Unit
   }
@@ -42,6 +44,17 @@ foreign import fs "var fs = require('fs');" ::
 -- Type synonym for callback functions.
 --
 type Callback eff a = Either String a -> Eff eff Unit
+
+-- |
+-- Renames a file.
+-- 
+rename :: forall eff. FilePath 
+                   -> FilePath
+                   -> Callback eff Unit
+                   -> Eff (fs :: FS | eff) Unit
+
+rename oldFile newFile cb = return $ runFn3
+  fs.rename oldFile newFile (handleCallback cb)
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
