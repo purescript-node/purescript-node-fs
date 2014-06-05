@@ -15,6 +15,7 @@ module Node.FS.Async
   , mkdir
   , mkdir'
   , readdir
+  , utimes
   , readFile
   , readTextFile
   , writeFile
@@ -22,6 +23,7 @@ module Node.FS.Async
   ) where
 
 import Control.Monad.Eff
+import Data.Date
 import Data.Either
 import Data.Foreign
 import Data.Function
@@ -60,6 +62,7 @@ foreign import fs "var fs = require('fs');" ::
   , rmdir :: Fn2 FilePath (JSCallback Unit) Unit
   , mkdir :: Fn3 FilePath Number (JSCallback Unit) Unit
   , readdir :: Fn2 FilePath (JSCallback [FilePath]) Unit
+  , utimes :: Fn4 FilePath Number Number (JSCallback Unit) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   }
@@ -228,6 +231,21 @@ readdir :: forall eff. FilePath
 
 readdir file cb = return $ runFn2
   fs.readdir file (handleCallback cb)
+
+-- |
+-- Sets the accessed and modified times for the specified file.
+--
+utimes :: forall eff. FilePath
+                   -> Date
+                   -> Date
+                   -> Callback eff Unit
+                   -> Eff (fs :: FS | eff) Unit
+
+utimes file atime mtime cb = return $ runFn4
+  fs.utimes file
+            ((toEpochMilliseconds atime) / 1000)
+            ((toEpochMilliseconds mtime) / 1000)
+            (handleCallback cb)
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.

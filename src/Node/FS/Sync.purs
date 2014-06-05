@@ -14,6 +14,7 @@ module Node.FS.Sync
   , mkdir
   , mkdir'
   , readdir
+  , utimes
   , readFile
   , readTextFile
   , writeFile
@@ -22,6 +23,7 @@ module Node.FS.Sync
 
 import Control.Monad.Eff
 import Control.Monad.Eff.Exception
+import Data.Date
 import Data.Function
 import Node.Buffer (Buffer(..))
 import Node.Encoding
@@ -44,6 +46,7 @@ foreign import fs "var fs = require('fs');" ::
   , rmdirSync :: Fn1 FilePath Unit
   , mkdirSync :: Fn2 FilePath Number Unit
   , readdirSync :: Fn1 FilePath [FilePath]
+  , utimesSync :: Fn3 FilePath Number Number Unit
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   , writeFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   }
@@ -197,6 +200,19 @@ readdir :: forall eff. FilePath
 
 readdir file = mkEff $ \_ -> runFn1
   fs.readdirSync file
+
+-- |
+-- Sets the accessed and modified times for the specified file.
+--
+utimes :: forall eff. FilePath
+                   -> Date
+                   -> Date
+                   -> Eff (fs :: FS, err :: Exception Error | eff) Unit
+
+utimes file atime mtime = mkEff $ \_ -> runFn3
+  fs.utimesSync file
+                ((toEpochMilliseconds atime) / 1000)
+                ((toEpochMilliseconds mtime) / 1000)
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.

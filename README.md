@@ -62,6 +62,8 @@
 
     unlink :: forall eff. FilePath -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 
+    utimes :: forall eff. FilePath -> Date -> Date -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
+
     writeFile :: forall eff. FilePath -> Buffer -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 
     writeTextFile :: forall eff. Encoding -> FilePath -> String -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
@@ -142,6 +144,8 @@
     truncate :: forall eff. FilePath -> Number -> Eff (err :: Exception Error, fs :: FS | eff) Unit
 
     unlink :: forall eff. FilePath -> Eff (err :: Exception Error, fs :: FS | eff) Unit
+
+    utimes :: forall eff. FilePath -> Date -> Date -> Eff (err :: Exception Error, fs :: FS | eff) Unit
 
     writeFile :: forall eff. FilePath -> Buffer -> Eff (err :: Exception Error, fs :: FS | eff) Unit
 
