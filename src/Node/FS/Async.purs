@@ -8,6 +8,8 @@ module Node.FS.Async
   , link
   , symlink
   , readlink
+  , realpath
+  , realpath'
   , readFile
   , readTextFile
   , writeFile
@@ -48,6 +50,7 @@ foreign import fs "var fs = require('fs');" ::
   , link :: Fn3 FilePath FilePath (JSCallback Unit) Unit
   , symlink :: Fn4 FilePath FilePath String (JSCallback Unit) Unit
   , readlink :: Fn2 FilePath (JSCallback FilePath) Unit
+  , realpath :: forall cache. Fn3 FilePath { | cache } (JSCallback FilePath) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   }
@@ -144,6 +147,28 @@ readlink :: forall eff. FilePath
 
 readlink path cb = return $ runFn2
   fs.readlink path (handleCallback cb)
+
+-- |
+-- Find the canonicalized absolute location for a path.
+--
+realpath :: forall eff. FilePath
+                     -> Callback eff FilePath
+                     -> Eff (fs :: FS | eff) Unit
+
+realpath path cb = return $ runFn3
+  fs.realpath path {} (handleCallback cb)
+  
+-- |
+-- Find the canonicalized absolute location for a path using a cache object for
+-- already resolved paths.
+--
+realpath' :: forall eff cache. FilePath
+                            -> { | cache }
+                            -> Callback eff FilePath
+                            -> Eff (fs :: FS | eff) Unit
+
+realpath' path cache cb = return $ runFn3
+  fs.realpath path cache (handleCallback cb)
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.

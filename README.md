@@ -40,6 +40,10 @@
 
     readlink :: forall eff. FilePath -> Callback eff FilePath -> Eff (fs :: FS | eff) Unit
 
+    realpath :: forall eff. FilePath -> Callback eff FilePath -> Eff (fs :: FS | eff) Unit
+
+    realpath' :: forall eff cache. FilePath -> {  | cache } -> Callback eff FilePath -> Eff (fs :: FS | eff) Unit
+
     rename :: forall eff. FilePath -> FilePath -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 
     stat :: forall eff. FilePath -> Callback eff Stats -> Eff (fs :: FS | eff) Unit
@@ -106,6 +110,10 @@
     readTextFile :: forall eff. Encoding -> FilePath -> Eff (err :: Exception Error, fs :: FS | eff) String
 
     readlink :: forall eff. FilePath -> Eff (err :: Exception Error, fs :: FS | eff) FilePath
+
+    realpath :: forall eff. FilePath -> Eff (err :: Exception Error, fs :: FS | eff) FilePath
+
+    realpath' :: forall eff cache. FilePath -> {  | cache } -> Eff (err :: Exception Error, fs :: FS | eff) FilePath
 
     rename :: forall eff. FilePath -> FilePath -> Eff (err :: Exception Error, fs :: FS | eff) Unit
 

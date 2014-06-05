@@ -7,6 +7,8 @@ module Node.FS.Sync
   , link
   , symlink
   , readlink
+  , realpath
+  , realpath'
   , readFile
   , readTextFile
   , writeFile
@@ -32,6 +34,7 @@ foreign import fs "var fs = require('fs');" ::
   , linkSync :: Fn2 FilePath FilePath Unit
   , symlinkSync :: Fn3 FilePath FilePath String Unit
   , readlinkSync :: Fn1 FilePath FilePath
+  , realpathSync :: forall cache. Fn2 FilePath { | cache } FilePath
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   , writeFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   }
@@ -120,6 +123,26 @@ readlink :: forall eff. FilePath
 
 readlink path = mkEff $ \_ -> runFn1
   fs.readlinkSync path
+
+-- |
+-- Find the canonicalized absolute location for a path.
+--
+realpath :: forall eff. FilePath
+                     -> Eff (fs :: FS, err :: Exception Error | eff) FilePath
+
+realpath path = mkEff $ \_ -> runFn2
+  fs.realpathSync path {}
+
+-- |
+-- Find the canonicalized absolute location for a path using a cache object for
+-- already resolved paths.
+--
+realpath' :: forall eff cache. FilePath
+                            -> { | cache }
+                            -> Eff (fs :: FS, err :: Exception Error | eff) FilePath
+
+realpath' path cache = mkEff $ \_ -> runFn2
+  fs.realpathSync path cache
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
