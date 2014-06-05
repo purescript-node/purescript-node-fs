@@ -4,6 +4,9 @@ module Node.FS.Sync
   , chown
   , chmod
   , stat
+  , link
+  , symlink
+  , readlink
   , readFile
   , readTextFile
   , writeFile

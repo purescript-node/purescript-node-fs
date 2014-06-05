@@ -32,13 +32,19 @@
 
     chown :: forall eff. FilePath -> Number -> Number -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 
+    link :: forall eff. FilePath -> FilePath -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
+
     readFile :: forall eff. FilePath -> Callback eff Buffer -> Eff (fs :: FS | eff) Unit
 
     readTextFile :: forall eff. Encoding -> FilePath -> Callback eff String -> Eff (fs :: FS | eff) Unit
 
+    readlink :: forall eff. FilePath -> Callback eff FilePath -> Eff (fs :: FS | eff) Unit
+
     rename :: forall eff. FilePath -> FilePath -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 
     stat :: forall eff. FilePath -> Callback eff Stats -> Eff (fs :: FS | eff) Unit
+
+    symlink :: forall eff. FilePath -> FilePath -> SymlinkType -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 
     truncate :: forall eff. FilePath -> Number -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 
@@ -93,13 +99,19 @@
 
     chown :: forall eff. FilePath -> Number -> Number -> Eff (err :: Exception Error, fs :: FS | eff) Unit
 
+    link :: forall eff. FilePath -> FilePath -> Eff (err :: Exception Error, fs :: FS | eff) Unit
+
     readFile :: forall eff. FilePath -> Eff (err :: Exception Error, fs :: FS | eff) Buffer
 
     readTextFile :: forall eff. Encoding -> FilePath -> Eff (err :: Exception Error, fs :: FS | eff) String
 
+    readlink :: forall eff. FilePath -> Eff (err :: Exception Error, fs :: FS | eff) FilePath
+
     rename :: forall eff. FilePath -> FilePath -> Eff (err :: Exception Error, fs :: FS | eff) Unit
 
     stat :: forall eff. FilePath -> Eff (err :: Exception Error, fs :: FS | eff) Stats
+
+    symlink :: forall eff. FilePath -> FilePath -> SymlinkType -> Eff (err :: Exception Error, fs :: FS | eff) Unit
 
     truncate :: forall eff. FilePath -> Number -> Eff (err :: Exception Error, fs :: FS | eff) Unit
 

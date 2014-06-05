@@ -5,6 +5,9 @@ module Node.FS.Async
   , chown
   , chmod
   , stat
+  , link
+  , symlink
+  , readlink
   , readFile
   , readTextFile
   , writeFile
