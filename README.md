@@ -28,6 +28,10 @@
 
 ### Values
 
+    appendFile :: forall eff. FilePath -> Buffer -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
+
+    appendTextFile :: forall eff. Encoding -> FilePath -> String -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
+
     chmod :: forall eff. FilePath -> Number -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 
     chown :: forall eff. FilePath -> Number -> Number -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
@@ -110,6 +114,10 @@
 ## Module Node.FS.Sync
 
 ### Values
+
+    appendFile :: forall eff. FilePath -> Buffer -> Eff (err :: Exception Error, fs :: FS | eff) Unit
+
+    appendTextFile :: forall eff. Encoding -> FilePath -> String -> Eff (err :: Exception Error, fs :: FS | eff) Unit
 
     chmod :: forall eff. FilePath -> Number -> Eff (err :: Exception Error, fs :: FS | eff) Unit
 

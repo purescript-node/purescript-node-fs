@@ -20,6 +20,8 @@ module Node.FS.Async
   , readTextFile
   , writeFile
   , writeTextFile
+  , appendFile
+  , appendTextFile
   ) where
 
 import Control.Monad.Eff
@@ -65,6 +67,7 @@ foreign import fs "var fs = require('fs');" ::
   , utimes :: Fn4 FilePath Number Number (JSCallback Unit) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
+  , appendFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   }
 
 -- |
@@ -290,3 +293,26 @@ writeTextFile :: forall eff. Encoding
 
 writeTextFile encoding file buff cb = return $ runFn4
   fs.writeFile file buff { encoding: show encoding } (handleCallback cb)
+
+-- |
+-- Appends the contents of a buffer to a file.
+--
+appendFile :: forall eff. FilePath
+                       -> Buffer
+                       -> Callback eff Unit
+                       -> Eff (fs :: FS | eff) Unit
+
+appendFile file buff cb = return $ runFn4
+  fs.appendFile file buff {} (handleCallback cb)
+
+-- |
+-- Appends text to a file using the specified encoding.
+--
+appendTextFile :: forall eff. Encoding
+                           -> FilePath
+                           -> String
+                           -> Callback eff Unit
+                           -> Eff (fs :: FS | eff) Unit
+
+appendTextFile encoding file buff cb = return $ runFn4
+  fs.appendFile file buff { encoding: show encoding } (handleCallback cb)
