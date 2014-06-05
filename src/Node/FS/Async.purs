@@ -44,6 +44,7 @@ foreign import fs "var fs = require('fs');" ::
   , stat :: Fn2 FilePath (JSCallback StatsObj) Unit
   , link :: Fn3 FilePath FilePath (JSCallback Unit) Unit
   , symlink :: Fn4 FilePath FilePath String (JSCallback Unit) Unit
+  , readlink :: Fn2 FilePath (JSCallback FilePath) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   }
@@ -130,6 +131,16 @@ symlink :: forall eff. FilePath
 
 symlink src dest ty cb = return $ runFn4
   fs.symlink src dest (show ty) (handleCallback cb)
+
+-- |
+-- Reads the value of a symlink.
+--
+readlink :: forall eff. FilePath
+                     -> Callback eff FilePath
+                     -> Eff (fs :: FS | eff) Unit
+
+readlink path cb = return $ runFn2
+  fs.readlink path (handleCallback cb)
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
