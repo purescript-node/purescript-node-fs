@@ -6,6 +6,18 @@
 
     data FS :: !
 
+    data SymlinkType where
+      FileLink :: SymlinkType
+      DirLink :: SymlinkType
+      JunctionLink :: SymlinkType
+
+
+### Type Class Instances
+
+    instance eqSymlinkType :: Eq SymlinkType
+
+    instance showSymlinkType :: Show SymlinkType
+
 
 ## Module Node.FS.Async
 

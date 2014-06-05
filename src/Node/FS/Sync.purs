@@ -27,6 +27,7 @@ foreign import fs "var fs = require('fs');" ::
   , chmodSync :: Fn2 FilePath Number Unit
   , statSync :: Fn1 FilePath StatsObj
   , linkSync :: Fn2 FilePath FilePath Unit
+  , symlinkSync :: Fn3 FilePath FilePath String Unit
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   , writeFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   }
@@ -95,6 +96,17 @@ link :: forall eff. FilePath
 
 link src dst = mkEff $ \_ -> runFn2
   fs.linkSync src dst
+
+-- |
+-- Creates a symlink.
+--
+symlink :: forall eff. FilePath
+                    -> FilePath
+                    -> SymlinkType
+                    -> Eff (fs :: FS, err :: Exception Error | eff) Unit
+
+symlink src dst ty = mkEff $ \_ -> runFn3
+  fs.symlinkSync src dst (show ty)
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
