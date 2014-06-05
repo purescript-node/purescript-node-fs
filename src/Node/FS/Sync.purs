@@ -13,6 +13,7 @@ module Node.FS.Sync
   , rmdir
   , mkdir
   , mkdir'
+  , readdir
   , readFile
   , readTextFile
   , writeFile
@@ -42,6 +43,7 @@ foreign import fs "var fs = require('fs');" ::
   , unlinkSync :: Fn1 FilePath Unit
   , rmdirSync :: Fn1 FilePath Unit
   , mkdirSync :: Fn2 FilePath Number Unit
+  , readdirSync :: Fn1 FilePath [FilePath]
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   , writeFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   }
@@ -186,6 +188,15 @@ mkdir' :: forall eff. FilePath
 
 mkdir' file mode = mkEff $ \_ -> runFn2
   fs.mkdirSync file mode
+
+-- |
+-- Reads the contents of a directory.
+--
+readdir :: forall eff. FilePath
+                    -> Eff (fs :: FS, err :: Exception Error | eff) [FilePath]
+
+readdir file = mkEff $ \_ -> runFn1
+  fs.readdirSync file
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.

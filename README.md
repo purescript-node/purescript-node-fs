@@ -42,6 +42,8 @@
 
     readTextFile :: forall eff. Encoding -> FilePath -> Callback eff String -> Eff (fs :: FS | eff) Unit
 
+    readdir :: forall eff. FilePath -> Callback eff [FilePath] -> Eff (fs :: FS | eff) Unit
+
     readlink :: forall eff. FilePath -> Callback eff FilePath -> Eff (fs :: FS | eff) Unit
 
     realpath :: forall eff. FilePath -> Callback eff FilePath -> Eff (fs :: FS | eff) Unit
@@ -120,6 +122,8 @@
     readFile :: forall eff. FilePath -> Eff (err :: Exception Error, fs :: FS | eff) Buffer
 
     readTextFile :: forall eff. Encoding -> FilePath -> Eff (err :: Exception Error, fs :: FS | eff) String
+
+    readdir :: forall eff. FilePath -> Eff (err :: Exception Error, fs :: FS | eff) [FilePath]
 
     readlink :: forall eff. FilePath -> Eff (err :: Exception Error, fs :: FS | eff) FilePath
 

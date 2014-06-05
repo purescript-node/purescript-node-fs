@@ -14,6 +14,7 @@ module Node.FS.Async
   , rmdir
   , mkdir
   , mkdir'
+  , readdir
   , readFile
   , readTextFile
   , writeFile
@@ -58,6 +59,7 @@ foreign import fs "var fs = require('fs');" ::
   , unlink :: Fn2 FilePath (JSCallback Unit) Unit
   , rmdir :: Fn2 FilePath (JSCallback Unit) Unit
   , mkdir :: Fn3 FilePath Number (JSCallback Unit) Unit
+  , readdir :: Fn2 FilePath (JSCallback [FilePath]) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   }
@@ -216,6 +218,16 @@ mkdir' :: forall eff. FilePath
 
 mkdir' file mode cb = return $ runFn3
   fs.mkdir file mode (handleCallback cb)
+
+-- |
+-- Reads the contents of a directory.
+--
+readdir :: forall eff. FilePath
+                    -> Callback eff [FilePath]
+                    -> Eff (fs :: FS | eff) Unit
+
+readdir file cb = return $ runFn2
+  fs.readdir file (handleCallback cb)
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
