@@ -41,9 +41,10 @@ foreign import fs "var fs = require('fs');" ::
   , truncate :: Fn3 FilePath Number (JSCallback Unit) Unit
   , chown :: Fn4 FilePath Number Number (JSCallback Unit) Unit
   , chmod :: Fn3 FilePath Number (JSCallback Unit) Unit
+  , stat :: Fn2 FilePath (JSCallback StatsObj) Unit
+  , link :: Fn3 FilePath FilePath (JSCallback Unit) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
-  , stat :: Fn2 FilePath (JSCallback StatsObj) Unit
   }
 
 -- |
@@ -105,6 +106,17 @@ stat :: forall eff. FilePath
 
 stat file cb = return $ runFn2
   fs.stat file (handleCallback $ cb <<< (<$>) Stats)
+
+-- |
+-- Creates a link to an existing file.
+--
+link :: forall eff. FilePath
+                 -> FilePath
+                 -> Callback eff Unit
+                 -> Eff (fs :: FS | eff) Unit
+
+link src dst cb = return $ runFn3
+  fs.link src dst (handleCallback cb)
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.

@@ -90,3 +90,7 @@
     stat :: forall eff. FilePath -> Eff (err :: Exception Error, fs :: FS | eff) Stats
 
     truncate :: forall eff. FilePath -> Number -> Eff (err :: Exception Error, fs :: FS | eff) Unit
+
+    writeFile :: forall eff. FilePath -> Buffer -> Eff (err :: Exception Error, fs :: FS | eff) Unit
+
+    writeTextFile :: forall eff. Encoding -> FilePath -> String -> Eff (err :: Exception Error, fs :: FS | eff) Unit

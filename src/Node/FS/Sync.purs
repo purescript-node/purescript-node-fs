@@ -26,6 +26,7 @@ foreign import fs "var fs = require('fs');" ::
   , chownSync :: Fn3 FilePath Number Number Unit
   , chmodSync :: Fn2 FilePath Number Unit
   , statSync :: Fn1 FilePath StatsObj
+  , linkSync :: Fn2 FilePath FilePath Unit
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   , writeFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   }
@@ -84,6 +85,16 @@ stat :: forall eff. FilePath
 
 stat file = mkEff $ \_ -> Stats $ runFn1
   fs.statSync file
+
+-- |
+-- Creates a link to an existing file.
+--
+link :: forall eff. FilePath
+                 -> FilePath
+                 -> Eff (fs :: FS, err :: Exception Error | eff) Unit
+
+link src dst = mkEff $ \_ -> runFn2
+  fs.linkSync src dst
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
