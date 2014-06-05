@@ -11,6 +11,8 @@ module Node.FS.Sync
   , realpath'
   , unlink
   , rmdir
+  , mkdir
+  , mkdir'
   , readFile
   , readTextFile
   , writeFile
@@ -39,6 +41,7 @@ foreign import fs "var fs = require('fs');" ::
   , realpathSync :: forall cache. Fn2 FilePath { | cache } FilePath
   , unlinkSync :: Fn1 FilePath Unit
   , rmdirSync :: Fn1 FilePath Unit
+  , mkdirSync :: Fn2 FilePath Number Unit
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   , writeFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   }
@@ -165,6 +168,24 @@ rmdir :: forall eff. FilePath
 
 rmdir file = mkEff $ \_ -> runFn1
   fs.rmdirSync file
+
+-- |
+-- Makes a new directory.
+--
+mkdir :: forall eff. FilePath
+                  -> Eff (fs :: FS, err :: Exception Error | eff) Unit
+
+mkdir = flip mkdir' 777
+
+-- |
+-- Makes a new directory with the specified permissions.
+--
+mkdir' :: forall eff. FilePath
+                   -> Number
+                   -> Eff (fs :: FS, err :: Exception Error | eff) Unit
+
+mkdir' file mode = mkEff $ \_ -> runFn2
+  fs.mkdirSync file mode
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
