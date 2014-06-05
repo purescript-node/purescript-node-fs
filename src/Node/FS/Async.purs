@@ -10,6 +10,7 @@ module Node.FS.Async
   , readlink
   , realpath
   , realpath'
+  , unlink
   , readFile
   , readTextFile
   , writeFile
@@ -51,6 +52,7 @@ foreign import fs "var fs = require('fs');" ::
   , symlink :: Fn4 FilePath FilePath String (JSCallback Unit) Unit
   , readlink :: Fn2 FilePath (JSCallback FilePath) Unit
   , realpath :: forall cache. Fn3 FilePath { | cache } (JSCallback FilePath) Unit
+  , unlink :: Fn2 FilePath (JSCallback Unit) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   }
@@ -125,7 +127,7 @@ link :: forall eff. FilePath
 
 link src dst cb = return $ runFn3
   fs.link src dst (handleCallback cb)
-  
+
 -- |
 -- Creates a symlink.
 --
@@ -157,7 +159,7 @@ realpath :: forall eff. FilePath
 
 realpath path cb = return $ runFn3
   fs.realpath path {} (handleCallback cb)
-  
+
 -- |
 -- Find the canonicalized absolute location for a path using a cache object for
 -- already resolved paths.
@@ -169,6 +171,16 @@ realpath' :: forall eff cache. FilePath
 
 realpath' path cache cb = return $ runFn3
   fs.realpath path cache (handleCallback cb)
+
+-- |
+-- Deletes a file.
+--
+unlink :: forall eff. FilePath
+                   -> Callback eff Unit
+                   -> Eff (fs :: FS | eff) Unit
+
+unlink file cb = return $ runFn2
+  fs.unlink file (handleCallback cb)
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
