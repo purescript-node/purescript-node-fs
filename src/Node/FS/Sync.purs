@@ -10,6 +10,7 @@ module Node.FS.Sync
   , realpath
   , realpath'
   , unlink
+  , rmdir
   , readFile
   , readTextFile
   , writeFile
@@ -37,6 +38,7 @@ foreign import fs "var fs = require('fs');" ::
   , readlinkSync :: Fn1 FilePath FilePath
   , realpathSync :: forall cache. Fn2 FilePath { | cache } FilePath
   , unlinkSync :: Fn1 FilePath Unit
+  , rmdirSync :: Fn1 FilePath Unit
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   , writeFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   }
@@ -154,6 +156,15 @@ unlink :: forall eff. FilePath
 
 unlink file = mkEff $ \_ -> runFn1
   fs.unlinkSync file
+
+-- |
+-- Deletes a directory.
+--
+rmdir :: forall eff. FilePath
+                  -> Eff (fs :: FS, err :: Exception Error | eff) Unit
+
+rmdir file = mkEff $ \_ -> runFn1
+  fs.rmdirSync file
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.

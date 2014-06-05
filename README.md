@@ -46,6 +46,8 @@
 
     rename :: forall eff. FilePath -> FilePath -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 
+    rmdir :: forall eff. FilePath -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
+
     stat :: forall eff. FilePath -> Callback eff Stats -> Eff (fs :: FS | eff) Unit
 
     symlink :: forall eff. FilePath -> FilePath -> SymlinkType -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
@@ -118,6 +120,8 @@
     realpath' :: forall eff cache. FilePath -> {  | cache } -> Eff (err :: Exception Error, fs :: FS | eff) FilePath
 
     rename :: forall eff. FilePath -> FilePath -> Eff (err :: Exception Error, fs :: FS | eff) Unit
+
+    rmdir :: forall eff. FilePath -> Eff (err :: Exception Error, fs :: FS | eff) Unit
 
     stat :: forall eff. FilePath -> Eff (err :: Exception Error, fs :: FS | eff) Stats
 

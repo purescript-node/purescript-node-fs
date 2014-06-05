@@ -11,6 +11,7 @@ module Node.FS.Async
   , realpath
   , realpath'
   , unlink
+  , rmdir
   , readFile
   , readTextFile
   , writeFile
@@ -53,6 +54,7 @@ foreign import fs "var fs = require('fs');" ::
   , readlink :: Fn2 FilePath (JSCallback FilePath) Unit
   , realpath :: forall cache. Fn3 FilePath { | cache } (JSCallback FilePath) Unit
   , unlink :: Fn2 FilePath (JSCallback Unit) Unit
+  , rmdir :: Fn2 FilePath (JSCallback Unit) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   }
@@ -181,6 +183,16 @@ unlink :: forall eff. FilePath
 
 unlink file cb = return $ runFn2
   fs.unlink file (handleCallback cb)
+
+-- |
+-- Deletes a directory.
+--
+rmdir :: forall eff. FilePath
+                   -> Callback eff Unit
+                   -> Eff (fs :: FS | eff) Unit
+
+rmdir file cb = return $ runFn2
+  fs.rmdir file (handleCallback cb)
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
