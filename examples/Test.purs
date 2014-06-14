@@ -24,7 +24,7 @@ main = do
   S.rename "tmp\\Test.js" "tmp\\Test1.js"
 
   S.truncate "tmp\\Test1.js" 1000
-  
+
   stats <- S.stat "tmp\\Test1.js"
   case stats of
     Right stats' -> do
@@ -52,19 +52,19 @@ main = do
 
   A.rename "tmp\\Test1.js" "tmp\\Test.js" $ \x -> do
     trace "\n\nrename result:"
-    either trace' (trace' <<< show) x
+    either (trace' <<< show) (trace' <<< show) x
 
     A.truncate "tmp\\Test.js" 10 $ \x -> do
       trace "\n\ntruncate result:"
-      either trace' (trace' <<< show) x
+      either (trace' <<< show) (trace' <<< show) x
 
   A.readFile "examples\\Test.purs" $ \x -> do
     trace "\n\nreadFile result:"
-    either trace' (trace' <<< show) x
+    either (trace' <<< show) (trace' <<< show) x
 
   A.readTextFile UTF8 "examples\\Test.purs" $ \x -> do
     trace "\n\nreadTextFile result:"
-    either trace' trace' x
+    either (trace' <<< show) trace' x
 
   A.stat "examples\\Test.purs" $ \x -> do
     trace "\n\nstat:"

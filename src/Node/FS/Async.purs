@@ -35,7 +35,7 @@ import Node.Encoding
 import Node.FS
 import Node.FS.Stats
 import Node.Path (FilePath())
-import Global (Error(..))
+import Global (Error(), error)
 
 type JSCallback a = Fn2 Foreign a Unit
 
@@ -46,8 +46,8 @@ foreign import runCallbackEff
 
 handleCallback :: forall eff a b. (Callback eff a) -> JSCallback a
 handleCallback f = mkFn2 $ \err x -> runCallbackEff $ f case parseForeign read err of
-  Left err -> Left $ "handleCallback failed: " ++ err
-  Right (Just err') -> Left $ show (err' :: Error)
+  Left err -> Left $ error $ "handleCallback failed: " ++ show err
+  Right (Just err') -> Left err'
   Right Nothing -> Right x
 
 foreign import fs "var fs = require('fs');" ::
@@ -73,7 +73,7 @@ foreign import fs "var fs = require('fs');" ::
 -- |
 -- Type synonym for callback functions.
 --
-type Callback eff a = Either String a -> Eff eff Unit
+type Callback eff a = Either Error a -> Eff eff Unit
 
 -- |
 -- Renames a file.
