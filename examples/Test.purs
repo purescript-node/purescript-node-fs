@@ -4,7 +4,6 @@ import qualified Node.FS.Async as A
 import qualified Node.FS.Sync as S
 import Node.FS.Stats
 import Control.Apply ((*>))
-import Control.Monad.Eff.Exception
 import Data.Either
 import Debug.Trace
 import Node.Encoding
@@ -15,39 +14,41 @@ main = do
 
   file <- S.readTextFile UTF8 "examples\\Test.purs"
   trace' "\n\nreadTextFile sync result:"
-  trace' file
+  case file of
+    Right file' -> trace' $ file'
 
-  flip catchException (S.readTextFile UTF8 "examples\\does not exist") $ \e -> do
-    trace' "Caught readTextFile exception:"
-    trace' $ show e
-    return ""
+  err <- S.readTextFile UTF8 "examples\\does not exist"
+  case err of
+    Left err' -> trace' $ "Caught readTextFile error:\n" ++ show err'
 
   S.rename "tmp\\Test.js" "tmp\\Test1.js"
 
   S.truncate "tmp\\Test1.js" 1000
   
   stats <- S.stat "tmp\\Test1.js"
-  trace "\n\nS.stat:"
-  trace' "isFile:"
-  trace' $ show $ isFile stats
-  trace' "isDirectory:"
-  trace' $ show $ isDirectory stats
-  trace' "isBlockDevice:"
-  trace' $ show $ isBlockDevice stats
-  trace' "isCharacterDevice:"
-  trace' $ show $ isCharacterDevice stats
-  trace' "isFIFO:"
-  trace' $ show $ isFIFO stats
-  trace' "isSocket:"
-  trace' $ show $ isSocket stats
-  trace' "isSymbolicLink:"
-  trace' $ show $ isSymbolicLink stats
-  trace' "modifiedTime:"
-  trace' $ show $ modifiedTime stats
-  trace' "accessedTime:"
-  trace' $ show $ accessedTime stats
-  trace' "statusChangedTime:"
-  trace' $ show $ statusChangedTime stats
+  case stats of
+    Right stats' -> do
+      trace "\n\nS.stat:"
+      trace' "isFile:"
+      trace' $ show $ isFile stats'
+      trace' "isDirectory:"
+      trace' $ show $ isDirectory stats'
+      trace' "isBlockDevice:"
+      trace' $ show $ isBlockDevice stats'
+      trace' "isCharacterDevice:"
+      trace' $ show $ isCharacterDevice stats'
+      trace' "isFIFO:"
+      trace' $ show $ isFIFO stats'
+      trace' "isSocket:"
+      trace' $ show $ isSocket stats'
+      trace' "isSymbolicLink:"
+      trace' $ show $ isSymbolicLink stats'
+      trace' "modifiedTime:"
+      trace' $ show $ modifiedTime stats'
+      trace' "accessedTime:"
+      trace' $ show $ accessedTime stats'
+      trace' "statusChangedTime:"
+      trace' $ show $ statusChangedTime stats'
 
   A.rename "tmp\\Test1.js" "tmp\\Test.js" $ \x -> do
     trace "\n\nrename result:"
