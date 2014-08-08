@@ -25,6 +25,7 @@ module Node.FS.Async
   ) where
 
 import Control.Monad.Eff
+import Control.Monad.Eff.Exception
 import Data.Date
 import Data.Either
 import Data.Foreign
@@ -35,7 +36,6 @@ import Node.Encoding
 import Node.FS
 import Node.FS.Stats
 import Node.Path (FilePath())
-import Global (Error(), error)
 
 type JSCallback a = Fn2 Foreign a Unit
 

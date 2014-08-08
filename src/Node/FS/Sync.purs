@@ -24,6 +24,7 @@ module Node.FS.Sync
   ) where
 
 import Control.Monad.Eff
+import Control.Monad.Eff.Exception
 import Data.Date
 import Data.Either
 import Data.Function
@@ -32,7 +33,6 @@ import Node.Encoding
 import Node.FS
 import Node.FS.Stats
 import Node.Path (FilePath())
-import Global (Error(..))
 
 foreign import fs "var fs = require('fs');" ::
   { renameSync :: Fn2 FilePath FilePath Unit
