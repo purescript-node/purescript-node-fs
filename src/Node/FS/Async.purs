@@ -46,10 +46,10 @@ foreign import handleCallbackImpl
   \    if (err) f(left(err))();\
   \    else f(right(value))();\
   \  };\
-  \}" :: forall eff a b. Fn3 (Error -> Either Error a)
-                             (a -> Either Error a)
-                             (Callback eff a)
-                             (JSCallback a)
+  \}" :: forall eff a. Fn3 (Error -> Either Error a)
+                           (a -> Either Error a)
+                           (Callback eff a)
+                           (JSCallback a)
 
 handleCallback :: forall eff a b. (Callback eff a) -> JSCallback a
 handleCallback cb = runFn3 handleCallbackImpl Left Right cb
