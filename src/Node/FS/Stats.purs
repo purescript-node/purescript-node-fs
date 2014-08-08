@@ -39,7 +39,7 @@ type StatsObj =
 
 -- |
 -- Stats wrapper to provide a usable interface to the underlying properties and methods.
--- 
+--
 data Stats = Stats StatsObj
 
 foreign import showStatsObj
@@ -50,11 +50,11 @@ foreign import showStatsObj
 instance showStats :: Show Stats where
   show (Stats o) = "Stats " ++ showStatsObj o
 
-foreign import statsMethod 
+foreign import statsMethod
   "function statsMethod(m, s) {\
   \  return s[m]();\
   \}" :: Fn2 String StatsObj Boolean
-  
+
 isFile :: Stats -> Boolean
 isFile (Stats s) = runFn2 statsMethod "isFile" s
 

@@ -25,9 +25,9 @@ module Node.FS.Async
   ) where
 
 import Control.Monad.Eff
+import Control.Monad.Eff.Exception
 import Data.Date
 import Data.Either
-import Data.Foreign
 import Data.Function
 import Data.Maybe
 import Node.Buffer (Buffer(..))
@@ -35,20 +35,24 @@ import Node.Encoding
 import Node.FS
 import Node.FS.Stats
 import Node.Path (FilePath())
-import Global (Error(), error)
 
-type JSCallback a = Fn2 Foreign a Unit
+foreign import data Nullable :: * -> *
 
-foreign import runCallbackEff
-  "function runCallbackEff (f) {\
-  \  return f(); \
-  \}" :: forall eff a. Eff eff a -> a
+type JSCallback a = Fn2 (Nullable Error) a Unit
+
+foreign import handleCallbackImpl
+  "function handleCallbackImpl(left, right, f) {\
+  \  return function(err, value) {\
+  \    if (err) f(left(err))();\
+  \    else f(right(value))();\
+  \  };\
+  \}" :: forall eff a b. Fn3 (Error -> Either Error a)
+                             (a -> Either Error a)
+                             (Callback eff a)
+                             (JSCallback a)
 
 handleCallback :: forall eff a b. (Callback eff a) -> JSCallback a
-handleCallback f = mkFn2 $ \err x -> runCallbackEff $ f case parseForeign read err of
-  Left err -> Left $ error $ "handleCallback failed: " ++ show err
-  Right (Just err') -> Left err'
-  Right Nothing -> Right x
+handleCallback cb = runFn3 handleCallbackImpl Left Right cb
 
 foreign import fs "var fs = require('fs');" ::
   { rename :: Fn3 FilePath FilePath (JSCallback Unit) Unit

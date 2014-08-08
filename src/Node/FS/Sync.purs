@@ -24,6 +24,7 @@ module Node.FS.Sync
   ) where
 
 import Control.Monad.Eff
+import Control.Monad.Eff.Exception
 import Data.Date
 import Data.Either
 import Data.Function
@@ -32,7 +33,6 @@ import Node.Encoding
 import Node.FS
 import Node.FS.Stats
 import Node.Path (FilePath())
-import Global (Error(..))
 
 foreign import fs "var fs = require('fs');" ::
   { renameSync :: Fn2 FilePath FilePath Unit
@@ -54,32 +54,20 @@ foreign import fs "var fs = require('fs');" ::
   , appendFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   }
 
-foreign import mkFSAction
-  "function mkFSAction(fail) {\
-  \  return function (success) {\
-  \    return function (f) {\
-  \      return function () {\
-  \        try {\
-  \          return success(f());\
-  \        } catch (e) {\
-  \          return fail(e);\
-  \        }\
-  \      };\
-  \    };\
-  \  };\
-  \}" :: forall eff a. (Error -> Either Error a) 
-                    -> (a -> Either Error a)
-                    -> (Unit -> a)
-                    -> Eff eff (Either Error a)
+foreign import mkEff
+  "function mkEff(action) {\
+  \  return action;\
+  \}" :: forall eff a. (Unit -> a)
+                    -> Eff eff a
 
 -- |
 -- Renames a file.
 --
 rename :: forall eff. FilePath
                    -> FilePath
-                   -> Eff (fs :: FS | eff) (Either Error Unit)
+                   -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-rename oldFile newFile = mkFSAction Left Right $ \_ -> runFn2
+rename oldFile newFile = mkEff $ \_ -> runFn2
   fs.renameSync oldFile newFile
 
 -- |
@@ -87,9 +75,9 @@ rename oldFile newFile = mkFSAction Left Right $ \_ -> runFn2
 --
 truncate :: forall eff. FilePath
                      -> Number
-                     -> Eff (fs :: FS | eff) (Either Error Unit)
+                     -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-truncate file len = mkFSAction Left Right $ \_ -> runFn2
+truncate file len = mkEff $ \_ -> runFn2
   fs.truncateSync file len
 
 -- |
@@ -98,9 +86,9 @@ truncate file len = mkFSAction Left Right $ \_ -> runFn2
 chown :: forall eff. FilePath
                   -> Number
                   -> Number
-                  -> Eff (fs :: FS | eff) (Either Error Unit)
+                  -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-chown file uid gid = mkFSAction Left Right $ \_ -> runFn3
+chown file uid gid = mkEff $ \_ -> runFn3
   fs.chownSync file uid gid
 
 -- |
@@ -108,18 +96,18 @@ chown file uid gid = mkFSAction Left Right $ \_ -> runFn3
 --
 chmod :: forall eff. FilePath
                   -> Number
-                  -> Eff (fs :: FS | eff) (Either Error Unit)
+                  -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-chmod file mode = mkFSAction Left Right $ \_ -> runFn2
+chmod file mode = mkEff $ \_ -> runFn2
   fs.chmodSync file mode
 
 -- |
 -- Gets file statistics.
 --
 stat :: forall eff. FilePath
-                 -> Eff (fs :: FS | eff) (Either Error Stats)
+                 -> Eff (fs :: FS, err :: Exception | eff) Stats
 
-stat file = mkFSAction Left Right $ \_ -> Stats $ runFn1
+stat file = return $ Stats $ runFn1
   fs.statSync file
 
 -- |
@@ -127,9 +115,9 @@ stat file = mkFSAction Left Right $ \_ -> Stats $ runFn1
 --
 link :: forall eff. FilePath
                  -> FilePath
-                 -> Eff (fs :: FS | eff) (Either Error Unit)
+                 -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-link src dst = mkFSAction Left Right $ \_ -> runFn2
+link src dst = mkEff $ \_ -> runFn2
   fs.linkSync src dst
 
 -- |
@@ -138,27 +126,27 @@ link src dst = mkFSAction Left Right $ \_ -> runFn2
 symlink :: forall eff. FilePath
                     -> FilePath
                     -> SymlinkType
-                    -> Eff (fs :: FS | eff) (Either Error Unit)
+                    -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-symlink src dst ty = mkFSAction Left Right $ \_ -> runFn3
+symlink src dst ty = mkEff $ \_ -> runFn3
   fs.symlinkSync src dst (show ty)
 
 -- |
 -- Reads the value of a symlink.
 --
 readlink :: forall eff. FilePath
-                     -> Eff (fs :: FS | eff) (Either Error FilePath)
+                     -> Eff (fs :: FS, err :: Exception | eff) FilePath
 
-readlink path = mkFSAction Left Right $ \_ -> runFn1
+readlink path = mkEff $ \_ -> runFn1
   fs.readlinkSync path
 
 -- |
 -- Find the canonicalized absolute location for a path.
 --
 realpath :: forall eff. FilePath
-                     -> Eff (fs :: FS | eff) (Either Error FilePath)
+                     -> Eff (fs :: FS, err :: Exception | eff) FilePath
 
-realpath path = mkFSAction Left Right $ \_ -> runFn2
+realpath path = mkEff $ \_ -> runFn2
   fs.realpathSync path {}
 
 -- |
@@ -167,34 +155,34 @@ realpath path = mkFSAction Left Right $ \_ -> runFn2
 --
 realpath' :: forall eff cache. FilePath
                             -> { | cache }
-                            -> Eff (fs :: FS | eff) (Either Error FilePath)
+                            -> Eff (fs :: FS, err :: Exception | eff) FilePath
 
-realpath' path cache = mkFSAction Left Right $ \_ -> runFn2
+realpath' path cache = mkEff $ \_ -> runFn2
   fs.realpathSync path cache
 
 -- |
 -- Deletes a file.
 --
 unlink :: forall eff. FilePath
-                   -> Eff (fs :: FS | eff) (Either Error Unit)
+                   -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-unlink file = mkFSAction Left Right $ \_ -> runFn1
+unlink file = mkEff $ \_ -> runFn1
   fs.unlinkSync file
 
 -- |
 -- Deletes a directory.
 --
 rmdir :: forall eff. FilePath
-                  -> Eff (fs :: FS | eff) (Either Error Unit)
+                  -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-rmdir file = mkFSAction Left Right $ \_ -> runFn1
+rmdir file = mkEff $ \_ -> runFn1
   fs.rmdirSync file
 
 -- |
 -- Makes a new directory.
 --
 mkdir :: forall eff. FilePath
-                  -> Eff (fs :: FS | eff) (Either Error Unit)
+                  -> Eff (fs :: FS, err :: Exception | eff) Unit
 
 mkdir = flip mkdir' 777
 
@@ -203,18 +191,18 @@ mkdir = flip mkdir' 777
 --
 mkdir' :: forall eff. FilePath
                    -> Number
-                   -> Eff (fs :: FS | eff) (Either Error Unit)
+                   -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-mkdir' file mode = mkFSAction Left Right $ \_ -> runFn2
+mkdir' file mode = mkEff $ \_ -> runFn2
   fs.mkdirSync file mode
 
 -- |
 -- Reads the contents of a directory.
 --
 readdir :: forall eff. FilePath
-                    -> Eff (fs :: FS | eff) (Either Error [FilePath])
+                    -> Eff (fs :: FS, err :: Exception | eff) [FilePath]
 
-readdir file = mkFSAction Left Right $ \_ -> runFn1
+readdir file = mkEff $ \_ -> runFn1
   fs.readdirSync file
 
 -- |
@@ -223,9 +211,9 @@ readdir file = mkFSAction Left Right $ \_ -> runFn1
 utimes :: forall eff. FilePath
                    -> Date
                    -> Date
-                   -> Eff (fs :: FS | eff) (Either Error Unit)
+                   -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-utimes file atime mtime = mkFSAction Left Right $ \_ -> runFn3
+utimes file atime mtime = mkEff $ \_ -> runFn3
   fs.utimesSync file
                 ((toEpochMilliseconds atime) / 1000)
                 ((toEpochMilliseconds mtime) / 1000)
@@ -234,9 +222,9 @@ utimes file atime mtime = mkFSAction Left Right $ \_ -> runFn3
 -- Reads the entire contents of a file returning the result as a raw buffer.
 --
 readFile :: forall eff. FilePath
-                     -> Eff (fs :: FS | eff) (Either Error Buffer)
+                     -> Eff (fs :: FS, err :: Exception | eff) Buffer
 
-readFile file = mkFSAction Left Right $ \_ -> runFn2
+readFile file = mkEff $ \_ -> runFn2
   fs.readFileSync file {}
 
 -- |
@@ -244,9 +232,9 @@ readFile file = mkFSAction Left Right $ \_ -> runFn2
 --
 readTextFile :: forall eff. Encoding
                          -> FilePath
-                         -> Eff (fs :: FS | eff) (Either Error String)
+                         -> Eff (fs :: FS, err :: Exception | eff) String
 
-readTextFile encoding file = mkFSAction Left Right $ \_ -> runFn2
+readTextFile encoding file = mkEff $ \_ -> runFn2
   fs.readFileSync file { encoding: show encoding }
 
 -- |
@@ -254,9 +242,9 @@ readTextFile encoding file = mkFSAction Left Right $ \_ -> runFn2
 --
 writeFile :: forall eff. FilePath
                       -> Buffer
-                      -> Eff (fs :: FS | eff) (Either Error Unit)
+                      -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-writeFile file buff = mkFSAction Left Right $ \_ -> runFn3
+writeFile file buff = mkEff $ \_ -> runFn3
   fs.writeFileSync file buff {}
 
 -- |
@@ -265,19 +253,19 @@ writeFile file buff = mkFSAction Left Right $ \_ -> runFn3
 writeTextFile :: forall eff. Encoding
                           -> FilePath
                           -> String
-                          -> Eff (fs :: FS | eff) (Either Error Unit)
+                          -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-writeTextFile encoding file buff = mkFSAction Left Right $ \_ -> runFn3
-  fs.writeFileSync file buff { encoding: show encoding }
+writeTextFile encoding file text = mkEff $ \_ -> runFn3
+  fs.writeFileSync file text { encoding: show encoding }
 
 -- |
 -- Appends the contents of a buffer to a file.
 --
 appendFile :: forall eff. FilePath
                        -> Buffer
-                       -> Eff (fs :: FS | eff) (Either Error Unit)
+                       -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-appendFile file buff = mkFSAction Left Right $ \_ -> runFn3
+appendFile file buff = mkEff $ \_ -> runFn3
   fs.appendFileSync file buff {}
 
 -- |
@@ -286,7 +274,7 @@ appendFile file buff = mkFSAction Left Right $ \_ -> runFn3
 appendTextFile :: forall eff. Encoding
                            -> FilePath
                            -> String
-                           -> Eff (fs :: FS | eff) (Either Error Unit)
+                           -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-appendTextFile encoding file buff = mkFSAction Left Right $ \_ -> runFn3
+appendTextFile encoding file buff = mkEff $ \_ -> runFn3
   fs.appendFileSync file buff { encoding: show encoding }
