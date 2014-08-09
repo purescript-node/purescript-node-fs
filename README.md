@@ -115,46 +115,46 @@
 
 ### Values
 
-    appendFile :: forall eff. FilePath -> Buffer -> Eff (fs :: FS | eff) (Either Error Unit)
+    appendFile :: forall eff. FilePath -> Buffer -> Eff (err :: Exception, fs :: FS | eff) Unit
 
-    appendTextFile :: forall eff. Encoding -> FilePath -> String -> Eff (fs :: FS | eff) (Either Error Unit)
+    appendTextFile :: forall eff. Encoding -> FilePath -> String -> Eff (err :: Exception, fs :: FS | eff) Unit
 
-    chmod :: forall eff. FilePath -> Number -> Eff (fs :: FS | eff) (Either Error Unit)
+    chmod :: forall eff. FilePath -> Number -> Eff (err :: Exception, fs :: FS | eff) Unit
 
-    chown :: forall eff. FilePath -> Number -> Number -> Eff (fs :: FS | eff) (Either Error Unit)
+    chown :: forall eff. FilePath -> Number -> Number -> Eff (err :: Exception, fs :: FS | eff) Unit
 
-    link :: forall eff. FilePath -> FilePath -> Eff (fs :: FS | eff) (Either Error Unit)
+    link :: forall eff. FilePath -> FilePath -> Eff (err :: Exception, fs :: FS | eff) Unit
 
-    mkdir :: forall eff. FilePath -> Eff (fs :: FS | eff) (Either Error Unit)
+    mkdir :: forall eff. FilePath -> Eff (err :: Exception, fs :: FS | eff) Unit
 
-    mkdir' :: forall eff. FilePath -> Number -> Eff (fs :: FS | eff) (Either Error Unit)
+    mkdir' :: forall eff. FilePath -> Number -> Eff (err :: Exception, fs :: FS | eff) Unit
 
-    readFile :: forall eff. FilePath -> Eff (fs :: FS | eff) (Either Error Buffer)
+    readFile :: forall eff. FilePath -> Eff (err :: Exception, fs :: FS | eff) Buffer
 
-    readTextFile :: forall eff. Encoding -> FilePath -> Eff (fs :: FS | eff) (Either Error String)
+    readTextFile :: forall eff. Encoding -> FilePath -> Eff (err :: Exception, fs :: FS | eff) String
 
-    readdir :: forall eff. FilePath -> Eff (fs :: FS | eff) (Either Error [FilePath])
+    readdir :: forall eff. FilePath -> Eff (err :: Exception, fs :: FS | eff) [FilePath]
 
-    readlink :: forall eff. FilePath -> Eff (fs :: FS | eff) (Either Error FilePath)
+    readlink :: forall eff. FilePath -> Eff (err :: Exception, fs :: FS | eff) FilePath
 
-    realpath :: forall eff. FilePath -> Eff (fs :: FS | eff) (Either Error FilePath)
+    realpath :: forall eff. FilePath -> Eff (err :: Exception, fs :: FS | eff) FilePath
 
-    realpath' :: forall eff cache. FilePath -> {  | cache } -> Eff (fs :: FS | eff) (Either Error FilePath)
+    realpath' :: forall eff cache. FilePath -> {  | cache } -> Eff (err :: Exception, fs :: FS | eff) FilePath
 
-    rename :: forall eff. FilePath -> FilePath -> Eff (fs :: FS | eff) (Either Error Unit)
+    rename :: forall eff. FilePath -> FilePath -> Eff (err :: Exception, fs :: FS | eff) Unit
 
-    rmdir :: forall eff. FilePath -> Eff (fs :: FS | eff) (Either Error Unit)
+    rmdir :: forall eff. FilePath -> Eff (err :: Exception, fs :: FS | eff) Unit
 
-    stat :: forall eff. FilePath -> Eff (fs :: FS | eff) (Either Error Stats)
+    stat :: forall eff. FilePath -> Eff (err :: Exception, fs :: FS | eff) Stats
 
-    symlink :: forall eff. FilePath -> FilePath -> SymlinkType -> Eff (fs :: FS | eff) (Either Error Unit)
+    symlink :: forall eff. FilePath -> FilePath -> SymlinkType -> Eff (err :: Exception, fs :: FS | eff) Unit
 
-    truncate :: forall eff. FilePath -> Number -> Eff (fs :: FS | eff) (Either Error Unit)
+    truncate :: forall eff. FilePath -> Number -> Eff (err :: Exception, fs :: FS | eff) Unit
 
-    unlink :: forall eff. FilePath -> Eff (fs :: FS | eff) (Either Error Unit)
+    unlink :: forall eff. FilePath -> Eff (err :: Exception, fs :: FS | eff) Unit
 
-    utimes :: forall eff. FilePath -> Date -> Date -> Eff (fs :: FS | eff) (Either Error Unit)
+    utimes :: forall eff. FilePath -> Date -> Date -> Eff (err :: Exception, fs :: FS | eff) Unit
 
-    writeFile :: forall eff. FilePath -> Buffer -> Eff (fs :: FS | eff) (Either Error Unit)
+    writeFile :: forall eff. FilePath -> Buffer -> Eff (err :: Exception, fs :: FS | eff) Unit
 
-    writeTextFile :: forall eff. Encoding -> FilePath -> String -> Eff (fs :: FS | eff) (Either Error Unit)
+    writeTextFile :: forall eff. Encoding -> FilePath -> String -> Eff (err :: Exception, fs :: FS | eff) Unit
