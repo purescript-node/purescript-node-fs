@@ -21,6 +21,7 @@ module Node.FS.Sync
   , writeTextFile
   , appendFile
   , appendTextFile
+  , exists
   ) where
 
 import Control.Monad.Eff
@@ -52,6 +53,7 @@ foreign import fs "var fs = require('fs');" ::
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   , writeFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   , appendFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
+  , existsSync :: Fn1 FilePath Boolean
   }
 
 foreign import mkEff
@@ -278,3 +280,11 @@ appendTextFile :: forall eff. Encoding
 
 appendTextFile encoding file buff = mkEff $ \_ -> runFn3
   fs.appendFileSync file buff { encoding: show encoding }
+
+-- |
+-- Check if the path exists.
+--
+exists :: forall eff. FilePath
+                   -> Eff (fs :: FS | eff) Boolean
+exists file = mkEff $ \_ -> runFn1
+  fs.existsSync file

@@ -123,6 +123,8 @@
 
     chown :: forall eff. FilePath -> Number -> Number -> Eff (err :: Exception, fs :: FS | eff) Unit
 
+    exists :: forall eff. FilePath -> Eff (fs :: FS | eff) Boolean
+
     link :: forall eff. FilePath -> FilePath -> Eff (err :: Exception, fs :: FS | eff) Unit
 
     mkdir :: forall eff. FilePath -> Eff (err :: Exception, fs :: FS | eff) Unit
