@@ -53,7 +53,7 @@ foreign import fs "var fs = require('fs');" ::
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   , writeFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   , appendFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
-  , existsSync :: Fn1 FilePath Boolean
+  , existsSync :: FilePath -> Boolean
   }
 
 foreign import mkEff
@@ -286,5 +286,4 @@ appendTextFile encoding file buff = mkEff $ \_ -> runFn3
 --
 exists :: forall eff. FilePath
                    -> Eff (fs :: FS | eff) Boolean
-exists file = mkEff $ \_ -> runFn1
-  fs.existsSync file
+exists file = mkEff $ \_ -> fs.existsSync file
