@@ -25,6 +25,7 @@ module Node.FS.Async
   ) where
 
 import Control.Monad.Eff
+import Control.Monad.Eff.Unsafe (unsafeInterleaveEff)
 import Control.Monad.Eff.Exception
 import Data.Date
 import Data.Either
