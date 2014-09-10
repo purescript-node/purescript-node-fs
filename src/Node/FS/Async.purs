@@ -22,6 +22,7 @@ module Node.FS.Async
   , writeTextFile
   , appendFile
   , appendTextFile
+  , exists
   ) where
 
 import Control.Monad.Eff
