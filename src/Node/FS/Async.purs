@@ -326,3 +326,12 @@ appendTextFile :: forall eff. Encoding
 
 appendTextFile encoding file buff cb = mkEff $ \_ -> runFn4
   fs.appendFile file buff { encoding: show encoding } (handleCallback cb)
+
+-- |
+-- Check if the path exists.
+--
+exists :: forall eff. FilePath
+                   -> (Boolean -> Eff eff Unit)
+                   -> Eff (fs :: FS | eff) Unit
+exists file cb = mkEff $ \_ -> runFn2
+  fs.exists file $ \b -> runPure (unsafeInterleaveEff (cb b))

@@ -11,6 +11,9 @@ import Node.Encoding
 
 main = do
 
+  A.exists "examples\\Test.purs" $ \e ->
+    trace $ "Test.purs exists? " ++ show e
+  
   file <- S.readTextFile UTF8 "examples\\Test.purs"
   trace "\n\nreadTextFile sync result:"
   trace $ file
