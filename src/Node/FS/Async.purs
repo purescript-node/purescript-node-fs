@@ -85,7 +85,7 @@ foreign import mkEff
 -- |
 -- Type synonym for callback functions.
 --
-type Callback eff a = Either Error a -> Eff eff Unit
+type Callback eff a = Either Error a -> Eff (fs :: FS | eff) Unit
 
 -- |
 -- Renames a file.

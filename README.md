@@ -23,7 +23,7 @@
 
 ### Types
 
-    type Callback eff a = Either Error a -> Eff eff Unit
+    type Callback eff a = Either Error a -> Eff (fs :: FS | eff) Unit
 
 
 ### Values
@@ -82,7 +82,7 @@
     data Stats where
       Stats :: StatsObj -> Stats
 
-    type StatsObj  = { isSocket :: Fn0 Boolean, isFIFO :: Fn0 Boolean, isCharacterDevice :: Fn0 Boolean, isBlockDevice :: Fn0 Boolean, isDirectory :: Fn0 Boolean, isFile :: Fn0 Boolean, ctime :: JSDate, mtime :: JSDate, atime :: JSDate, size :: Number, ino :: Number, rdev :: Number, gid :: Number, uid :: Number, nlink :: Number, mode :: Number, dev :: Number }
+    type StatsObj = { isSocket :: Fn0 Boolean, isFIFO :: Fn0 Boolean, isCharacterDevice :: Fn0 Boolean, isBlockDevice :: Fn0 Boolean, isDirectory :: Fn0 Boolean, isFile :: Fn0 Boolean, ctime :: JSDate, mtime :: JSDate, atime :: JSDate, size :: Number, ino :: Number, rdev :: Number, gid :: Number, uid :: Number, nlink :: Number, mode :: Number, dev :: Number }
 
 
 ### Type Class Instances
