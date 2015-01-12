@@ -22,6 +22,20 @@ module Node.FS.Sync
   , appendFile
   , appendTextFile
   , exists
+  , FileDescriptor(..)
+  , FileFlags(..)
+  , BufferLength(..)
+  , BufferOffset(..)
+  , ByteCount(..)
+  , FileMode(..)
+  , FilePosition(..)
+  , fdOpen
+  , fdRead
+  , fdNext
+  , fdWrite
+  , fdAppend
+  , fdFlush
+  , fdClose
   ) where
 
 import Control.Monad.Eff
@@ -29,11 +43,24 @@ import Control.Monad.Eff.Exception
 import Data.Date
 import Data.Either
 import Data.Function
-import Node.Buffer (Buffer(..))
+import Data.Maybe (Maybe(..))
+import Node.Buffer (Buffer(..), size)
 import Node.Encoding
 import Node.FS
 import Node.FS.Stats
 import Node.Path (FilePath())
+
+foreign import data FileDescriptor :: *
+
+data FileFlags = R | R_PLUS | RS | RS_PLUS
+               | W | WX | W_PLUS | WX_PLUS
+               | A | AX | A_PLUS | AX_PLUS
+
+type BufferLength = Number
+type BufferOffset = Number
+type ByteCount = Number
+type FileMode = Number
+type FilePosition = Number
 
 foreign import fs "var fs = require('fs');" ::
   { renameSync :: Fn2 FilePath FilePath Unit
@@ -54,7 +81,39 @@ foreign import fs "var fs = require('fs');" ::
   , writeFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   , appendFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   , existsSync :: FilePath -> Boolean
+  , openSync :: Fn2 FilePath String FileDescriptor
+  , readSync :: Fn5 FileDescriptor Buffer BufferOffset BufferLength FilePosition ByteCount
+  , writeSync :: Fn5 FileDescriptor Buffer BufferOffset BufferLength FilePosition ByteCount
+  , fsyncSync :: Fn1 FileDescriptor Unit
+  , closeSync :: Fn1 FileDescriptor Unit
   }
+
+foreign import createSync
+  """
+  var fs = require('fs');
+  function createSync(file, flags, mode) {
+    return fs.openSync(file, flags, mode);
+  }
+  """
+  :: Fn3 FilePath String FileMode FileDescriptor
+
+foreign import writeSeqSync
+  """
+  var fs = require('fs');
+  function writeSeqSync(fd, buffer, offset, len) {
+    return fs.writeSync(fd, buffer, offset, len);
+  }
+  """
+  :: Fn4 FileDescriptor Buffer BufferOffset BufferLength ByteCount
+
+foreign import readSeqSync
+  """
+  var fs = require('fs');
+  function readSeqSync(fd, buffer, offset, len) {
+    return fs.readSync(fd, buffer, offset, len);
+  }
+  """
+  :: Fn4 FileDescriptor Buffer BufferOffset BufferLength ByteCount
 
 foreign import mkEff
   "function mkEff(action) {\
@@ -287,3 +346,107 @@ appendTextFile encoding file buff = mkEff $ \_ -> runFn3
 exists :: forall eff. FilePath
                    -> Eff (fs :: FS | eff) Boolean
 exists file = mkEff $ \_ -> fs.existsSync file
+
+{- Synchronous File Descriptor Functions -}
+
+--|
+-- Open a file synchronously.  See <a
+-- href="http://nodejs.org/api/fs.html#fs_fs_opensync_path_flags_mode">Node
+-- Documentation</a> for details.
+--
+fdOpen :: forall opts eff.
+          FilePath
+       -> FileFlags
+       -> Maybe FileMode
+       -> Eff (err :: Exception, fs :: FS | eff) FileDescriptor
+fdOpen file flags mode =
+  case mode of
+    Nothing  -> mkEff $ \_ -> runFn2 fs.openSync file (toStr flags)
+    (Just m) -> mkEff $ \_ -> runFn3 createSync file (toStr flags) m
+  where
+    toStr R       = "r"
+    toStr R_PLUS  = "r+"
+    toStr RS      = "rs"
+    toStr RS_PLUS = "rs+"
+    toStr W       = "w"
+    toStr WX      = "wx"
+    toStr W_PLUS  = "w+"
+    toStr WX_PLUS = "wx+"
+    toStr A       = "a"
+    toStr AX      = "ax"
+    toStr A_PLUS  = "a+"
+    toStr AX_PLUS = "ax+"
+
+--|
+-- Read to a file synchronously.  See <a
+-- href="http://nodejs.org/api/fs.html#fs_fs_readsync_fd_buffer_offset_length_position">Node
+-- ocumentation</a> for details.
+--
+fdRead :: forall eff.
+          FileDescriptor
+       -> Buffer
+       -> BufferOffset
+       -> BufferLength
+       -> Maybe FilePosition
+       -> Eff (err :: Exception, fs :: FS | eff) ByteCount
+fdRead fd buff off len Nothing =
+  mkEff $ \_ -> runFn4 readSeqSync fd buff off len
+fdRead fd buff off len (Just pos) =
+  mkEff $ \_ -> runFn5 fs.readSync fd buff off len pos
+
+--|
+-- Convienence function to fill the whole buffer from the current
+-- file position.
+--
+fdNext :: forall eff.
+          FileDescriptor
+       -> Buffer
+       -> Eff (err :: Exception, fs :: FS | eff) ByteCount
+fdNext fd buff = fdRead fd buff 0 (size buff) Nothing
+
+--|
+-- Write to a file synchronously.  See <a
+-- href="http://nodejs.org/api/fs.html#fs_fs_writesync_fd_buffer_offset_length_position">Node
+-- Documentation</a> for details.
+--
+fdWrite :: forall eff.
+           FileDescriptor
+        -> Buffer
+        -> BufferOffset
+        -> BufferLength
+        -> Maybe FilePosition
+        -> Eff (err :: Exception, fs :: FS | eff) ByteCount
+fdWrite fd buff off len Nothing =
+  mkEff $ \_ -> runFn4 writeSeqSync fd buff off len
+fdWrite fd buff off len (Just pos) =
+  mkEff $ \_ -> runFn5 fs.writeSync fd buff off len pos
+
+--|
+-- Convienence function to append the whole buffer to the current
+-- file position.
+--
+fdAppend :: forall eff.
+            FileDescriptor
+         -> Buffer
+         -> Eff (err :: Exception, fs :: FS | eff) ByteCount
+fdAppend fd buff = fdWrite fd buff 0 (size buff) Nothing
+
+--|
+-- Flush a file synchronously.  See <a
+-- href="http://nodejs.org/api/fs.html#fs_fs_fsyncsync_fd">Node
+-- Documentation</a> for details.
+--
+fdFlush :: forall eff.
+           FileDescriptor
+        -> Eff (err :: Exception, fs :: FS | eff) Unit
+fdFlush fd = mkEff $ \_ -> runFn1 fs.fsyncSync fd
+
+--|
+-- Close a file synchronously.  See <a
+-- href="http://nodejs.org/api/fs.html#fs_fs_closesync_fd">Node
+-- Documentation</a> for details.
+--
+fdClose :: forall eff.
+           FileDescriptor
+        -> Eff (err :: Exception, fs :: FS | eff) Unit
+fdClose fd = mkEff $ \_ -> runFn1 fs.closeSync fd
