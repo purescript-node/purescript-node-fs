@@ -115,6 +115,35 @@
 
 ## Module Node.FS.Sync
 
+### Types
+
+    type BufferLength = Number
+
+    type BufferOffset = Number
+
+    type ByteCount = Number
+
+    data FileDescriptor :: *
+
+    data FileFlags where
+      R :: FileFlags
+      R_PLUS :: FileFlags
+      RS :: FileFlags
+      RS_PLUS :: FileFlags
+      W :: FileFlags
+      WX :: FileFlags
+      W_PLUS :: FileFlags
+      WX_PLUS :: FileFlags
+      A :: FileFlags
+      AX :: FileFlags
+      A_PLUS :: FileFlags
+      AX_PLUS :: FileFlags
+
+    type FileMode = Number
+
+    type FilePosition = Number
+
+
 ### Values
 
     appendFile :: forall eff. FilePath -> Buffer -> Eff (err :: Exception, fs :: FS | eff) Unit
@@ -126,6 +155,20 @@
     chown :: forall eff. FilePath -> Number -> Number -> Eff (err :: Exception, fs :: FS | eff) Unit
 
     exists :: forall eff. FilePath -> Eff (fs :: FS | eff) Boolean
+
+    fdAppend :: forall eff. FileDescriptor -> Buffer -> Eff (fs :: FS, err :: Exception | eff) ByteCount
+
+    fdClose :: forall eff. FileDescriptor -> Eff (fs :: FS, err :: Exception | eff) Unit
+
+    fdFlush :: forall eff. FileDescriptor -> Eff (fs :: FS, err :: Exception | eff) Unit
+
+    fdNext :: forall eff. FileDescriptor -> Buffer -> Eff (fs :: FS, err :: Exception | eff) ByteCount
+
+    fdOpen :: forall opts eff. FilePath -> FileFlags -> Maybe FileMode -> Eff (fs :: FS, err :: Exception | eff) FileDescriptor
+
+    fdRead :: forall eff. FileDescriptor -> Buffer -> BufferOffset -> BufferLength -> Maybe FilePosition -> Eff (fs :: FS, err :: Exception | eff) ByteCount
+
+    fdWrite :: forall eff. FileDescriptor -> Buffer -> BufferOffset -> BufferLength -> Maybe FilePosition -> Eff (fs :: FS, err :: Exception | eff) ByteCount
 
     link :: forall eff. FilePath -> FilePath -> Eff (err :: Exception, fs :: FS | eff) Unit
 
