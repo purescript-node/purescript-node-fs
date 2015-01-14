@@ -8,6 +8,9 @@ import Control.Monad.Eff.Exception
 import Data.Either
 import Debug.Trace
 import Node.Encoding
+import Node.Buffer
+import Node.Path
+import Data.Maybe
 
 main = do
 
@@ -90,3 +93,14 @@ main = do
         trace $ show $ accessedTime x'
         trace "statusChangedTime:"
         trace $ show $ statusChangedTime x'
+
+  let fdFile = join ["tmp", "FD.json"]
+  fd0 <- S.fdOpen fdFile S.W (Just 420)
+  let buf0 = fromString "[ 42 ]" UTF8
+  bytes0 <- S.fdAppend fd0 buf0
+  S.fdFlush fd0
+  S.fdClose fd0
+  fd1 <- S.fdOpen fdFile S.R Nothing
+  let buf1 = create (size buf0)
+  bytes1 <- S.fdNext fd1 buf1
+  S.fdClose fd1
