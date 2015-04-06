@@ -29,6 +29,7 @@ import Control.Monad.Eff
 import Control.Monad.Eff.Unsafe (unsafeInterleaveEff)
 import Control.Monad.Eff.Exception
 import Data.Date
+import Data.Time
 import Data.Either
 import Data.Function
 import Data.Maybe
@@ -76,7 +77,7 @@ foreign import fs "var fs = require('fs');" ::
   , appendFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   , exists :: forall a. Fn2 FilePath (Boolean -> a) Unit
   }
-  
+
 foreign import mkEff
   "function mkEff(action) {\
   \  return action;\
@@ -258,9 +259,11 @@ utimes :: forall eff. FilePath
 
 utimes file atime mtime cb = mkEff $ \_ -> runFn4
   fs.utimes file
-            ((toEpochMilliseconds atime) / 1000)
-            ((toEpochMilliseconds mtime) / 1000)
+            (ms (toEpochMilliseconds atime) / 1000)
+            (ms (toEpochMilliseconds mtime) / 1000)
             (handleCallback cb)
+  where
+  ms (Milliseconds n) = n
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.

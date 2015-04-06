@@ -41,6 +41,7 @@ module Node.FS.Sync
 import Control.Monad.Eff
 import Control.Monad.Eff.Exception
 import Data.Date
+import Data.Time
 import Data.Either
 import Data.Function
 import Data.Maybe (Maybe(..))
@@ -276,8 +277,10 @@ utimes :: forall eff. FilePath
 
 utimes file atime mtime = mkEff $ \_ -> runFn3
   fs.utimesSync file
-                ((toEpochMilliseconds atime) / 1000)
-                ((toEpochMilliseconds mtime) / 1000)
+                (ms (toEpochMilliseconds atime) / 1000)
+                (ms (toEpochMilliseconds mtime) / 1000)
+  where
+  ms (Milliseconds n) = n
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
