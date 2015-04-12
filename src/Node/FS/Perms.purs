@@ -2,7 +2,6 @@ module Node.FS.Perms
   ( permsFromString
   , permsToString
   , permsToNum
-  , Perm()
   , Perms()
   ) where
 
