@@ -41,14 +41,14 @@ permsFromString = _perms <<< toCharArray
 permFromChar :: Char -> Maybe Perm
 permFromChar = _perm <<< charString
   where
-    _perm "0" = Just $ mkPerm false false false
-    _perm "1" = Just $ mkPerm false false true
-    _perm "2" = Just $ mkPerm false true  false
-    _perm "3" = Just $ mkPerm false true  true
-    _perm "4" = Just $ mkPerm true  false false
-    _perm "5" = Just $ mkPerm true  false true
-    _perm "6" = Just $ mkPerm true  true  false
-    _perm "7" = Just $ mkPerm true  true  true
+    _perm "0" = Just $ none
+    _perm "1" = Just $ x
+    _perm "2" = Just $ w
+    _perm "3" = Just $ w <> x
+    _perm "4" = Just $ r
+    _perm "5" = Just $ r <> x
+    _perm "6" = Just $ r <> w
+    _perm "7" = Just $ r <> w <> x
     _perm _   = Nothing
 
 mkPerm :: Boolean -> Boolean -> Boolean -> Perm
