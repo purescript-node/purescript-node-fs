@@ -33,11 +33,13 @@ import Data.Time
 import Data.Either
 import Data.Function
 import Data.Maybe
+import Data.Maybe.Unsafe(fromJust)
 import Node.Buffer (Buffer(..))
 import Node.Encoding
 import Node.FS
 import Node.FS.Stats
 import Node.Path (FilePath())
+import Node.FS.Perms
 
 foreign import data Nullable :: * -> *
 
@@ -61,7 +63,7 @@ foreign import fs "var fs = require('fs');" ::
   { rename :: Fn3 FilePath FilePath (JSCallback Unit) Unit
   , truncate :: Fn3 FilePath Number (JSCallback Unit) Unit
   , chown :: Fn4 FilePath Number Number (JSCallback Unit) Unit
-  , chmod :: Fn3 FilePath Number (JSCallback Unit) Unit
+  , chmod :: Fn3 FilePath String (JSCallback Unit) Unit
   , stat :: Fn2 FilePath (JSCallback StatsObj) Unit
   , link :: Fn3 FilePath FilePath (JSCallback Unit) Unit
   , symlink :: Fn4 FilePath FilePath String (JSCallback Unit) Unit
@@ -69,7 +71,7 @@ foreign import fs "var fs = require('fs');" ::
   , realpath :: forall cache. Fn3 FilePath { | cache } (JSCallback FilePath) Unit
   , unlink :: Fn2 FilePath (JSCallback Unit) Unit
   , rmdir :: Fn2 FilePath (JSCallback Unit) Unit
-  , mkdir :: Fn3 FilePath Number (JSCallback Unit) Unit
+  , mkdir :: Fn3 FilePath String (JSCallback Unit) Unit
   , readdir :: Fn2 FilePath (JSCallback [FilePath]) Unit
   , utimes :: Fn4 FilePath Number Number (JSCallback Unit) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
@@ -126,12 +128,12 @@ chown file uid gid cb = mkEff $ \_ -> runFn4
 -- Changes the permissions of a file.
 --
 chmod :: forall eff. FilePath
-                  -> Number
+                  -> Perms
                   -> Callback eff Unit
                   -> Eff (fs :: FS | eff) Unit
 
-chmod file mode cb = mkEff $ \_ -> runFn3
-  fs.chmod file mode (handleCallback cb)
+chmod file perms cb = mkEff $ \_ -> runFn3
+  fs.chmod file (permsToString perms) (handleCallback cb)
 
 -- |
 -- Gets file statistics.
@@ -225,18 +227,18 @@ mkdir :: forall eff. FilePath
                   -> Callback eff Unit
                   -> Eff (fs :: FS | eff) Unit
 
-mkdir = flip mkdir' 777
+mkdir = flip mkdir' $ mkPerms (r <> w <> x) (r <> w <> x) (r <> w <> x)
 
 -- |
 -- Makes a new directory with the specified permissions.
 --
 mkdir' :: forall eff. FilePath
-                   -> Number
+                   -> Perms
                    -> Callback eff Unit
                    -> Eff (fs :: FS | eff) Unit
 
-mkdir' file mode cb = mkEff $ \_ -> runFn3
-  fs.mkdir file mode (handleCallback cb)
+mkdir' file perms cb = mkEff $ \_ -> runFn3
+  fs.mkdir file (permsToString perms) (handleCallback cb)
 
 -- |
 -- Reads the contents of a directory.
