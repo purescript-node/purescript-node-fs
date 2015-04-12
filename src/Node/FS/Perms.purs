@@ -17,8 +17,8 @@ import Data.Char (Char(), charString)
 import Data.String (toCharArray)
 import Data.Function
 
-data Perm = Perm { r :: Boolean, w :: Boolean, x :: Boolean }
-data Perms = Perms { u :: Perm, g :: Perm, o :: Perm }
+newtype Perm = Perm { r :: Boolean, w :: Boolean, x :: Boolean }
+newtype Perms = Perms { u :: Perm, g :: Perm, o :: Perm }
 
 none = Perm { r: false, w: false, x: false }
 r = Perm { r: true, w: false, x: false }
