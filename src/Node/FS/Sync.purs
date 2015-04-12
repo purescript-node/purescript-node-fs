@@ -69,7 +69,7 @@ foreign import fs "var fs = require('fs');" ::
   { renameSync :: Fn2 FilePath FilePath Unit
   , truncateSync :: Fn2 FilePath Number Unit
   , chownSync :: Fn3 FilePath Number Number Unit
-  , chmodSync :: Fn2 FilePath Number Unit
+  , chmodSync :: Fn2 FilePath String Unit
   , statSync :: Fn1 FilePath StatsObj
   , linkSync :: Fn2 FilePath FilePath Unit
   , symlinkSync :: Fn3 FilePath FilePath String Unit
@@ -159,11 +159,11 @@ chown file uid gid = mkEff $ \_ -> runFn3
 -- Changes the permissions of a file.
 --
 chmod :: forall eff. FilePath
-                  -> Number
+                  -> Perms
                   -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-chmod file mode = mkEff $ \_ -> runFn2
-  fs.chmodSync file mode
+chmod file perms = mkEff $ \_ -> runFn2
+  fs.chmodSync file (permsToString perms)
 
 -- |
 -- Gets file statistics.

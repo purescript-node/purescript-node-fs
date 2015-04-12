@@ -63,7 +63,7 @@ foreign import fs "var fs = require('fs');" ::
   { rename :: Fn3 FilePath FilePath (JSCallback Unit) Unit
   , truncate :: Fn3 FilePath Number (JSCallback Unit) Unit
   , chown :: Fn4 FilePath Number Number (JSCallback Unit) Unit
-  , chmod :: Fn3 FilePath Number (JSCallback Unit) Unit
+  , chmod :: Fn3 FilePath String (JSCallback Unit) Unit
   , stat :: Fn2 FilePath (JSCallback StatsObj) Unit
   , link :: Fn3 FilePath FilePath (JSCallback Unit) Unit
   , symlink :: Fn4 FilePath FilePath String (JSCallback Unit) Unit
@@ -128,12 +128,12 @@ chown file uid gid cb = mkEff $ \_ -> runFn4
 -- Changes the permissions of a file.
 --
 chmod :: forall eff. FilePath
-                  -> Number
+                  -> Perms
                   -> Callback eff Unit
                   -> Eff (fs :: FS | eff) Unit
 
-chmod file mode cb = mkEff $ \_ -> runFn3
-  fs.chmod file mode (handleCallback cb)
+chmod file perms cb = mkEff $ \_ -> runFn3
+  fs.chmod file (permsToString perms) (handleCallback cb)
 
 -- |
 -- Gets file statistics.
