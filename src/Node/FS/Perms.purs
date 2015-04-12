@@ -6,7 +6,7 @@ module Node.FS.Perms
   , Perms()
   ) where
 
-import Global (isNaN)
+import Global (readInt)
 import Data.Maybe (Maybe(..))
 import Data.Char (Char(), charString)
 import Data.String (toCharArray)
@@ -61,12 +61,8 @@ permsToString (Perms { u = u, g = g, o = o }) =
 
 type Radix = Number
 
-foreign import parseInt "" :: Fn2 String Radix Number
-runParseInt :: String -> Radix -> Number
-runParseInt = runFn2 parseInt
-
 permsToNum :: Perms -> Number
-permsToNum p = runParseInt (permsToString p) 8
+permsToNum p = readInt 8 $ permsToString p
 
 instance showPerm :: Show Perm where
   show (Perm { r = r, w = w, x = x }) =
