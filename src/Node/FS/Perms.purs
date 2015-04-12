@@ -15,7 +15,6 @@ import Global (readInt)
 import Data.Maybe (Maybe(..))
 import Data.Char (Char(), charString)
 import Data.String (toCharArray)
-import Data.Function
 import Data.Int (Int(), fromNumber, toNumber)
 
 newtype Perm = Perm { r :: Boolean, w :: Boolean, x :: Boolean }
