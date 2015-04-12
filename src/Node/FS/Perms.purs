@@ -2,7 +2,13 @@ module Node.FS.Perms
   ( permsFromString
   , permsToString
   , permsToNum
+  , none
+  , r
+  , w
+  , x
+  , mkPerms
   , Perms()
+  , Perm()
   ) where
 
 import Global (readInt)
@@ -13,6 +19,15 @@ import Data.Function
 
 data Perm = Perm { r :: Boolean, w :: Boolean, x :: Boolean }
 data Perms = Perms { u :: Perm, g :: Perm, o :: Perm }
+
+none = Perm { r: false, w: false, x: false }
+r = Perm { r: true, w: false, x: false }
+w = Perm { r: false, w: true, x: false }
+x = Perm { r: false, w: false, x: true }
+
+instance semigroupPerm :: Semigroup Perm where
+  (<>) (Perm { r = r0, w = w0, x = x0 }) (Perm { r = r1, w = w1, x = x1 }) =
+    Perm { r: r0 || r1, w: w0 || w1, x: x0 || x1  }
 
 permsFromString :: String -> Maybe Perms
 permsFromString = _perms <<< toCharArray

@@ -227,7 +227,7 @@ mkdir :: forall eff. FilePath
                   -> Callback eff Unit
                   -> Eff (fs :: FS | eff) Unit
 
-mkdir = flip mkdir' (fromJust $ permsFromString "777")
+mkdir = flip mkdir' $ mkPerms (r <> w <> x) (r <> w <> x) (r <> w <> x)
 
 -- |
 -- Makes a new directory with the specified permissions.
