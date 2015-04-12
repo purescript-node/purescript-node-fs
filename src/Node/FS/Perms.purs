@@ -1,7 +1,7 @@
 module Node.FS.Perms
   ( permsFromString
   , permsToString
-  , permsToNum
+  , permsToInt
   , none
   , r
   , w
@@ -16,6 +16,7 @@ import Data.Maybe (Maybe(..))
 import Data.Char (Char(), charString)
 import Data.String (toCharArray)
 import Data.Function
+import Data.Int (Int(), fromNumber, toNumber)
 
 newtype Perm = Perm { r :: Boolean, w :: Boolean, x :: Boolean }
 newtype Perms = Perms { u :: Perm, g :: Perm, o :: Perm }
@@ -57,14 +58,14 @@ mkPerm r w x = Perm { r: r, w: w, x: x }
 mkPerms :: Perm -> Perm -> Perm -> Perms
 mkPerms u g o = Perms { u: u, g: g, o: o }
 
-permToNum :: Perm -> Number
-permToNum (Perm { r = r, w = w, x = x }) =
+permToInt :: Perm -> Int
+permToInt (Perm { r = r, w = w, x = x }) = fromNumber $
     (if r then 4 else 0)
   + (if w then 2 else 0)
   + (if x then 1 else 0)
 
 permToString :: Perm -> String
-permToString = show <<< permToNum
+permToString = show <<< toNumber <<< permToInt
 
 permsToString :: Perms -> String
 permsToString (Perms { u = u, g = g, o = o }) =
@@ -73,8 +74,8 @@ permsToString (Perms { u = u, g = g, o = o }) =
   ++ permToString g
   ++ permToString o
 
-permsToNum :: Perms -> Number
-permsToNum p = readInt 8 $ permsToString p
+permsToInt :: Perms -> Int
+permsToInt p = fromNumber $ readInt 8 $ permsToString p
 
 instance showPerm :: Show Perm where
   show (Perm { r = r, w = w, x = x }) =
