@@ -59,8 +59,6 @@ permsToString (Perms { u = u, g = g, o = o }) =
   ++ permToString g
   ++ permToString o
 
-type Radix = Number
-
 permsToNum :: Perms -> Number
 permsToNum p = readInt 8 $ permsToString p
 
