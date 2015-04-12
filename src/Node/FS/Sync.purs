@@ -45,11 +45,13 @@ import Data.Time
 import Data.Either
 import Data.Function
 import Data.Maybe (Maybe(..))
+import Data.Maybe.Unsafe(fromJust)
 import Node.Buffer (Buffer(..), size)
 import Node.Encoding
 import Node.FS
 import Node.FS.Stats
 import Node.Path (FilePath())
+import Node.FS.Perms
 
 foreign import data FileDescriptor :: *
 
@@ -75,7 +77,7 @@ foreign import fs "var fs = require('fs');" ::
   , realpathSync :: forall cache. Fn2 FilePath { | cache } FilePath
   , unlinkSync :: Fn1 FilePath Unit
   , rmdirSync :: Fn1 FilePath Unit
-  , mkdirSync :: Fn2 FilePath Number Unit
+  , mkdirSync :: Fn2 FilePath String Unit
   , readdirSync :: Fn1 FilePath [FilePath]
   , utimesSync :: Fn3 FilePath Number Number Unit
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
@@ -246,17 +248,17 @@ rmdir file = mkEff $ \_ -> runFn1
 mkdir :: forall eff. FilePath
                   -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-mkdir = flip mkdir' 777
+mkdir = flip mkdir' (fromJust $ permsFromString "777")
 
 -- |
 -- Makes a new directory with the specified permissions.
 --
 mkdir' :: forall eff. FilePath
-                   -> Number
+                   -> Perms
                    -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-mkdir' file mode = mkEff $ \_ -> runFn2
-  fs.mkdirSync file mode
+mkdir' file perms = mkEff $ \_ -> runFn2
+  fs.mkdirSync file (permsToString perms)
 
 -- |
 -- Reads the contents of a directory.
