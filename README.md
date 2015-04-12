@@ -61,7 +61,7 @@ chown :: forall eff. FilePath -> Number -> Number -> Callback eff Unit -> Eff (f
 #### `chmod`
 
 ``` purescript
-chmod :: forall eff. FilePath -> Number -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
+chmod :: forall eff. FilePath -> Perms -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 ```
 
 #### `stat`
@@ -121,7 +121,7 @@ mkdir :: forall eff. FilePath -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 #### `mkdir'`
 
 ``` purescript
-mkdir' :: forall eff. FilePath -> Number -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
+mkdir' :: forall eff. FilePath -> Perms -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 ```
 
 #### `readdir`
@@ -177,6 +177,51 @@ appendTextFile :: forall eff. Encoding -> FilePath -> String -> Callback eff Uni
 ``` purescript
 exists :: forall eff. FilePath -> (Boolean -> Eff eff Unit) -> Eff (fs :: FS | eff) Unit
 ```
+
+
+## Module Node.FS.Perms
+
+#### `Perms`
+
+``` purescript
+data Perms
+```
+
+
+#### `permsFromString`
+
+``` purescript
+permsFromString :: String -> Maybe Perms
+```
+
+
+#### `permsToString`
+
+``` purescript
+permsToString :: Perms -> String
+```
+
+
+#### `permsToNum`
+
+``` purescript
+permsToNum :: Perms -> Number
+```
+
+
+#### `showPerm`
+
+``` purescript
+instance showPerm :: Show Perm
+```
+
+
+#### `showPerms`
+
+``` purescript
+instance showPerms :: Show Perms
+```
+
 
 
 ## Module Node.FS.Stats
@@ -357,7 +402,7 @@ chown :: forall eff. FilePath -> Number -> Number -> Eff (err :: Exception, fs :
 #### `chmod`
 
 ``` purescript
-chmod :: forall eff. FilePath -> Number -> Eff (err :: Exception, fs :: FS | eff) Unit
+chmod :: forall eff. FilePath -> Perms -> Eff (err :: Exception, fs :: FS | eff) Unit
 ```
 
 #### `stat`
@@ -417,7 +462,7 @@ mkdir :: forall eff. FilePath -> Eff (err :: Exception, fs :: FS | eff) Unit
 #### `mkdir'`
 
 ``` purescript
-mkdir' :: forall eff. FilePath -> Number -> Eff (err :: Exception, fs :: FS | eff) Unit
+mkdir' :: forall eff. FilePath -> Perms -> Eff (err :: Exception, fs :: FS | eff) Unit
 ```
 
 #### `readdir`
