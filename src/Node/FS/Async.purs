@@ -5,6 +5,8 @@ module Node.FS.Async
   , chown
   , chmod
   , stat
+  , lstat
+  , fstat
   , link
   , symlink
   , readlink
@@ -63,6 +65,8 @@ foreign import fs "var fs = require('fs');" ::
   , chown :: Fn4 FilePath Number Number (JSCallback Unit) Unit
   , chmod :: Fn3 FilePath Number (JSCallback Unit) Unit
   , stat :: Fn2 FilePath (JSCallback StatsObj) Unit
+  , lstat :: Fn2 FilePath (JSCallback StatsObj) Unit
+  , fstat :: Fn2 FilePath (JSCallback StatsObj) Unit
   , link :: Fn3 FilePath FilePath (JSCallback Unit) Unit
   , symlink :: Fn4 FilePath FilePath String (JSCallback Unit) Unit
   , readlink :: Fn2 FilePath (JSCallback FilePath) Unit
@@ -142,6 +146,20 @@ stat :: forall eff. FilePath
 
 stat file cb = mkEff $ \_ -> runFn2
   fs.stat file (handleCallback $ cb <<< (<$>) Stats)
+
+fstat :: forall eff. FilePath
+                 -> Callback eff Stats
+                 -> Eff (fs :: FS | eff) Unit
+
+fstat file cb = mkEff $ \_ -> runFn2
+  fs.fstat file (handleCallback $ cb <<< (<$>) Stats)
+
+lstat :: forall eff. FilePath
+                 -> Callback eff Stats
+                 -> Eff (fs :: FS | eff) Unit
+
+lstat file cb = mkEff $ \_ -> runFn2
+  fs.lstat file (handleCallback $ cb <<< (<$>) Stats)
 
 -- |
 -- Creates a link to an existing file.

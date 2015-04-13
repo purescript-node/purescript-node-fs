@@ -4,6 +4,8 @@ module Node.FS.Sync
   , chown
   , chmod
   , stat
+  , lstat
+  , fstat
   , link
   , symlink
   , readlink
@@ -69,6 +71,8 @@ foreign import fs "var fs = require('fs');" ::
   , chownSync :: Fn3 FilePath Number Number Unit
   , chmodSync :: Fn2 FilePath Number Unit
   , statSync :: Fn1 FilePath StatsObj
+  , lstatSync :: Fn1 FilePath StatsObj
+  , fstatSync :: Fn1 FilePath StatsObj
   , linkSync :: Fn2 FilePath FilePath Unit
   , symlinkSync :: Fn3 FilePath FilePath String Unit
   , readlinkSync :: Fn1 FilePath FilePath
@@ -171,6 +175,18 @@ stat :: forall eff. FilePath
 
 stat file = return $ Stats $ runFn1
   fs.statSync file
+
+lstat :: forall eff. FilePath
+                 -> Eff (fs :: FS, err :: Exception | eff) Stats
+
+lstat file = return $ Stats $ runFn1
+  fs.lstatSync file
+
+fstat :: forall eff. FilePath
+                 -> Eff (fs :: FS, err :: Exception | eff) Stats
+
+fstat file = return $ Stats $ runFn1
+  fs.fstatSync file
 
 -- |
 -- Creates a link to an existing file.

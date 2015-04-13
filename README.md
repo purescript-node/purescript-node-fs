@@ -70,6 +70,20 @@ chmod :: forall eff. FilePath -> Number -> Callback eff Unit -> Eff (fs :: FS | 
 stat :: forall eff. FilePath -> Callback eff Stats -> Eff (fs :: FS | eff) Unit
 ```
 
+#### `fstat`
+
+``` purescript
+fstat :: forall eff. FilePath -> Callback eff Stats -> Eff (fs :: FS | eff) Unit
+```
+
+
+#### `lstat`
+
+``` purescript
+lstat :: forall eff. FilePath -> Callback eff Stats -> Eff (fs :: FS | eff) Unit
+```
+
+
 #### `link`
 
 ``` purescript
@@ -365,6 +379,20 @@ chmod :: forall eff. FilePath -> Number -> Eff (err :: Exception, fs :: FS | eff
 ``` purescript
 stat :: forall eff. FilePath -> Eff (err :: Exception, fs :: FS | eff) Stats
 ```
+
+#### `lstat`
+
+``` purescript
+lstat :: forall eff. FilePath -> Eff (err :: Exception, fs :: FS | eff) Stats
+```
+
+
+#### `fstat`
+
+``` purescript
+fstat :: forall eff. FilePath -> Eff (err :: Exception, fs :: FS | eff) Stats
+```
+
 
 #### `link`
 
