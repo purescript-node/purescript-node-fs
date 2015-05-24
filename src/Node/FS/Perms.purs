@@ -6,6 +6,7 @@ module Node.FS.Perms
   , r
   , w
   , x
+  , all
   , mkPerms
   , Perms()
   , Perm()

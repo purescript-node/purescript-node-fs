@@ -235,6 +235,14 @@ x :: Perm
 
 The "executable" permission.
 
+#### `all`
+
+``` purescript
+all :: Perm
+```
+
+All permissions: readable, writable, and executable.
+
 #### `semigroupPerm`
 
 ``` purescript
