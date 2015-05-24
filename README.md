@@ -187,6 +187,11 @@ exists :: forall eff. FilePath -> (Boolean -> Eff eff Unit) -> Eff (fs :: FS | e
 newtype Perm
 ```
 
+A `Perm` value specifies what is allowed to be done with a particular
+file by a particular class of user &mdash; that is, whether it is
+readable, writable, and/or executable. It has a semigroup instance, which
+allows you to combine permissions; for example, `r <> w` means "readable
+and writable".
 
 #### `Perms`
 
@@ -194,6 +199,41 @@ newtype Perm
 newtype Perms
 ```
 
+A `Perms` value includes all the permissions information about a
+particular file or directory,
+
+#### `none`
+
+``` purescript
+none :: Perm
+```
+
+No permissions. This is the identity of the Semigroup (<>) operation for
+Perm.
+
+#### `r`
+
+``` purescript
+r :: Perm
+```
+
+The "readable" permission.
+
+#### `w`
+
+``` purescript
+w :: Perm
+```
+
+The "writable" permission.
+
+#### `x`
+
+``` purescript
+x :: Perm
+```
+
+The "executable" permission.
 
 #### `semigroupPerm`
 
@@ -215,6 +255,8 @@ permsFromString :: String -> Maybe Perms
 mkPerms :: Perm -> Perm -> Perm -> Perms
 ```
 
+Create a `Perms` value. The arguments represent the user's, group's, and
+others' permission sets, respectively.
 
 #### `permsToString`
 

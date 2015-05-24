@@ -17,13 +17,37 @@ import Data.Char (Char(), charString)
 import Data.String (toCharArray)
 import Data.Int (Int(), fromNumber, toNumber)
 
+-- | A `Perm` value specifies what is allowed to be done with a particular
+-- | file by a particular class of user &mdash; that is, whether it is
+-- | readable, writable, and/or executable. It has a semigroup instance, which
+-- | allows you to combine permissions; for example, `r <> w` means "readable
+-- | and writable".
 newtype Perm = Perm { r :: Boolean, w :: Boolean, x :: Boolean }
+
+-- | A `Perms` value includes all the permissions information about a
+-- | particular file or directory,
 newtype Perms = Perms { u :: Perm, g :: Perm, o :: Perm }
 
+-- | No permissions. This is the identity of the Semigroup (<>) operation for
+-- | Perm.
+none :: Perm
 none = Perm { r: false, w: false, x: false }
+
+-- | The "readable" permission.
+r :: Perm
 r = Perm { r: true, w: false, x: false }
+
+-- | The "writable" permission.
+w :: Perm
 w = Perm { r: false, w: true, x: false }
+
+-- | The "executable" permission.
+x :: Perm
 x = Perm { r: false, w: false, x: true }
+
+-- | All permissions: readable, writable, and executable.
+all :: Perm
+all = r <> w <> x
 
 instance semigroupPerm :: Semigroup Perm where
   (<>) (Perm { r = r0, w = w0, x = x0 }) (Perm { r = r1, w = w1, x = x1 }) =
@@ -51,9 +75,13 @@ permFromChar = _perm <<< charString
     _perm "7" = Just $ r <> w <> x
     _perm _   = Nothing
 
+-- | Create a `Perm` value. The arguments represent the readable, writable, and
+-- | executable permissions respectively.
 mkPerm :: Boolean -> Boolean -> Boolean -> Perm
 mkPerm r w x = Perm { r: r, w: w, x: x }
 
+-- | Create a `Perms` value. The arguments represent the user's, group's, and
+-- | others' permission sets, respectively.
 mkPerms :: Perm -> Perm -> Perm -> Perms
 mkPerms u g o = Perms { u: u, g: g, o: o }
 
