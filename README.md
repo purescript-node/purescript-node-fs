@@ -190,18 +190,36 @@ newtype Perm
 A `Perm` value specifies what is allowed to be done with a particular
 file by a particular class of user &mdash; that is, whether it is
 readable, writable, and/or executable. It has a semigroup instance, which
-allows you to combine permissions; for example, `r <> w` means "readable
-and writable".
+allows you to combine permissions; for example, `read <> write` means
+"readable and writable".
 
-#### `Perms`
+#### `eqPerm`
 
 ``` purescript
-newtype Perms
+instance eqPerm :: Eq Perm
 ```
 
-A `Perms` value includes all the permissions information about a
-particular file or directory, by storing a `Perm` value for each of the
-file owner, the group, and others.
+
+#### `ordPerm`
+
+``` purescript
+instance ordPerm :: Ord Perm
+```
+
+
+#### `showPerm`
+
+``` purescript
+instance showPerm :: Show Perm
+```
+
+
+#### `semigroupPerm`
+
+``` purescript
+instance semigroupPerm :: Semigroup Perm
+```
+
 
 #### `none`
 
@@ -212,26 +230,26 @@ none :: Perm
 No permissions. This is the identity of the `Semigroup` operation `(<>)`
 for `Perm`.
 
-#### `r`
+#### `read`
 
 ``` purescript
-r :: Perm
+read :: Perm
 ```
 
 The "readable" permission.
 
-#### `w`
+#### `write`
 
 ``` purescript
-w :: Perm
+write :: Perm
 ```
 
 The "writable" permission.
 
-#### `x`
+#### `execute`
 
 ``` purescript
-x :: Perm
+execute :: Perm
 ```
 
 The "executable" permission.
@@ -244,10 +262,34 @@ all :: Perm
 
 All permissions: readable, writable, and executable.
 
-#### `semigroupPerm`
+#### `Perms`
 
 ``` purescript
-instance semigroupPerm :: Semigroup Perm
+newtype Perms
+```
+
+A `Perms` value includes all the permissions information about a
+particular file or directory, by storing a `Perm` value for each of the
+file owner, the group, and any other users.
+
+#### `eqPerms`
+
+``` purescript
+instance eqPerms :: Eq Perms
+```
+
+
+#### `ordPerms`
+
+``` purescript
+instance ordPerms :: Ord Perms
+```
+
+
+#### `showPerms`
+
+``` purescript
+instance showPerms :: Show Perms
 ```
 
 
@@ -259,7 +301,7 @@ permsFromString :: String -> Maybe Perms
 
 Attempt to parse a `Perms` value from a `String` containing an octal
 integer. For example,
-`permsFromString "644" == Just (mkPerms (r <> w) r r)`.
+`permsFromString "0644" == Just (mkPerms (read <> write) read read)`.
 
 #### `mkPerms`
 
@@ -267,8 +309,8 @@ integer. For example,
 mkPerms :: Perm -> Perm -> Perm -> Perms
 ```
 
-Create a `Perms` value. The arguments represent the user's, group's, and
-others' permission sets, respectively.
+Create a `Perms` value. The arguments represent the owner's, group's, and
+other users' permission sets, respectively.
 
 #### `permsToString`
 
@@ -288,20 +330,6 @@ permsToInt :: Perms -> Int
 ```
 
 Convert a `Perms` value to an `Int`, via `permsToString`.
-
-#### `showPerm`
-
-``` purescript
-instance showPerm :: Show Perm
-```
-
-
-#### `showPerms`
-
-``` purescript
-instance showPerms :: Show Perms
-```
-
 
 
 ## Module Node.FS.Stats

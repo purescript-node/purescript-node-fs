@@ -247,7 +247,7 @@ rmdir file = mkEff $ \_ -> runFn1
 mkdir :: forall eff. FilePath
                   -> Eff (fs :: FS, err :: Exception | eff) Unit
 
-mkdir = flip mkdir' $ mkPerms (r <> w <> x) (r <> w <> x) (r <> w <> x)
+mkdir = flip mkdir' $ mkPerms all all all
 
 -- |
 -- Makes a new directory with the specified permissions.
