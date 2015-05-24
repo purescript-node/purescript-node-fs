@@ -45,7 +45,6 @@ import Data.Time
 import Data.Either
 import Data.Function
 import Data.Maybe (Maybe(..))
-import Data.Maybe.Unsafe(fromJust)
 import Node.Buffer (Buffer(..), size)
 import Node.Encoding
 import Node.FS
