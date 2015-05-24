@@ -50,6 +50,13 @@ instance semigroupPerm :: Semigroup Perm where
   (<>) (Perm { r = r0, w = w0, x = x0 }) (Perm { r = r1, w = w1, x = x1 }) =
     Perm { r: r0 || r1, w: w0 || w1, x: x0 || x1  }
 
+instance semiringPerm :: Semiring Perm where
+  (+) = (<>)
+  zero = none
+  (*) (Perm { r = r0, w = w0, x = x0 }) (Perm { r = r1, w = w1, x = x1 }) =
+    Perm { r: r0 && r1, w: w0 && w1, x: x0 && x1  }
+  one = all
+
 -- | Create a `Perm` value. The arguments represent the readable, writable, and
 -- | executable permissions, in that order.
 mkPerm :: Boolean -> Boolean -> Boolean -> Perm
