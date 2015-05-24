@@ -320,8 +320,7 @@ permsToString :: Perms -> String
 
 Convert a `Perms` value to an octal string, in a format similar to that
 accepted by `chmod`. For example:
-
-* `permsToString (mkPerms (r <> w) r r) == "0644"`
+`permsToString (mkPerms (read <> write) read read) == "0644"`
 
 #### `permsToInt`
 
