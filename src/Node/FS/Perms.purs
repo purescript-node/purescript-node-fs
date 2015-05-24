@@ -16,7 +16,7 @@ import Global (readInt)
 import Data.Array () -- for Semigroup and Functor instances
 import Data.Maybe (Maybe(..))
 import Data.Char (Char(), charString, fromCharCode)
-import Data.String (toCharArray, joinWith, drop, charAt)
+import Data.String (toCharArray, joinWith, drop, charAt, indexOf)
 import Data.Int (Int(), fromNumber, toNumber)
 
 -- | A `Perm` value specifies what is allowed to be done with a particular
@@ -94,7 +94,10 @@ instance showPerms :: Show Perms where
   show (Perms { u = u, g = g, o = o }) =
     "mkPerms " <> joinWith " " (f <$> [u, g, o])
     where
-    f perm = "(" <> show perm <> ")"
+      f perm = let str = show perm
+               in  if indexOf " " str == -1
+                     then str
+                     else "(" <> str <> ")"
 
 -- | Attempt to parse a `Perms` value from a `String` containing an octal
 -- | integer. For example,
