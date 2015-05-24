@@ -181,10 +181,24 @@ exists :: forall eff. FilePath -> (Boolean -> Eff eff Unit) -> Eff (fs :: FS | e
 
 ## Module Node.FS.Perms
 
+#### `Perm`
+
+``` purescript
+newtype Perm
+```
+
+
 #### `Perms`
 
 ``` purescript
-data Perms
+newtype Perms
+```
+
+
+#### `semigroupPerm`
+
+``` purescript
+instance semigroupPerm :: Semigroup Perm
 ```
 
 
@@ -195,6 +209,13 @@ permsFromString :: String -> Maybe Perms
 ```
 
 
+#### `mkPerms`
+
+``` purescript
+mkPerms :: Perm -> Perm -> Perm -> Perms
+```
+
+
 #### `permsToString`
 
 ``` purescript
@@ -202,10 +223,10 @@ permsToString :: Perms -> String
 ```
 
 
-#### `permsToNum`
+#### `permsToInt`
 
 ``` purescript
-permsToNum :: Perms -> Number
+permsToInt :: Perms -> Int
 ```
 
 
