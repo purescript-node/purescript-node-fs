@@ -200,7 +200,8 @@ newtype Perms
 ```
 
 A `Perms` value includes all the permissions information about a
-particular file or directory,
+particular file or directory, by storing a `Perm` value for each of the
+file owner, the group, and others.
 
 #### `none`
 
@@ -208,8 +209,8 @@ particular file or directory,
 none :: Perm
 ```
 
-No permissions. This is the identity of the Semigroup (<>) operation for
-Perm.
+No permissions. This is the identity of the `Semigroup` operation `(<>)`
+for `Perm`.
 
 #### `r`
 
@@ -256,6 +257,9 @@ instance semigroupPerm :: Semigroup Perm
 permsFromString :: String -> Maybe Perms
 ```
 
+Attempt to parse a `Perms` value from a `String` containing an octal
+integer. For example,
+`permsFromString "644" == Just (mkPerms (r <> w) r r)`.
 
 #### `mkPerms`
 
@@ -272,6 +276,10 @@ others' permission sets, respectively.
 permsToString :: Perms -> String
 ```
 
+Convert a `Perms` value to an octal string, in a format similar to that
+accepted by `chmod`. For example:
+
+* `permsToString (mkPerms (r <> w) r r) == "0644"`
 
 #### `permsToInt`
 
@@ -279,6 +287,7 @@ permsToString :: Perms -> String
 permsToInt :: Perms -> Int
 ```
 
+Convert a `Perms` value to an `Int`, via `permsToString`.
 
 #### `showPerm`
 
