@@ -150,8 +150,7 @@ permToString = show <<< toNumber <<< permToInt
 
 -- | Convert a `Perms` value to an octal string, in a format similar to that
 -- | accepted by `chmod`. For example:
--- |
--- | * `permsToString (mkPerms (r <> w) r r) == "0644"`
+-- | `permsToString (mkPerms (read <> write) read read) == "0644"`
 permsToString :: Perms -> String
 permsToString (Perms { u = u, g = g, o = o }) =
      "0"
