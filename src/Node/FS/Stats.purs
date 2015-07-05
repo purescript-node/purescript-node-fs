@@ -42,18 +42,12 @@ type StatsObj =
 --
 data Stats = Stats StatsObj
 
-foreign import showStatsObj
-  "function showStatsObj (obj) {\
-  \  return require('util').inspect(obj);\
-  \}" :: StatsObj -> String
+foreign import showStatsObj :: StatsObj -> String
 
 instance showStats :: Show Stats where
   show (Stats o) = "Stats " ++ showStatsObj o
 
-foreign import statsMethod
-  "function statsMethod(m, s) {\
-  \  return s[m]();\
-  \}" :: Fn2 String StatsObj Boolean
+foreign import statsMethod :: Fn2 String StatsObj Boolean
 
 isFile :: Stats -> Boolean
 isFile (Stats s) = runFn2 statsMethod "isFile" s
