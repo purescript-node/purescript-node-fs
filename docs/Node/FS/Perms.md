@@ -17,7 +17,9 @@ allows you to combine permissions:
    permissions that two `Perm` values have in common. For example:
    `(read + write) * (write + execute) == write`.
 
-
+You can think also of a `Perm` value as a subset of the set
+`{ read, write, execute }`; then, `(+)` and `(*)` represent set union and
+intersection respectively.
 
 ##### Instances
 ``` purescript
