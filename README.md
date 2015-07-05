@@ -221,6 +221,13 @@ instance semigroupPerm :: Semigroup Perm
 ```
 
 
+#### `semiringPerm`
+
+``` purescript
+instance semiringPerm :: Semiring Perm
+```
+
+
 #### `none`
 
 ``` purescript
