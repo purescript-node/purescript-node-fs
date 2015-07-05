@@ -46,14 +46,11 @@ instance showPerm :: Show Perm where
       (if w then ["write"] else []) <>
       (if x then ["execute"] else [])
 
-instance semigroupPerm :: Semigroup Perm where
-  (<>) (Perm { r = r0, w = w0, x = x0 }) (Perm { r = r1, w = w1, x = x1 }) =
-    Perm { r: r0 || r1, w: w0 || w1, x: x0 || x1  }
-
 instance semiringPerm :: Semiring Perm where
-  (+) = (<>)
+  add (Perm { r = r0, w = w0, x = x0 }) (Perm { r = r1, w = w1, x = x1 }) =
+    Perm { r: r0 || r1, w: w0 || w1, x: x0 || x1  }
   zero = none
-  (*) (Perm { r = r0, w = w0, x = x0 }) (Perm { r = r1, w = w1, x = x1 }) =
+  mul (Perm { r = r0, w = w0, x = x0 }) (Perm { r = r1, w = w1, x = x1 }) =
     Perm { r: r0 && r1, w: w0 && w1, x: x0 && x1  }
   one = all
 
