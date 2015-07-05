@@ -25,6 +25,7 @@ module Node.FS.Async
   , exists
   ) where
 
+import Prelude
 import Control.Monad.Eff
 import Control.Monad.Eff.Unsafe (unsafeInterleaveEff)
 import Control.Monad.Eff.Exception
@@ -68,7 +69,7 @@ foreign import fs ::
   , rmdir :: Fn2 FilePath (JSCallback Unit) Unit
   , mkdir :: Fn3 FilePath String (JSCallback Unit) Unit
   , readdir :: Fn2 FilePath (JSCallback (Array FilePath)) Unit
-  , utimes :: Fn4 FilePath Number Number (JSCallback Unit) Unit
+  , utimes :: Fn4 FilePath Int Int (JSCallback Unit) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   , appendFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit

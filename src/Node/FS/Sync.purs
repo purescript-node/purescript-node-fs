@@ -38,6 +38,7 @@ module Node.FS.Sync
   , fdClose
   ) where
 
+import Prelude
 import Control.Monad.Eff
 import Control.Monad.Eff.Exception
 import Data.Date
@@ -58,16 +59,16 @@ data FileFlags = R | R_PLUS | RS | RS_PLUS
                | W | WX | W_PLUS | WX_PLUS
                | A | AX | A_PLUS | AX_PLUS
 
-type BufferLength = Number
-type BufferOffset = Number
-type ByteCount = Number
-type FileMode = Number
-type FilePosition = Number
+type BufferLength = Int
+type BufferOffset = Int
+type ByteCount = Int
+type FileMode = Int
+type FilePosition = Int
 
 foreign import fs ::
   { renameSync :: Fn2 FilePath FilePath Unit
-  , truncateSync :: Fn2 FilePath Number Unit
-  , chownSync :: Fn3 FilePath Number Number Unit
+  , truncateSync :: Fn2 FilePath Int Unit
+  , chownSync :: Fn3 FilePath Int Int Unit
   , chmodSync :: Fn2 FilePath String Unit
   , statSync :: Fn1 FilePath StatsObj
   , linkSync :: Fn2 FilePath FilePath Unit
@@ -78,7 +79,7 @@ foreign import fs ::
   , rmdirSync :: Fn1 FilePath Unit
   , mkdirSync :: Fn2 FilePath String Unit
   , readdirSync :: Fn1 FilePath (Array FilePath)
-  , utimesSync :: Fn3 FilePath Number Number Unit
+  , utimesSync :: Fn3 FilePath Int Int Unit
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   , writeFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   , appendFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
@@ -101,7 +102,7 @@ foreign import readSeqSync :: Fn4 FileDescriptor Buffer BufferOffset BufferLengt
 --
 rename :: forall eff. FilePath
                    -> FilePath
-                   -> Eff (fs :: FS, err :: Exception | eff) Unit
+                   -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 rename oldFile newFile = return $ runFn2
   fs.renameSync oldFile newFile
@@ -110,8 +111,8 @@ rename oldFile newFile = return $ runFn2
 -- Truncates a file to the specified length.
 --
 truncate :: forall eff. FilePath
-                     -> Number
-                     -> Eff (fs :: FS, err :: Exception | eff) Unit
+                     -> Int
+                     -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 truncate file len = return $ runFn2
   fs.truncateSync file len
@@ -120,9 +121,9 @@ truncate file len = return $ runFn2
 -- Changes the ownership of a file.
 --
 chown :: forall eff. FilePath
-                  -> Number
-                  -> Number
-                  -> Eff (fs :: FS, err :: Exception | eff) Unit
+                  -> Int
+                  -> Int
+                  -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 chown file uid gid = return $ runFn3
   fs.chownSync file uid gid
@@ -132,7 +133,7 @@ chown file uid gid = return $ runFn3
 --
 chmod :: forall eff. FilePath
                   -> Perms
-                  -> Eff (fs :: FS, err :: Exception | eff) Unit
+                  -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 chmod file perms = return $ runFn2
   fs.chmodSync file (permsToString perms)
@@ -141,7 +142,7 @@ chmod file perms = return $ runFn2
 -- Gets file statistics.
 --
 stat :: forall eff. FilePath
-                 -> Eff (fs :: FS, err :: Exception | eff) Stats
+                 -> Eff (fs :: FS, err :: EXCEPTION | eff) Stats
 
 stat file = return $ Stats $ runFn1
   fs.statSync file
@@ -151,7 +152,7 @@ stat file = return $ Stats $ runFn1
 --
 link :: forall eff. FilePath
                  -> FilePath
-                 -> Eff (fs :: FS, err :: Exception | eff) Unit
+                 -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 link src dst = return $ runFn2
   fs.linkSync src dst
@@ -162,7 +163,7 @@ link src dst = return $ runFn2
 symlink :: forall eff. FilePath
                     -> FilePath
                     -> SymlinkType
-                    -> Eff (fs :: FS, err :: Exception | eff) Unit
+                    -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 symlink src dst ty = return $ runFn3
   fs.symlinkSync src dst (show ty)
@@ -171,7 +172,7 @@ symlink src dst ty = return $ runFn3
 -- Reads the value of a symlink.
 --
 readlink :: forall eff. FilePath
-                     -> Eff (fs :: FS, err :: Exception | eff) FilePath
+                     -> Eff (fs :: FS, err :: EXCEPTION | eff) FilePath
 
 readlink path = return $ runFn1
   fs.readlinkSync path
@@ -180,7 +181,7 @@ readlink path = return $ runFn1
 -- Find the canonicalized absolute location for a path.
 --
 realpath :: forall eff. FilePath
-                     -> Eff (fs :: FS, err :: Exception | eff) FilePath
+                     -> Eff (fs :: FS, err :: EXCEPTION | eff) FilePath
 
 realpath path = return $ runFn2
   fs.realpathSync path {}
@@ -191,7 +192,7 @@ realpath path = return $ runFn2
 --
 realpath' :: forall eff cache. FilePath
                             -> { | cache }
-                            -> Eff (fs :: FS, err :: Exception | eff) FilePath
+                            -> Eff (fs :: FS, err :: EXCEPTION | eff) FilePath
 
 realpath' path cache = return $ runFn2
   fs.realpathSync path cache
@@ -200,7 +201,7 @@ realpath' path cache = return $ runFn2
 -- Deletes a file.
 --
 unlink :: forall eff. FilePath
-                   -> Eff (fs :: FS, err :: Exception | eff) Unit
+                   -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 unlink file = return $ runFn1
   fs.unlinkSync file
@@ -209,7 +210,7 @@ unlink file = return $ runFn1
 -- Deletes a directory.
 --
 rmdir :: forall eff. FilePath
-                  -> Eff (fs :: FS, err :: Exception | eff) Unit
+                  -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 rmdir file = return $ runFn1
   fs.rmdirSync file
@@ -218,7 +219,7 @@ rmdir file = return $ runFn1
 -- Makes a new directory.
 --
 mkdir :: forall eff. FilePath
-                  -> Eff (fs :: FS, err :: Exception | eff) Unit
+                  -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 mkdir = flip mkdir' $ mkPerms all all all
 
@@ -227,7 +228,7 @@ mkdir = flip mkdir' $ mkPerms all all all
 --
 mkdir' :: forall eff. FilePath
                    -> Perms
-                   -> Eff (fs :: FS, err :: Exception | eff) Unit
+                   -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 mkdir' file perms = return $ runFn2
   fs.mkdirSync file (permsToString perms)
@@ -236,7 +237,7 @@ mkdir' file perms = return $ runFn2
 -- Reads the contents of a directory.
 --
 readdir :: forall eff. FilePath
-                    -> Eff (fs :: FS, err :: Exception | eff) (Array FilePath)
+                    -> Eff (fs :: FS, err :: EXCEPTION | eff) (Array FilePath)
 
 readdir file = return $ runFn1
   fs.readdirSync file
@@ -247,7 +248,7 @@ readdir file = return $ runFn1
 utimes :: forall eff. FilePath
                    -> Date
                    -> Date
-                   -> Eff (fs :: FS, err :: Exception | eff) Unit
+                   -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 utimes file atime mtime = return $ runFn3
   fs.utimesSync file
@@ -260,7 +261,7 @@ utimes file atime mtime = return $ runFn3
 -- Reads the entire contents of a file returning the result as a raw buffer.
 --
 readFile :: forall eff. FilePath
-                     -> Eff (fs :: FS, err :: Exception | eff) Buffer
+                     -> Eff (fs :: FS, err :: EXCEPTION | eff) Buffer
 
 readFile file = return $ runFn2
   fs.readFileSync file {}
@@ -270,7 +271,7 @@ readFile file = return $ runFn2
 --
 readTextFile :: forall eff. Encoding
                          -> FilePath
-                         -> Eff (fs :: FS, err :: Exception | eff) String
+                         -> Eff (fs :: FS, err :: EXCEPTION | eff) String
 
 readTextFile encoding file = return $ runFn2
   fs.readFileSync file { encoding: show encoding }
@@ -280,7 +281,7 @@ readTextFile encoding file = return $ runFn2
 --
 writeFile :: forall eff. FilePath
                       -> Buffer
-                      -> Eff (fs :: FS, err :: Exception | eff) Unit
+                      -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 writeFile file buff = return $ runFn3
   fs.writeFileSync file buff {}
@@ -291,7 +292,7 @@ writeFile file buff = return $ runFn3
 writeTextFile :: forall eff. Encoding
                           -> FilePath
                           -> String
-                          -> Eff (fs :: FS, err :: Exception | eff) Unit
+                          -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 writeTextFile encoding file text = return $ runFn3
   fs.writeFileSync file text { encoding: show encoding }
@@ -301,7 +302,7 @@ writeTextFile encoding file text = return $ runFn3
 --
 appendFile :: forall eff. FilePath
                        -> Buffer
-                       -> Eff (fs :: FS, err :: Exception | eff) Unit
+                       -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 appendFile file buff = return $ runFn3
   fs.appendFileSync file buff {}
@@ -312,7 +313,7 @@ appendFile file buff = return $ runFn3
 appendTextFile :: forall eff. Encoding
                            -> FilePath
                            -> String
-                           -> Eff (fs :: FS, err :: Exception | eff) Unit
+                           -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 appendTextFile encoding file buff = return $ runFn3
   fs.appendFileSync file buff { encoding: show encoding }
@@ -335,7 +336,7 @@ fdOpen :: forall opts eff.
           FilePath
        -> FileFlags
        -> Maybe FileMode
-       -> Eff (err :: Exception, fs :: FS | eff) FileDescriptor
+       -> Eff (err :: EXCEPTION, fs :: FS | eff) FileDescriptor
 fdOpen file flags mode =
   case mode of
     Nothing  -> return $ runFn2 fs.openSync file (toStr flags)
@@ -365,7 +366,7 @@ fdRead :: forall eff.
        -> BufferOffset
        -> BufferLength
        -> Maybe FilePosition
-       -> Eff (err :: Exception, fs :: FS | eff) ByteCount
+       -> Eff (err :: EXCEPTION, fs :: FS | eff) ByteCount
 fdRead fd buff off len Nothing =
   return $ runFn4 readSeqSync fd buff off len
 fdRead fd buff off len (Just pos) =
@@ -378,7 +379,7 @@ fdRead fd buff off len (Just pos) =
 fdNext :: forall eff.
           FileDescriptor
        -> Buffer
-       -> Eff (err :: Exception, fs :: FS | eff) ByteCount
+       -> Eff (err :: EXCEPTION, fs :: FS | eff) ByteCount
 fdNext fd buff = fdRead fd buff 0 (size buff) Nothing
 
 --|
@@ -392,7 +393,7 @@ fdWrite :: forall eff.
         -> BufferOffset
         -> BufferLength
         -> Maybe FilePosition
-        -> Eff (err :: Exception, fs :: FS | eff) ByteCount
+        -> Eff (err :: EXCEPTION, fs :: FS | eff) ByteCount
 fdWrite fd buff off len Nothing =
   return $ runFn4 writeSeqSync fd buff off len
 fdWrite fd buff off len (Just pos) =
@@ -405,7 +406,7 @@ fdWrite fd buff off len (Just pos) =
 fdAppend :: forall eff.
             FileDescriptor
          -> Buffer
-         -> Eff (err :: Exception, fs :: FS | eff) ByteCount
+         -> Eff (err :: EXCEPTION, fs :: FS | eff) ByteCount
 fdAppend fd buff = fdWrite fd buff 0 (size buff) Nothing
 
 --|
@@ -415,7 +416,7 @@ fdAppend fd buff = fdWrite fd buff 0 (size buff) Nothing
 --
 fdFlush :: forall eff.
            FileDescriptor
-        -> Eff (err :: Exception, fs :: FS | eff) Unit
+        -> Eff (err :: EXCEPTION, fs :: FS | eff) Unit
 fdFlush fd = return $ runFn1 fs.fsyncSync fd
 
 --|
@@ -425,5 +426,5 @@ fdFlush fd = return $ runFn1 fs.fsyncSync fd
 --
 fdClose :: forall eff.
            FileDescriptor
-        -> Eff (err :: Exception, fs :: FS | eff) Unit
+        -> Eff (err :: EXCEPTION, fs :: FS | eff) Unit
 fdClose fd = return $ runFn1 fs.closeSync fd

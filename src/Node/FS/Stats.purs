@@ -13,6 +13,7 @@ module Node.FS.Stats
   , statusChangedTime
   ) where
 
+import Prelude
 import Data.Date
 import Data.Function
 import Data.Maybe.Unsafe (fromJust)
