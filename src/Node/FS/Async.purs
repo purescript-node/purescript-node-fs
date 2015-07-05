@@ -41,6 +41,7 @@ import Node.FS
 import Node.FS.Stats
 import Node.Path (FilePath())
 import Node.FS.Perms
+import Node.FS.Internal
 
 foreign import data Nullable :: * -> *
 
@@ -88,7 +89,7 @@ rename :: forall eff. FilePath
                    -> FilePath
                    -> Callback eff Unit
                    -> Eff (fs :: FS | eff) Unit
-rename oldFile newFile cb = return $ runFn3
+rename oldFile newFile cb = mkEff $ \_ -> runFn3
   fs.rename oldFile newFile (handleCallback cb)
 
 -- |
@@ -99,7 +100,7 @@ truncate :: forall eff. FilePath
                      -> Callback eff Unit
                      -> Eff (fs :: FS | eff) Unit
 
-truncate file len cb = return $ runFn3
+truncate file len cb = mkEff $ \_ -> runFn3
   fs.truncate file len (handleCallback cb)
 
 -- |
@@ -111,7 +112,7 @@ chown :: forall eff. FilePath
                   -> Callback eff Unit
                   -> Eff (fs :: FS | eff) Unit
 
-chown file uid gid cb = return $ runFn4
+chown file uid gid cb = mkEff $ \_ -> runFn4
   fs.chown file uid gid (handleCallback cb)
 
 -- |
@@ -122,7 +123,7 @@ chmod :: forall eff. FilePath
                   -> Callback eff Unit
                   -> Eff (fs :: FS | eff) Unit
 
-chmod file perms cb = return $ runFn3
+chmod file perms cb = mkEff $ \_ -> runFn3
   fs.chmod file (permsToString perms) (handleCallback cb)
 
 -- |
@@ -132,7 +133,7 @@ stat :: forall eff. FilePath
                  -> Callback eff Stats
                  -> Eff (fs :: FS | eff) Unit
 
-stat file cb = return $ runFn2
+stat file cb = mkEff $ \_ -> runFn2
   fs.stat file (handleCallback $ cb <<< (<$>) Stats)
 
 -- |
@@ -143,7 +144,7 @@ link :: forall eff. FilePath
                  -> Callback eff Unit
                  -> Eff (fs :: FS | eff) Unit
 
-link src dst cb = return $ runFn3
+link src dst cb = mkEff $ \_ -> runFn3
   fs.link src dst (handleCallback cb)
 
 -- |
@@ -155,7 +156,7 @@ symlink :: forall eff. FilePath
                     -> Callback eff Unit
                     -> Eff (fs :: FS | eff) Unit
 
-symlink src dest ty cb = return $ runFn4
+symlink src dest ty cb = mkEff $ \_ -> runFn4
   fs.symlink src dest (show ty) (handleCallback cb)
 
 -- |
@@ -165,7 +166,7 @@ readlink :: forall eff. FilePath
                      -> Callback eff FilePath
                      -> Eff (fs :: FS | eff) Unit
 
-readlink path cb = return $ runFn2
+readlink path cb = mkEff $ \_ -> runFn2
   fs.readlink path (handleCallback cb)
 
 -- |
@@ -175,7 +176,7 @@ realpath :: forall eff. FilePath
                      -> Callback eff FilePath
                      -> Eff (fs :: FS | eff) Unit
 
-realpath path cb = return $ runFn3
+realpath path cb = mkEff $ \_ -> runFn3
   fs.realpath path {} (handleCallback cb)
 
 -- |
@@ -187,7 +188,7 @@ realpath' :: forall eff cache. FilePath
                             -> Callback eff FilePath
                             -> Eff (fs :: FS | eff) Unit
 
-realpath' path cache cb = return $ runFn3
+realpath' path cache cb = mkEff $ \_ -> runFn3
   fs.realpath path cache (handleCallback cb)
 
 -- |
@@ -197,7 +198,7 @@ unlink :: forall eff. FilePath
                    -> Callback eff Unit
                    -> Eff (fs :: FS | eff) Unit
 
-unlink file cb = return $ runFn2
+unlink file cb = mkEff $ \_ -> runFn2
   fs.unlink file (handleCallback cb)
 
 -- |
@@ -207,7 +208,7 @@ rmdir :: forall eff. FilePath
                    -> Callback eff Unit
                    -> Eff (fs :: FS | eff) Unit
 
-rmdir file cb = return $ runFn2
+rmdir file cb = mkEff $ \_ -> runFn2
   fs.rmdir file (handleCallback cb)
 
 -- |
@@ -227,7 +228,7 @@ mkdir' :: forall eff. FilePath
                    -> Callback eff Unit
                    -> Eff (fs :: FS | eff) Unit
 
-mkdir' file perms cb = return $ runFn3
+mkdir' file perms cb = mkEff $ \_ -> runFn3
   fs.mkdir file (permsToString perms) (handleCallback cb)
 
 -- |
@@ -237,7 +238,7 @@ readdir :: forall eff. FilePath
                     -> Callback eff (Array FilePath)
                     -> Eff (fs :: FS | eff) Unit
 
-readdir file cb = return $ runFn2
+readdir file cb = mkEff $ \_ -> runFn2
   fs.readdir file (handleCallback cb)
 
 -- |
@@ -249,7 +250,7 @@ utimes :: forall eff. FilePath
                    -> Callback eff Unit
                    -> Eff (fs :: FS | eff) Unit
 
-utimes file atime mtime cb = return $ runFn4
+utimes file atime mtime cb = mkEff $ \_ -> runFn4
   fs.utimes file
             (ms (toEpochMilliseconds atime) / 1000)
             (ms (toEpochMilliseconds mtime) / 1000)
@@ -264,7 +265,7 @@ readFile :: forall eff. FilePath
                      -> Callback eff Buffer
                      -> Eff (fs :: FS | eff) Unit
 
-readFile file cb = return $ runFn3
+readFile file cb = mkEff $ \_ -> runFn3
   fs.readFile file {} (handleCallback cb)
 
 -- |
@@ -275,7 +276,7 @@ readTextFile :: forall eff. Encoding
                          -> Callback eff String
                          -> Eff (fs :: FS | eff) Unit
 
-readTextFile encoding file cb = return $ runFn3
+readTextFile encoding file cb = mkEff $ \_ -> runFn3
   fs.readFile file { encoding: show encoding } (handleCallback cb)
 
 -- |
@@ -286,7 +287,7 @@ writeFile :: forall eff. FilePath
                       -> Callback eff Unit
                       -> Eff (fs :: FS | eff) Unit
 
-writeFile file buff cb = return $ runFn4
+writeFile file buff cb = mkEff $ \_ -> runFn4
   fs.writeFile file buff {} (handleCallback cb)
 
 -- |
@@ -298,7 +299,7 @@ writeTextFile :: forall eff. Encoding
                           -> Callback eff Unit
                           -> Eff (fs :: FS | eff) Unit
 
-writeTextFile encoding file buff cb = return $ runFn4
+writeTextFile encoding file buff cb = mkEff $ \_ -> runFn4
   fs.writeFile file buff { encoding: show encoding } (handleCallback cb)
 
 -- |
@@ -309,7 +310,7 @@ appendFile :: forall eff. FilePath
                        -> Callback eff Unit
                        -> Eff (fs :: FS | eff) Unit
 
-appendFile file buff cb = return $ runFn4
+appendFile file buff cb = mkEff $ \_ -> runFn4
   fs.appendFile file buff {} (handleCallback cb)
 
 -- |
@@ -321,7 +322,7 @@ appendTextFile :: forall eff. Encoding
                            -> Callback eff Unit
                            -> Eff (fs :: FS | eff) Unit
 
-appendTextFile encoding file buff cb = return $ runFn4
+appendTextFile encoding file buff cb = mkEff $ \_ -> runFn4
   fs.appendFile file buff { encoding: show encoding } (handleCallback cb)
 
 -- |
@@ -330,5 +331,5 @@ appendTextFile encoding file buff cb = return $ runFn4
 exists :: forall eff. FilePath
                    -> (Boolean -> Eff eff Unit)
                    -> Eff (fs :: FS | eff) Unit
-exists file cb = return $ runFn2
+exists file cb = mkEff $ \_ -> runFn2
   fs.exists file $ \b -> runPure (unsafeInterleaveEff (cb b))

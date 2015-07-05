@@ -27,6 +27,7 @@
     "purescript-exceptions": "~0.3.0",
     "purescript-strings": "~0.5.0",
     "purescript-globals": "~0.2.0",
-    "purescript-integers": "~0.2.0"
+    "purescript-integers": "~0.2.0",
+    "purescript-unsafe-coerce": "~0.1.0"
   }
 }
