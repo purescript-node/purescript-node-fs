@@ -28,8 +28,8 @@ import Data.Int (fromNumber, toNumber)
 -- | - `(+)` adds `Perm` values together. For example, `read + write` means
 -- |   "readable and writable".
 -- | - `(*)` masks permissions. It can be thought of as selecting only the
--- |    permissions that two `Perm` values have in common. For example: `(read
--- |    + write) * (write + execute) == write`.
+-- |    permissions that two `Perm` values have in common. For example:
+-- |    `(read + write) * (write + execute) == write`.
 -- |
 -- | 
 newtype Perm = Perm { r :: Boolean, w :: Boolean, x :: Boolean }

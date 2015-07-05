@@ -14,8 +14,8 @@ allows you to combine permissions:
 - `(+)` adds `Perm` values together. For example, `read + write` means
   "readable and writable".
 - `(*)` masks permissions. It can be thought of as selecting only the
-   permissions that two `Perm` values have in common. For example: `(read
-   + write) * (write + execute) == write`.
+   permissions that two `Perm` values have in common. For example:
+   `(read + write) * (write + execute) == write`.
 
 
 
