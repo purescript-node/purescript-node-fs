@@ -70,7 +70,7 @@ foreign import fs ::
   , rmdir :: Fn2 FilePath (JSCallback Unit) Unit
   , mkdir :: Fn3 FilePath String (JSCallback Unit) Unit
   , readdir :: Fn2 FilePath (JSCallback (Array FilePath)) Unit
-  , utimes :: Fn4 FilePath Int Int (JSCallback Unit) Unit
+  , utimes :: Fn4 FilePath Number Number (JSCallback Unit) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   , appendFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
@@ -252,8 +252,8 @@ utimes :: forall eff. FilePath
 
 utimes file atime mtime cb = mkEff $ \_ -> runFn4
   fs.utimes file
-            (ms (toEpochMilliseconds atime) / 1000)
-            (ms (toEpochMilliseconds mtime) / 1000)
+            (ms (toEpochMilliseconds atime) / 1000.0)
+            (ms (toEpochMilliseconds mtime) / 1000.0)
             (handleCallback cb)
   where
   ms (Milliseconds n) = n

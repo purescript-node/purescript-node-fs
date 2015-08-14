@@ -80,7 +80,7 @@ foreign import fs ::
   , rmdirSync :: Fn1 FilePath Unit
   , mkdirSync :: Fn2 FilePath String Unit
   , readdirSync :: Fn1 FilePath (Array FilePath)
-  , utimesSync :: Fn3 FilePath Int Int Unit
+  , utimesSync :: Fn3 FilePath Number Number Unit
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
   , writeFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   , appendFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
@@ -253,8 +253,8 @@ utimes :: forall eff. FilePath
 
 utimes file atime mtime = mkEff $ \_ -> runFn3
   fs.utimesSync file
-                (ms (toEpochMilliseconds atime) / 1000)
-                (ms (toEpochMilliseconds mtime) / 1000)
+                (ms (toEpochMilliseconds atime) / 1000.0)
+                (ms (toEpochMilliseconds mtime) / 1000.0)
   where
   ms (Milliseconds n) = n
 

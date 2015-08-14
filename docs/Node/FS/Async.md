@@ -141,7 +141,7 @@ appendTextFile :: forall eff. Encoding -> FilePath -> String -> Callback eff Uni
 #### `exists`
 
 ``` purescript
-exists :: forall eff. FilePath -> (Boolean -> Eff eff Unit) -> Eff (fs :: FS | eff) Unit
+exists :: forall eff. FilePath -> (Boolean -> Eff (fs :: FS | eff) Unit) -> Eff (fs :: FS | eff) Unit
 ```
 
 

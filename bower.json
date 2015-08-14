@@ -11,23 +11,15 @@
     "bower_components",
     "node_modules",
     "output",
-    "tests",
-    "tmp",
     "bower.json",
-    "Gruntfile.js",
     "package.json"
   ],
   "dependencies": {
-    "purescript-either": "~0.2.0",
-    "purescript-maybe": "~0.3.0",
-    "purescript-foreign": "~0.5.0",
-    "purescript-node-buffer": "~0.1.0",
-    "purescript-node-path": "~0.4.0-rc.1",
-    "purescript-datetime": "~0.6.0",
-    "purescript-exceptions": "~0.3.0",
-    "purescript-strings": "~0.5.0",
-    "purescript-globals": "~0.2.0",
-    "purescript-integers": "~0.2.0",
-    "purescript-unsafe-coerce": "~0.1.0"
+    "purescript-datetime": "^0.9.0",
+    "purescript-exceptions": "^0.3.0",
+    "purescript-foreign": "^0.7.0",
+    "purescript-node-buffer": "^0.1.0",
+    "purescript-node-path": "^0.4.0-rc.1",
+    "purescript-unsafe-coerce": "^0.1.0"
   }
 }
