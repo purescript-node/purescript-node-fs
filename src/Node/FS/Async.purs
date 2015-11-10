@@ -35,7 +35,7 @@ import Data.Either
 import Data.Function
 import Data.Maybe
 import Data.Maybe.Unsafe(fromJust)
-import Node.Buffer (Buffer(..))
+import Node.Buffer (Buffer())
 import Node.Encoding
 import Node.FS
 import Node.FS.Stats
@@ -53,7 +53,7 @@ foreign import handleCallbackImpl ::
                     (Callback eff a)
                     (JSCallback a)
 
-handleCallback :: forall eff a b. (Callback eff a) -> JSCallback a
+handleCallback :: forall eff a. (Callback eff a) -> JSCallback a
 handleCallback cb = runFn3 handleCallbackImpl Left Right cb
 
 foreign import fs ::

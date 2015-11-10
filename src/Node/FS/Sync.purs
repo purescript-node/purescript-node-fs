@@ -46,7 +46,7 @@ import Data.Time
 import Data.Either
 import Data.Function
 import Data.Maybe (Maybe(..))
-import Node.Buffer (Buffer(..), size)
+import Node.Buffer (Buffer(), size)
 import Node.Encoding
 import Node.FS
 import Node.FS.Stats
@@ -333,7 +333,7 @@ exists file = return $ fs.existsSync file
 -- href="http://nodejs.org/api/fs.html#fs_fs_opensync_path_flags_mode">Node
 -- Documentation</a> for details.
 --
-fdOpen :: forall opts eff.
+fdOpen :: forall eff.
           FilePath
        -> FileFlags
        -> Maybe FileMode
