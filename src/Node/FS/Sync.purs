@@ -22,13 +22,6 @@ module Node.FS.Sync
   , appendFile
   , appendTextFile
   , exists
-  , FileDescriptor(..)
-  , FileFlags(..)
-  , BufferLength(..)
-  , BufferOffset(..)
-  , ByteCount(..)
-  , FileMode(..)
-  , FilePosition(..)
   , fdOpen
   , fdRead
   , fdNext
@@ -53,18 +46,6 @@ import Node.FS.Stats
 import Node.Path (FilePath())
 import Node.FS.Perms
 import Node.FS.Internal
-
-foreign import data FileDescriptor :: *
-
-data FileFlags = R | R_PLUS | RS | RS_PLUS
-               | W | WX | W_PLUS | WX_PLUS
-               | A | AX | A_PLUS | AX_PLUS
-
-type BufferLength = Int
-type BufferOffset = Int
-type ByteCount = Int
-type FileMode = Int
-type FilePosition = Int
 
 foreign import fs ::
   { renameSync :: Fn2 FilePath FilePath Unit
@@ -340,21 +321,8 @@ fdOpen :: forall eff.
        -> Eff (err :: EXCEPTION, fs :: FS | eff) FileDescriptor
 fdOpen file flags mode =
   case mode of
-    Nothing  -> mkEff $ \_ -> runFn2 fs.openSync file (toStr flags)
-    (Just m) -> mkEff $ \_ -> runFn3 createSync file (toStr flags) m
-  where
-    toStr R       = "r"
-    toStr R_PLUS  = "r+"
-    toStr RS      = "rs"
-    toStr RS_PLUS = "rs+"
-    toStr W       = "w"
-    toStr WX      = "wx"
-    toStr W_PLUS  = "w+"
-    toStr WX_PLUS = "wx+"
-    toStr A       = "a"
-    toStr AX      = "ax"
-    toStr A_PLUS  = "a+"
-    toStr AX_PLUS = "ax+"
+    Nothing  -> mkEff $ \_ -> runFn2 fs.openSync file (show flags)
+    (Just m) -> mkEff $ \_ -> runFn3 createSync file (show flags) m
 
 --|
 -- Read to a file synchronously.  See <a
