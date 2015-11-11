@@ -12,10 +12,20 @@ foreign import data FS :: !
 --
 data SymlinkType = FileLink | DirLink | JunctionLink
 
+-- |
+-- Convert a `SymlinkType` to a `String` expected by the Node.js filesystem
+-- API.
+--
+symlinkTypeToNode :: SymlinkType -> String
+symlinkTypeToNode ty = case ty of
+  FileLink -> "file"
+  DirLink -> "dir"
+  JunctionLink -> "junction"
+
 instance showSymlinkType :: Show SymlinkType where
-  show FileLink     = "file"
-  show DirLink      = "dir"
-  show JunctionLink = "junction"
+  show FileLink     = "FileLink"
+  show DirLink      = "DirLink"
+  show JunctionLink = "JunctionLink"
 
 instance eqSymlinkType :: Eq SymlinkType where
   eq FileLink     FileLink     = true
