@@ -40,7 +40,7 @@ import Data.Time
 import Data.Either
 import Data.Function
 import Data.Maybe
-import Data.Maybe.Unsafe(fromJust)
+import Data.Nullable
 import Node.Buffer (Buffer(), size)
 import Node.Encoding
 import Node.FS
@@ -48,8 +48,6 @@ import Node.FS.Stats
 import Node.Path (FilePath())
 import Node.FS.Perms
 import Node.FS.Internal
-
-foreign import data Nullable :: * -> *
 
 type JSCallback a = Fn2 (Nullable Error) a Unit
 
@@ -81,17 +79,11 @@ foreign import fs ::
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   , appendFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   , exists :: forall a. Fn2 FilePath (Boolean -> a) Unit
-  , open :: Fn3 FilePath String (JSCallback FileDescriptor) Unit
-  , read :: Fn6 FileDescriptor Buffer BufferOffset BufferLength FilePosition (JSCallback ByteCount) Unit
-  , write :: Fn6 FileDescriptor Buffer BufferOffset BufferLength FilePosition (JSCallback ByteCount) Unit
+  , open :: Fn4 FilePath String (Nullable FileMode) (JSCallback FileDescriptor) Unit
+  , read :: Fn6 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) (JSCallback ByteCount) Unit
+  , write :: Fn6 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) (JSCallback ByteCount) Unit
   , close :: Fn2 FileDescriptor (JSCallback Unit) Unit
   }
-
-foreign import create :: Fn4 FilePath String FileMode (JSCallback FileDescriptor) Unit
-
-foreign import writeSeq :: Fn5 FileDescriptor Buffer BufferOffset BufferLength (JSCallback ByteCount) Unit
-
-foreign import readSeq :: Fn5 FileDescriptor Buffer BufferOffset BufferLength (JSCallback ByteCount) Unit
 
 -- |
 -- Type synonym for callback functions.
@@ -364,10 +356,7 @@ fdOpen :: forall eff.
        -> Maybe FileMode
        -> Callback eff FileDescriptor
        -> Eff (fs :: FS | eff) Unit
-fdOpen file flags mode cb =
-  case mode of
-    Nothing  -> mkEff $ \_ -> runFn3 fs.open file (show flags) (handleCallback cb)
-    (Just m) -> mkEff $ \_ -> runFn4 create file (show flags) m (handleCallback cb)
+fdOpen file flags mode cb = mkEff $ \_ -> runFn4 fs.open file (show flags) (toNullable mode) (handleCallback cb)
 
 --|
 -- Read from a file asynchronously.  See <a
@@ -382,10 +371,7 @@ fdRead :: forall eff.
        -> Maybe FilePosition
        -> Callback eff ByteCount
        -> Eff (fs :: FS | eff) Unit
-fdRead fd buff off len Nothing cb =
-  mkEff $ \_ -> runFn5 readSeq fd buff off len (handleCallback cb)
-fdRead fd buff off len (Just pos) cb =
-  mkEff $ \_ -> runFn6 fs.read fd buff off len pos (handleCallback cb)
+fdRead fd buff off len pos cb =  mkEff $ \_ -> runFn6 fs.read fd buff off len (toNullable pos) (handleCallback cb)
 
 --|
 -- Convienence function to fill the whole buffer from the current
@@ -411,10 +397,7 @@ fdWrite :: forall eff.
         -> Maybe FilePosition
         -> Callback eff ByteCount
         -> Eff (fs :: FS | eff) Unit
-fdWrite fd buff off len Nothing cb =
-  mkEff $ \_ -> runFn5 writeSeq fd buff off len (handleCallback cb)
-fdWrite fd buff off len (Just pos) cb =
-  mkEff $ \_ -> runFn6 fs.write fd buff off len pos (handleCallback cb)
+fdWrite fd buff off len pos cb = mkEff $ \_ -> runFn6 fs.write fd buff off len (toNullable pos) (handleCallback cb)
 
 --|
 -- Convienence function to append the whole buffer to the current
