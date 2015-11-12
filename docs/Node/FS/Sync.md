@@ -1,59 +1,5 @@
 ## Module Node.FS.Sync
 
-#### `FileDescriptor`
-
-``` purescript
-data FileDescriptor :: *
-```
-
-#### `FileFlags`
-
-``` purescript
-data FileFlags
-  = R
-  | R_PLUS
-  | RS
-  | RS_PLUS
-  | W
-  | WX
-  | W_PLUS
-  | WX_PLUS
-  | A
-  | AX
-  | A_PLUS
-  | AX_PLUS
-```
-
-#### `BufferLength`
-
-``` purescript
-type BufferLength = Int
-```
-
-#### `BufferOffset`
-
-``` purescript
-type BufferOffset = Int
-```
-
-#### `ByteCount`
-
-``` purescript
-type ByteCount = Int
-```
-
-#### `FileMode`
-
-``` purescript
-type FileMode = Int
-```
-
-#### `FilePosition`
-
-``` purescript
-type FilePosition = Int
-```
-
 #### `rename`
 
 ``` purescript
@@ -165,7 +111,7 @@ readTextFile :: forall eff. Encoding -> FilePath -> Eff (fs :: FS, err :: EXCEPT
 #### `writeFile`
 
 ``` purescript
-writeFile :: forall eff. FilePath -> Buffer -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
+writeFile :: forall eff. FilePath -> Buffer -> Eff (buffer :: BUFFER, fs :: FS, err :: EXCEPTION | eff) Unit
 ```
 
 #### `writeTextFile`
@@ -177,7 +123,7 @@ writeTextFile :: forall eff. Encoding -> FilePath -> String -> Eff (fs :: FS, er
 #### `appendFile`
 
 ``` purescript
-appendFile :: forall eff. FilePath -> Buffer -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
+appendFile :: forall eff. FilePath -> Buffer -> Eff (buffer :: BUFFER, fs :: FS, err :: EXCEPTION | eff) Unit
 ```
 
 #### `appendTextFile`
@@ -195,31 +141,31 @@ exists :: forall eff. FilePath -> Eff (fs :: FS | eff) Boolean
 #### `fdOpen`
 
 ``` purescript
-fdOpen :: forall opts eff. FilePath -> FileFlags -> Maybe FileMode -> Eff (err :: EXCEPTION, fs :: FS | eff) FileDescriptor
+fdOpen :: forall eff. FilePath -> FileFlags -> Maybe FileMode -> Eff (err :: EXCEPTION, fs :: FS | eff) FileDescriptor
 ```
 
 #### `fdRead`
 
 ``` purescript
-fdRead :: forall eff. FileDescriptor -> Buffer -> BufferOffset -> BufferLength -> Maybe FilePosition -> Eff (err :: EXCEPTION, fs :: FS | eff) ByteCount
+fdRead :: forall eff. FileDescriptor -> Buffer -> BufferOffset -> BufferLength -> Maybe FilePosition -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
 ```
 
 #### `fdNext`
 
 ``` purescript
-fdNext :: forall eff. FileDescriptor -> Buffer -> Eff (err :: EXCEPTION, fs :: FS | eff) ByteCount
+fdNext :: forall eff. FileDescriptor -> Buffer -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
 ```
 
 #### `fdWrite`
 
 ``` purescript
-fdWrite :: forall eff. FileDescriptor -> Buffer -> BufferOffset -> BufferLength -> Maybe FilePosition -> Eff (err :: EXCEPTION, fs :: FS | eff) ByteCount
+fdWrite :: forall eff. FileDescriptor -> Buffer -> BufferOffset -> BufferLength -> Maybe FilePosition -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
 ```
 
 #### `fdAppend`
 
 ``` purescript
-fdAppend :: forall eff. FileDescriptor -> Buffer -> Eff (err :: EXCEPTION, fs :: FS | eff) ByteCount
+fdAppend :: forall eff. FileDescriptor -> Buffer -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
 ```
 
 #### `fdFlush`

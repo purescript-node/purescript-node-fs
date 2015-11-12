@@ -15,13 +15,13 @@ rename :: forall eff. FilePath -> FilePath -> Callback eff Unit -> Eff (fs :: FS
 #### `truncate`
 
 ``` purescript
-truncate :: forall eff. FilePath -> Number -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
+truncate :: forall eff. FilePath -> Int -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 ```
 
 #### `chown`
 
 ``` purescript
-chown :: forall eff. FilePath -> Number -> Number -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
+chown :: forall eff. FilePath -> Int -> Int -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 ```
 
 #### `chmod`
@@ -105,7 +105,7 @@ utimes :: forall eff. FilePath -> Date -> Date -> Callback eff Unit -> Eff (fs :
 #### `readFile`
 
 ``` purescript
-readFile :: forall eff. FilePath -> Callback eff Buffer -> Eff (fs :: FS | eff) Unit
+readFile :: forall eff. FilePath -> Callback (buffer :: BUFFER | eff) Buffer -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
 ```
 
 #### `readTextFile`
@@ -117,7 +117,7 @@ readTextFile :: forall eff. Encoding -> FilePath -> Callback eff String -> Eff (
 #### `writeFile`
 
 ``` purescript
-writeFile :: forall eff. FilePath -> Buffer -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
+writeFile :: forall eff. FilePath -> Buffer -> Callback (buffer :: BUFFER | eff) Unit -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
 ```
 
 #### `writeTextFile`
@@ -129,7 +129,7 @@ writeTextFile :: forall eff. Encoding -> FilePath -> String -> Callback eff Unit
 #### `appendFile`
 
 ``` purescript
-appendFile :: forall eff. FilePath -> Buffer -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
+appendFile :: forall eff. FilePath -> Buffer -> Callback (buffer :: BUFFER | eff) Unit -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
 ```
 
 #### `appendTextFile`
@@ -142,6 +142,42 @@ appendTextFile :: forall eff. Encoding -> FilePath -> String -> Callback eff Uni
 
 ``` purescript
 exists :: forall eff. FilePath -> (Boolean -> Eff (fs :: FS | eff) Unit) -> Eff (fs :: FS | eff) Unit
+```
+
+#### `fdOpen`
+
+``` purescript
+fdOpen :: forall eff. FilePath -> FileFlags -> Maybe FileMode -> Callback eff FileDescriptor -> Eff (fs :: FS | eff) Unit
+```
+
+#### `fdRead`
+
+``` purescript
+fdRead :: forall eff. FileDescriptor -> Buffer -> BufferOffset -> BufferLength -> Maybe FilePosition -> Callback (buffer :: BUFFER | eff) ByteCount -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
+```
+
+#### `fdNext`
+
+``` purescript
+fdNext :: forall eff. FileDescriptor -> Buffer -> Callback (buffer :: BUFFER | eff) ByteCount -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
+```
+
+#### `fdWrite`
+
+``` purescript
+fdWrite :: forall eff. FileDescriptor -> Buffer -> BufferOffset -> BufferLength -> Maybe FilePosition -> Callback (buffer :: BUFFER | eff) ByteCount -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
+```
+
+#### `fdAppend`
+
+``` purescript
+fdAppend :: forall eff. FileDescriptor -> Buffer -> Callback (buffer :: BUFFER | eff) ByteCount -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
+```
+
+#### `fdClose`
+
+``` purescript
+fdClose :: forall eff. FileDescriptor -> Callback eff Unit -> Eff (fs :: FS | eff) Unit
 ```
 
 
