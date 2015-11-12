@@ -4,8 +4,7 @@
 
 // module Node.FS.Sync
 
-var fs = require('fs');
-exports.fs = fs;
+exports.fs = require('fs');
 
 exports.handleCallbackImpl = function (left, right, f) {
   return function (err, value) {
@@ -16,7 +15,3 @@ exports.handleCallbackImpl = function (left, right, f) {
     }
   };
 };
-
-exports.createSync = fs.openSync;
-exports.writeSeqSync = fs.writeSync;
-exports.readSeqSync = fs.readSync;

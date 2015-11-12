@@ -38,6 +38,7 @@ import Data.Date
 import Data.Time
 import Data.Either
 import Data.Function
+import Data.Nullable (Nullable(), toNullable)
 import Data.Int (round)
 import Data.Maybe (Maybe(..))
 import Node.Buffer (Buffer(), BUFFER(), size)
@@ -67,18 +68,12 @@ foreign import fs ::
   , writeFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   , appendFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   , existsSync :: FilePath -> Boolean
-  , openSync :: Fn2 FilePath String FileDescriptor
-  , readSync :: Fn5 FileDescriptor Buffer BufferOffset BufferLength FilePosition ByteCount
-  , writeSync :: Fn5 FileDescriptor Buffer BufferOffset BufferLength FilePosition ByteCount
+  , openSync :: Fn3 FilePath String (Nullable FileMode) FileDescriptor
+  , readSync :: Fn5 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) ByteCount
+  , writeSync :: Fn5 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) ByteCount
   , fsyncSync :: Fn1 FileDescriptor Unit
   , closeSync :: Fn1 FileDescriptor Unit
   }
-
-foreign import createSync :: Fn3 FilePath String FileMode FileDescriptor
-
-foreign import writeSeqSync :: Fn4 FileDescriptor Buffer BufferOffset BufferLength ByteCount
-
-foreign import readSeqSync :: Fn4 FileDescriptor Buffer BufferOffset BufferLength ByteCount
 
 -- |
 -- Renames a file.
@@ -321,10 +316,8 @@ fdOpen :: forall eff.
        -> FileFlags
        -> Maybe FileMode
        -> Eff (err :: EXCEPTION, fs :: FS | eff) FileDescriptor
-fdOpen file flags mode =
-  case mode of
-    Nothing  -> mkEff $ \_ -> runFn2 fs.openSync file (fileFlagsToNode flags)
-    (Just m) -> mkEff $ \_ -> runFn3 createSync file (fileFlagsToNode flags) m
+fdOpen file flags mode = mkEff $ \_ ->
+  runFn3 fs.openSync file (fileFlagsToNode flags) (toNullable mode)
 
 --|
 -- Read to a file synchronously.  See <a
@@ -338,10 +331,8 @@ fdRead :: forall eff.
        -> BufferLength
        -> Maybe FilePosition
        -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
-fdRead fd buff off len Nothing =
-  mkEff $ \_ -> runFn4 readSeqSync fd buff off len
-fdRead fd buff off len (Just pos) =
-  mkEff $ \_ -> runFn5 fs.readSync fd buff off len pos
+fdRead fd buff off len pos =
+  mkEff $ \_ -> runFn5 fs.readSync fd buff off len (toNullable pos)
 
 --|
 -- Convienence function to fill the whole buffer from the current
@@ -367,10 +358,8 @@ fdWrite :: forall eff.
         -> BufferLength
         -> Maybe FilePosition
         -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
-fdWrite fd buff off len Nothing =
-  mkEff $ \_ -> runFn4 writeSeqSync fd buff off len
-fdWrite fd buff off len (Just pos) =
-  mkEff $ \_ -> runFn5 fs.writeSync fd buff off len pos
+fdWrite fd buff off len pos =
+  mkEff $ \_ -> runFn5 fs.writeSync fd buff off len (toNullable pos)
 
 --|
 -- Convienence function to append the whole buffer to the current
