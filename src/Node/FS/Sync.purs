@@ -22,13 +22,6 @@ module Node.FS.Sync
   , appendFile
   , appendTextFile
   , exists
-  , FileDescriptor(..)
-  , FileFlags(..)
-  , BufferLength(..)
-  , BufferOffset(..)
-  , ByteCount(..)
-  , FileMode(..)
-  , FilePosition(..)
   , fdOpen
   , fdRead
   , fdNext
@@ -46,25 +39,13 @@ import Data.Time
 import Data.Either
 import Data.Function
 import Data.Maybe (Maybe(..))
-import Node.Buffer (Buffer(..), size)
+import Node.Buffer (Buffer(), size)
 import Node.Encoding
 import Node.FS
 import Node.FS.Stats
 import Node.Path (FilePath())
 import Node.FS.Perms
 import Node.FS.Internal
-
-foreign import data FileDescriptor :: *
-
-data FileFlags = R | R_PLUS | RS | RS_PLUS
-               | W | WX | W_PLUS | WX_PLUS
-               | A | AX | A_PLUS | AX_PLUS
-
-type BufferLength = Int
-type BufferOffset = Int
-type ByteCount = Int
-type FileMode = Int
-type FilePosition = Int
 
 foreign import fs ::
   { renameSync :: Fn2 FilePath FilePath Unit
@@ -333,28 +314,15 @@ exists file = return $ fs.existsSync file
 -- href="http://nodejs.org/api/fs.html#fs_fs_opensync_path_flags_mode">Node
 -- Documentation</a> for details.
 --
-fdOpen :: forall opts eff.
+fdOpen :: forall eff.
           FilePath
        -> FileFlags
        -> Maybe FileMode
        -> Eff (err :: EXCEPTION, fs :: FS | eff) FileDescriptor
 fdOpen file flags mode =
   case mode of
-    Nothing  -> mkEff $ \_ -> runFn2 fs.openSync file (toStr flags)
-    (Just m) -> mkEff $ \_ -> runFn3 createSync file (toStr flags) m
-  where
-    toStr R       = "r"
-    toStr R_PLUS  = "r+"
-    toStr RS      = "rs"
-    toStr RS_PLUS = "rs+"
-    toStr W       = "w"
-    toStr WX      = "wx"
-    toStr W_PLUS  = "w+"
-    toStr WX_PLUS = "wx+"
-    toStr A       = "a"
-    toStr AX      = "ax"
-    toStr A_PLUS  = "a+"
-    toStr AX_PLUS = "ax+"
+    Nothing  -> mkEff $ \_ -> runFn2 fs.openSync file (fileFlagsToNode flags)
+    (Just m) -> mkEff $ \_ -> runFn3 createSync file (fileFlagsToNode flags) m
 
 --|
 -- Read to a file synchronously.  See <a

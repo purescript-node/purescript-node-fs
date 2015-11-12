@@ -23,6 +23,12 @@ module Node.FS.Async
   , appendFile
   , appendTextFile
   , exists
+  , fdOpen
+  , fdRead
+  , fdNext
+  , fdWrite
+  , fdAppend
+  , fdClose
   ) where
 
 import Prelude
@@ -34,16 +40,14 @@ import Data.Time
 import Data.Either
 import Data.Function
 import Data.Maybe
-import Data.Maybe.Unsafe(fromJust)
-import Node.Buffer (Buffer(..))
+import Data.Nullable
+import Node.Buffer (Buffer(), size)
 import Node.Encoding
 import Node.FS
 import Node.FS.Stats
 import Node.Path (FilePath())
 import Node.FS.Perms
 import Node.FS.Internal
-
-foreign import data Nullable :: * -> *
 
 type JSCallback a = Fn2 (Nullable Error) a Unit
 
@@ -53,7 +57,7 @@ foreign import handleCallbackImpl ::
                     (Callback eff a)
                     (JSCallback a)
 
-handleCallback :: forall eff a b. (Callback eff a) -> JSCallback a
+handleCallback :: forall eff a. (Callback eff a) -> JSCallback a
 handleCallback cb = runFn3 handleCallbackImpl Left Right cb
 
 foreign import fs ::
@@ -75,6 +79,10 @@ foreign import fs ::
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   , appendFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   , exists :: forall a. Fn2 FilePath (Boolean -> a) Unit
+  , open :: Fn4 FilePath String (Nullable FileMode) (JSCallback FileDescriptor) Unit
+  , read :: Fn6 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) (JSCallback ByteCount) Unit
+  , write :: Fn6 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) (JSCallback ByteCount) Unit
+  , close :: Fn2 FileDescriptor (JSCallback Unit) Unit
   }
 
 -- |
@@ -333,3 +341,82 @@ exists :: forall eff. FilePath
                    -> Eff (fs :: FS | eff) Unit
 exists file cb = mkEff $ \_ -> runFn2
   fs.exists file $ \b -> runPure (unsafeInterleaveEff (cb b))
+
+
+{- Asynchronous File Descriptor Functions -}
+
+--|
+-- Open a file asynchronously.  See <a
+-- href="https://nodejs.org/api/fs.html#fs_fs_open_path_flags_mode_callback">Node
+-- Documentation</a> for details.
+--
+fdOpen :: forall eff.
+          FilePath
+       -> FileFlags
+       -> Maybe FileMode
+       -> Callback eff FileDescriptor
+       -> Eff (fs :: FS | eff) Unit
+fdOpen file flags mode cb = mkEff $ \_ -> runFn4 fs.open file (fileFlagsToNode flags) (toNullable mode) (handleCallback cb)
+
+--|
+-- Read from a file asynchronously.  See <a
+-- href="https://nodejs.org/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback">Node
+-- Documentation</a> for details.
+--
+fdRead :: forall eff.
+          FileDescriptor
+       -> Buffer
+       -> BufferOffset
+       -> BufferLength
+       -> Maybe FilePosition
+       -> Callback eff ByteCount
+       -> Eff (fs :: FS | eff) Unit
+fdRead fd buff off len pos cb =  mkEff $ \_ -> runFn6 fs.read fd buff off len (toNullable pos) (handleCallback cb)
+
+--|
+-- Convienence function to fill the whole buffer from the current
+-- file position.
+--
+fdNext :: forall eff.
+          FileDescriptor
+       -> Buffer
+       -> Callback eff ByteCount
+       -> Eff (fs :: FS | eff) Unit
+fdNext fd buff cb = fdRead fd buff 0 (size buff) Nothing cb
+
+--|
+-- Write to a file asynchronously.  See <a
+-- href="https://nodejs.org/api/fs.html#fs_fs_write_fd_buffer_offset_length_position_callback">Node
+-- Documentation</a> for details.
+--
+fdWrite :: forall eff.
+           FileDescriptor
+        -> Buffer
+        -> BufferOffset
+        -> BufferLength
+        -> Maybe FilePosition
+        -> Callback eff ByteCount
+        -> Eff (fs :: FS | eff) Unit
+fdWrite fd buff off len pos cb = mkEff $ \_ -> runFn6 fs.write fd buff off len (toNullable pos) (handleCallback cb)
+
+--|
+-- Convienence function to append the whole buffer to the current
+-- file position.
+--
+fdAppend :: forall eff.
+            FileDescriptor
+         -> Buffer
+         -> Callback eff ByteCount
+         -> Eff (fs :: FS | eff) Unit
+fdAppend fd buff cb = fdWrite fd buff 0 (size buff) Nothing cb
+
+--|
+-- Close a file asynchronously.  See <a
+-- href="https://nodejs.org/api/fs.html#fs_fs_close_fd_callback">Node
+-- Documentation</a> for details.
+--
+fdClose :: forall eff.
+           FileDescriptor
+        -> Callback eff Unit   
+        -> Eff (fs :: FS | eff) Unit
+fdClose fd cb = mkEff $ \_ -> runFn2 fs.close fd (handleCallback cb)
