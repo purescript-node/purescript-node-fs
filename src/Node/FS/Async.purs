@@ -42,6 +42,8 @@ import Data.Function
 import Data.Maybe
 import Data.Nullable
 import Node.Buffer (Buffer(), size)
+import Data.Int (round)
+import Data.Maybe.Unsafe (fromJust)
 import Node.Encoding
 import Node.FS
 import Node.FS.Stats
@@ -62,8 +64,8 @@ handleCallback cb = runFn3 handleCallbackImpl Left Right cb
 
 foreign import fs ::
   { rename :: Fn3 FilePath FilePath (JSCallback Unit) Unit
-  , truncate :: Fn3 FilePath Number (JSCallback Unit) Unit
-  , chown :: Fn4 FilePath Number Number (JSCallback Unit) Unit
+  , truncate :: Fn3 FilePath Int (JSCallback Unit) Unit
+  , chown :: Fn4 FilePath Int Int (JSCallback Unit) Unit
   , chmod :: Fn3 FilePath String (JSCallback Unit) Unit
   , stat :: Fn2 FilePath (JSCallback StatsObj) Unit
   , link :: Fn3 FilePath FilePath (JSCallback Unit) Unit
@@ -74,7 +76,7 @@ foreign import fs ::
   , rmdir :: Fn2 FilePath (JSCallback Unit) Unit
   , mkdir :: Fn3 FilePath String (JSCallback Unit) Unit
   , readdir :: Fn2 FilePath (JSCallback (Array FilePath)) Unit
-  , utimes :: Fn4 FilePath Number Number (JSCallback Unit) Unit
+  , utimes :: Fn4 FilePath Int Int (JSCallback Unit) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
   , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   , appendFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
@@ -104,7 +106,7 @@ rename oldFile newFile cb = mkEff $ \_ -> runFn3
 -- Truncates a file to the specified length.
 --
 truncate :: forall eff. FilePath
-                     -> Number
+                     -> Int
                      -> Callback eff Unit
                      -> Eff (fs :: FS | eff) Unit
 
@@ -115,8 +117,8 @@ truncate file len cb = mkEff $ \_ -> runFn3
 -- Changes the ownership of a file.
 --
 chown :: forall eff. FilePath
-                  -> Number
-                  -> Number
+                  -> Int
+                  -> Int
                   -> Callback eff Unit
                   -> Eff (fs :: FS | eff) Unit
 
@@ -260,11 +262,12 @@ utimes :: forall eff. FilePath
 
 utimes file atime mtime cb = mkEff $ \_ -> runFn4
   fs.utimes file
-            (ms (toEpochMilliseconds atime) / 1000.0)
-            (ms (toEpochMilliseconds mtime) / 1000.0)
+            (fromDate atime)
+            (fromDate mtime)
             (handleCallback cb)
   where
-  ms (Milliseconds n) = n
+  fromDate date = ms (toEpochMilliseconds date) / 1000
+  ms (Milliseconds n) = round n
 
 -- |
 -- Reads the entire contents of a file returning the result as a raw buffer.
