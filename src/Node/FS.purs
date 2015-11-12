@@ -4,6 +4,7 @@ module Node.FS
   , FileFlags(..)
   , FileMode(..)
   , SymlinkType(..)
+  , symlinkTypeToNode
   , BufferLength(..)
   , BufferOffset(..)
   , ByteCount(..)
