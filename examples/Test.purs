@@ -41,6 +41,11 @@ main = do
     log $ "Caught readTextFile error:\n" ++ show err
     return "") $ S.readTextFile UTF8 (fp ["examples", "does not exist"])
 
+  -- If an error is thrown, it's probably EEXIST, so ignore it. Should
+  -- really check this instead.
+  catchException' (const (return unit)) (S.mkdir "tmp")
+
+  S.writeTextFile ASCII (fp ["tmp", "Test.js"]) "console.log('hello world')"
   S.rename (fp ["tmp", "Test.js"]) (fp ["tmp", "Test1.js"])
 
   S.truncate (fp ["tmp", "Test1.js"]) 1000
