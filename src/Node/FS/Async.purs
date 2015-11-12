@@ -356,7 +356,7 @@ fdOpen :: forall eff.
        -> Maybe FileMode
        -> Callback eff FileDescriptor
        -> Eff (fs :: FS | eff) Unit
-fdOpen file flags mode cb = mkEff $ \_ -> runFn4 fs.open file (show flags) (toNullable mode) (handleCallback cb)
+fdOpen file flags mode cb = mkEff $ \_ -> runFn4 fs.open file (fileFlagsToNode flags) (toNullable mode) (handleCallback cb)
 
 --|
 -- Read from a file asynchronously.  See <a

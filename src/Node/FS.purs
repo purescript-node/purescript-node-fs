@@ -8,6 +8,7 @@ module Node.FS
   , BufferOffset(..)
   , ByteCount(..)
   , FilePosition(..)
+  , fileFlagsToNode
   ) where
 
 import Prelude
@@ -23,19 +24,20 @@ data FileFlags = R | R_PLUS | RS | RS_PLUS
                | W | WX | W_PLUS | WX_PLUS
                | A | AX | A_PLUS | AX_PLUS
 
-instance showFileFlags :: Show FileFlags where
-    show R       = "r"
-    show R_PLUS  = "r+"
-    show RS      = "rs"
-    show RS_PLUS = "rs+"
-    show W       = "w"
-    show WX      = "wx"
-    show W_PLUS  = "w+"
-    show WX_PLUS = "wx+"
-    show A       = "a"
-    show AX      = "ax"
-    show A_PLUS  = "a+"
-    show AX_PLUS = "ax+"
+fileFlagsToNode :: FileFlags -> String
+fileFlagsToNode ff = case ff of
+  R -> "r"
+  R_PLUS -> "r+"
+  RS -> "rs"
+  RS_PLUS -> "rs+"
+  W -> "w"
+  WX -> "wx"
+  W_PLUS -> "w+"
+  WX_PLUS -> "wx+"
+  A -> "a"
+  AX -> "ax"
+  A_PLUS -> "a+"
+  AX_PLUS -> "ax+"
 
 type FileMode = Int
 type FilePosition = Int

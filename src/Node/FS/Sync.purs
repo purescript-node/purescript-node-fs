@@ -321,8 +321,8 @@ fdOpen :: forall eff.
        -> Eff (err :: EXCEPTION, fs :: FS | eff) FileDescriptor
 fdOpen file flags mode =
   case mode of
-    Nothing  -> mkEff $ \_ -> runFn2 fs.openSync file (show flags)
-    (Just m) -> mkEff $ \_ -> runFn3 createSync file (show flags) m
+    Nothing  -> mkEff $ \_ -> runFn2 fs.openSync file (fileFlagsToNode flags)
+    (Just m) -> mkEff $ \_ -> runFn3 createSync file (fileFlagsToNode flags) m
 
 --|
 -- Read to a file synchronously.  See <a

@@ -4,8 +4,7 @@
 
 // module Node.FS.Async
 
-var fs = require('fs');
-exports.fs = fs
+exports.fs = require('fs');
 
 exports.handleCallbackImpl = function (left, right, f) {
   return function (err, value) {
