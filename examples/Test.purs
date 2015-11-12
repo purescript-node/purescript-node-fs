@@ -1,106 +1,122 @@
-module Main where
+module Test where
 
+import Prelude
+import Data.Maybe
+import Data.Either
+import Control.Apply ((*>))
+import Control.Bind ((=<<))
+import Control.Monad.Eff
+import Control.Monad.Eff.Exception
+import Control.Monad.Eff.Console (log)
+import Node.Encoding
+import qualified Node.Buffer as Buffer
+import qualified Node.Path as Path
+import Unsafe.Coerce
+
+import Node.FS
+import Node.FS.Stats
 import qualified Node.FS.Async as A
 import qualified Node.FS.Sync as S
-import Node.FS.Stats
-import Control.Apply ((*>))
-import Control.Monad.Eff.Exception
-import Data.Either
-import Debug.Trace
-import Node.Encoding
-import Node.Buffer
-import Node.Path
-import Data.Maybe
+
+-- Cheat to allow `main` to type check. See also issue #5 in
+-- purescript-exceptions.
+catchException' ::
+  forall a eff.
+    (Error -> Eff (err :: EXCEPTION | eff) a)
+    -> Eff (err :: EXCEPTION | eff) a
+    -> Eff (err :: EXCEPTION | eff) a
+catchException' = unsafeCoerce catchException
 
 main = do
+  let fp = Path.concat
 
-  A.exists "examples\\Test.purs" $ \e ->
-    trace $ "Test.purs exists? " ++ show e
-  
-  file <- S.readTextFile UTF8 "examples\\Test.purs"
-  trace "\n\nreadTextFile sync result:"
-  trace $ file
+  A.exists (fp ["examples", "Test.purs"]) $ \e ->
+    log $ "Test.purs exists? " ++ show e
 
-  catchException (\err -> do
-    trace $ "Caught readTextFile error:\n" ++ show err
-    return "") $ S.readTextFile UTF8 "examples\\does not exist"
+  file <- S.readTextFile UTF8 (fp ["examples", "Test.purs"])
+  log "\n\nreadTextFile sync result:"
+  log $ file
 
-  S.rename "tmp\\Test.js" "tmp\\Test1.js"
+  catchException' (\err -> do
+    log $ "Caught readTextFile error:\n" ++ show err
+    return "") $ S.readTextFile UTF8 (fp ["examples", "does not exist"])
 
-  S.truncate "tmp\\Test1.js" 1000
+  S.rename (fp ["tmp", "Test.js"]) (fp ["tmp", "Test1.js"])
 
-  stats <- S.stat "tmp\\Test1.js"
-  trace "\n\nS.stat:"
-  trace "isFile:"
-  trace $ show $ isFile stats
-  trace "isDirectory:"
-  trace $ show $ isDirectory stats
-  trace "isBlockDevice:"
-  trace $ show $ isBlockDevice stats
-  trace "isCharacterDevice:"
-  trace $ show $ isCharacterDevice stats
-  trace "isFIFO:"
-  trace $ show $ isFIFO stats
-  trace "isSocket:"
-  trace $ show $ isSocket stats
-  trace "isSymbolicLink:"
-  trace $ show $ isSymbolicLink stats
-  trace "modifiedTime:"
-  trace $ show $ modifiedTime stats
-  trace "accessedTime:"
-  trace $ show $ accessedTime stats
-  trace "statusChangedTime:"
-  trace $ show $ statusChangedTime stats
+  S.truncate (fp ["tmp", "Test1.js"]) 1000
 
-  A.rename "tmp\\Test1.js" "tmp\\Test.js" $ \x -> do
-    trace "\n\nrename result:"
-    either (trace <<< show) (trace <<< show) x
+  stats <- S.stat (fp ["tmp", "Test1.js"])
+  log "\n\nS.stat:"
+  log "isFile:"
+  log $ show $ isFile stats
+  log "isDirectory:"
+  log $ show $ isDirectory stats
+  log "isBlockDevice:"
+  log $ show $ isBlockDevice stats
+  log "isCharacterDevice:"
+  log $ show $ isCharacterDevice stats
+  log "isFIFO:"
+  log $ show $ isFIFO stats
+  log "isSocket:"
+  log $ show $ isSocket stats
+  log "isSymbolicLink:"
+  log $ show $ isSymbolicLink stats
+  log "modifiedTime:"
+  log $ show $ modifiedTime stats
+  log "accessedTime:"
+  log $ show $ accessedTime stats
+  log "statusChangedTime:"
+  log $ show $ statusChangedTime stats
 
-    A.truncate "tmp\\Test.js" 10 $ \x -> do
-      trace "\n\ntruncate result:"
-      either (trace <<< show) (trace <<< show) x
+  A.rename (fp ["tmp", "Test1.js"]) (fp ["tmp", "Test.js"]) $ \x -> do
+    log "\n\nrename result:"
+    either (log <<< show) (log <<< show) x
 
-  A.readFile "examples\\Test.purs" $ \x -> do
-    trace "\n\nreadFile result:"
-    either (trace <<< show) (trace <<< show) x
+    A.truncate (fp ["tmp", "Test.js"]) 10 $ \x -> do
+      log "\n\ntruncate result:"
+      either (log <<< show) (log <<< show) x
 
-  A.readTextFile UTF8 "examples\\Test.purs" $ \x -> do
-    trace "\n\nreadTextFile result:"
-    either (trace <<< show) trace x
+  A.readFile (fp ["examples", "Test.purs"]) $ \x -> do
+    log "\n\nreadFile result:"
+    either (log <<< show) (log <<< show) x
 
-  A.stat "examples\\Test.purs" $ \x -> do
-    trace "\n\nstat:"
+  A.readTextFile UTF8 (fp ["examples", "Test.purs"]) $ \x -> do
+    log "\n\nreadTextFile result:"
+    either (log <<< show) log x
+
+  A.stat (fp ["examples", "Test.purs"]) $ \x -> do
+    log "\n\nstat:"
     case x of
-      Left err -> trace $ "Error:" ++ show err
+      Left err -> log $ "Error:" ++ show err
       Right x' -> do
-        trace "isFile:"
-        trace $ show $ isFile x'
-        trace "isDirectory:"
-        trace $ show $ isDirectory x'
-        trace "isBlockDevice:"
-        trace $ show $ isBlockDevice x'
-        trace "isCharacterDevice:"
-        trace $ show $ isCharacterDevice x'
-        trace "isFIFO:"
-        trace $ show $ isFIFO x'
-        trace "isSocket:"
-        trace $ show $ isSocket x'
-        trace "isSymbolicLink:"
-        trace $ show $ isSymbolicLink x'
-        trace "modifiedTime:"
-        trace $ show $ modifiedTime x'
-        trace "accessedTime:"
-        trace $ show $ accessedTime x'
-        trace "statusChangedTime:"
-        trace $ show $ statusChangedTime x'
+        log "isFile:"
+        log $ show $ isFile x'
+        log "isDirectory:"
+        log $ show $ isDirectory x'
+        log "isBlockDevice:"
+        log $ show $ isBlockDevice x'
+        log "isCharacterDevice:"
+        log $ show $ isCharacterDevice x'
+        log "isFIFO:"
+        log $ show $ isFIFO x'
+        log "isSocket:"
+        log $ show $ isSocket x'
+        log "isSymbolicLink:"
+        log $ show $ isSymbolicLink x'
+        log "modifiedTime:"
+        log $ show $ modifiedTime x'
+        log "accessedTime:"
+        log $ show $ accessedTime x'
+        log "statusChangedTime:"
+        log $ show $ statusChangedTime x'
 
-  let fdFile = join ["tmp", "FD.json"]
-  fd0 <- S.fdOpen fdFile S.W (Just 420)
-  let buf0 = fromString "[ 42 ]" UTF8
+  let fdFile = fp ["tmp", "FD.json"]
+  fd0 <- S.fdOpen fdFile W (Just 420)
+  buf0 <- Buffer.fromString "[ 42 ]" UTF8
   bytes0 <- S.fdAppend fd0 buf0
   S.fdFlush fd0
   S.fdClose fd0
-  fd1 <- S.fdOpen fdFile S.R Nothing
-  let buf1 = create (size buf0)
+  fd1 <- S.fdOpen fdFile R Nothing
+  buf1 <- Buffer.create =<< Buffer.size buf0
   bytes1 <- S.fdNext fd1 buf1
   S.fdClose fd1

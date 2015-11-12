@@ -14,11 +14,13 @@ import qualified Node.Buffer as B
 
 -- exercise the file descriptor based async IO functions
 
-main :: forall eff . Eff (fs::FS,err::EXCEPTION,console::CONSOLE|eff) Unit
+main :: Eff _ Unit
 main = do
   let path1 = FP.concat( ["examples", "TestAsync.purs"] )
       path2 = FP.concat( ["examples", "TestAsync.purs.partial"] )
-      buf = B.create 1000
+
+  buf <- B.create 1000
+
   A.fdOpen path1 R Nothing $ \v -> case v of
     (Left err) -> log ("err:" ++ show err)
     (Right fd) -> do
