@@ -167,7 +167,7 @@ symlink :: forall eff. FilePath
                     -> Eff (fs :: FS | eff) Unit
 
 symlink src dest ty cb = mkEff $ \_ -> runFn4
-  fs.symlink src dest (show ty) (handleCallback cb)
+  fs.symlink src dest (symlinkTypeToNode ty) (handleCallback cb)
 
 -- |
 -- Reads the value of a symlink.
