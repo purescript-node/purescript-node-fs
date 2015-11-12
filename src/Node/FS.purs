@@ -26,17 +26,17 @@ data FileFlags = R | R_PLUS | RS | RS_PLUS
 
 fileFlagsToNode :: FileFlags -> String
 fileFlagsToNode ff = case ff of
-  R -> "r"
-  R_PLUS -> "r+"
-  RS -> "rs"
+  R       -> "r"
+  R_PLUS  -> "r+"
+  RS      -> "rs"
   RS_PLUS -> "rs+"
-  W -> "w"
-  WX -> "wx"
-  W_PLUS -> "w+"
+  W       -> "w"
+  WX      -> "wx"
+  W_PLUS  -> "w+"
   WX_PLUS -> "wx+"
-  A -> "a"
-  AX -> "ax"
-  A_PLUS -> "a+"
+  A       -> "a"
+  AX      -> "ax"
+  A_PLUS  -> "a+"
   AX_PLUS -> "ax+"
 
 type FileMode = Int
