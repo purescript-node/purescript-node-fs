@@ -41,7 +41,7 @@ import Data.Either
 import Data.Function
 import Data.Maybe
 import Data.Nullable
-import Node.Buffer (Buffer(), size)
+import Node.Buffer (Buffer(), BUFFER(), size)
 import Data.Int (round)
 import Data.Maybe.Unsafe (fromJust)
 import Node.Encoding
@@ -273,8 +273,8 @@ utimes file atime mtime cb = mkEff $ \_ -> runFn4
 -- Reads the entire contents of a file returning the result as a raw buffer.
 --
 readFile :: forall eff. FilePath
-                     -> Callback eff Buffer
-                     -> Eff (fs :: FS | eff) Unit
+                     -> Callback (buffer :: BUFFER | eff) Buffer
+                     -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
 
 readFile file cb = mkEff $ \_ -> runFn3
   fs.readFile file {} (handleCallback cb)
@@ -295,8 +295,8 @@ readTextFile encoding file cb = mkEff $ \_ -> runFn3
 --
 writeFile :: forall eff. FilePath
                       -> Buffer
-                      -> Callback eff Unit
-                      -> Eff (fs :: FS | eff) Unit
+                      -> Callback (buffer :: BUFFER | eff) Unit
+                      -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
 
 writeFile file buff cb = mkEff $ \_ -> runFn4
   fs.writeFile file buff {} (handleCallback cb)
@@ -318,8 +318,8 @@ writeTextFile encoding file buff cb = mkEff $ \_ -> runFn4
 --
 appendFile :: forall eff. FilePath
                        -> Buffer
-                       -> Callback eff Unit
-                       -> Eff (fs :: FS | eff) Unit
+                       -> Callback (buffer :: BUFFER | eff) Unit
+                       -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
 
 appendFile file buff cb = mkEff $ \_ -> runFn4
   fs.appendFile file buff {} (handleCallback cb)
@@ -372,8 +372,8 @@ fdRead :: forall eff.
        -> BufferOffset
        -> BufferLength
        -> Maybe FilePosition
-       -> Callback eff ByteCount
-       -> Eff (fs :: FS | eff) Unit
+       -> Callback (buffer :: BUFFER | eff) ByteCount
+       -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
 fdRead fd buff off len pos cb =  mkEff $ \_ -> runFn6 fs.read fd buff off len (toNullable pos) (handleCallback cb)
 
 --|
@@ -383,9 +383,11 @@ fdRead fd buff off len pos cb =  mkEff $ \_ -> runFn6 fs.read fd buff off len (t
 fdNext :: forall eff.
           FileDescriptor
        -> Buffer
-       -> Callback eff ByteCount
-       -> Eff (fs :: FS | eff) Unit
-fdNext fd buff cb = fdRead fd buff 0 (size buff) Nothing cb
+       -> Callback (buffer :: BUFFER | eff) ByteCount
+       -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
+fdNext fd buff cb = do
+  sz <- size buff
+  fdRead fd buff 0 sz Nothing cb
 
 --|
 -- Write to a file asynchronously.  See <a
@@ -398,8 +400,8 @@ fdWrite :: forall eff.
         -> BufferOffset
         -> BufferLength
         -> Maybe FilePosition
-        -> Callback eff ByteCount
-        -> Eff (fs :: FS | eff) Unit
+        -> Callback (buffer :: BUFFER | eff) ByteCount
+        -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
 fdWrite fd buff off len pos cb = mkEff $ \_ -> runFn6 fs.write fd buff off len (toNullable pos) (handleCallback cb)
 
 --|
@@ -409,9 +411,11 @@ fdWrite fd buff off len pos cb = mkEff $ \_ -> runFn6 fs.write fd buff off len (
 fdAppend :: forall eff.
             FileDescriptor
          -> Buffer
-         -> Callback eff ByteCount
-         -> Eff (fs :: FS | eff) Unit
-fdAppend fd buff cb = fdWrite fd buff 0 (size buff) Nothing cb
+         -> Callback (buffer :: BUFFER | eff) ByteCount
+         -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
+fdAppend fd buff cb = do
+  sz <- size buff
+  fdWrite fd buff 0 sz Nothing cb
 
 --|
 -- Close a file asynchronously.  See <a

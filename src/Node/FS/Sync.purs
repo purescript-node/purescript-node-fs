@@ -40,7 +40,7 @@ import Data.Either
 import Data.Function
 import Data.Int (round)
 import Data.Maybe (Maybe(..))
-import Node.Buffer (Buffer(), size)
+import Node.Buffer (Buffer(), BUFFER(), size)
 import Node.Encoding
 import Node.FS
 import Node.FS.Stats
@@ -265,7 +265,7 @@ readTextFile encoding file = mkEff $ \_ -> runFn2
 --
 writeFile :: forall eff. FilePath
                       -> Buffer
-                      -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
+                      -> Eff (buffer :: BUFFER, fs :: FS, err :: EXCEPTION | eff) Unit
 
 writeFile file buff = mkEff $ \_ -> runFn3
   fs.writeFileSync file buff {}
@@ -286,7 +286,7 @@ writeTextFile encoding file text = mkEff $ \_ -> runFn3
 --
 appendFile :: forall eff. FilePath
                        -> Buffer
-                       -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
+                       -> Eff (buffer :: BUFFER, fs :: FS, err :: EXCEPTION | eff) Unit
 
 appendFile file buff = mkEff $ \_ -> runFn3
   fs.appendFileSync file buff {}
@@ -337,7 +337,7 @@ fdRead :: forall eff.
        -> BufferOffset
        -> BufferLength
        -> Maybe FilePosition
-       -> Eff (err :: EXCEPTION, fs :: FS | eff) ByteCount
+       -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
 fdRead fd buff off len Nothing =
   mkEff $ \_ -> runFn4 readSeqSync fd buff off len
 fdRead fd buff off len (Just pos) =
@@ -350,8 +350,10 @@ fdRead fd buff off len (Just pos) =
 fdNext :: forall eff.
           FileDescriptor
        -> Buffer
-       -> Eff (err :: EXCEPTION, fs :: FS | eff) ByteCount
-fdNext fd buff = fdRead fd buff 0 (size buff) Nothing
+       -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
+fdNext fd buff = do
+  sz <- size buff
+  fdRead fd buff 0 sz Nothing
 
 --|
 -- Write to a file synchronously.  See <a
@@ -364,7 +366,7 @@ fdWrite :: forall eff.
         -> BufferOffset
         -> BufferLength
         -> Maybe FilePosition
-        -> Eff (err :: EXCEPTION, fs :: FS | eff) ByteCount
+        -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
 fdWrite fd buff off len Nothing =
   mkEff $ \_ -> runFn4 writeSeqSync fd buff off len
 fdWrite fd buff off len (Just pos) =
@@ -377,8 +379,10 @@ fdWrite fd buff off len (Just pos) =
 fdAppend :: forall eff.
             FileDescriptor
          -> Buffer
-         -> Eff (err :: EXCEPTION, fs :: FS | eff) ByteCount
-fdAppend fd buff = fdWrite fd buff 0 (size buff) Nothing
+         -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
+fdAppend fd buff = do
+  sz <- size buff
+  fdWrite fd buff 0 sz Nothing
 
 --|
 -- Flush a file synchronously.  See <a
