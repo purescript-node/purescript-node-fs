@@ -30,16 +30,16 @@ catchException' = unsafeCoerce catchException
 main = do
   let fp = Path.concat
 
-  A.exists (fp ["examples", "Test.purs"]) $ \e ->
+  A.exists (fp ["test", "Test.purs"]) $ \e ->
     log $ "Test.purs exists? " ++ show e
 
-  file <- S.readTextFile UTF8 (fp ["examples", "Test.purs"])
+  file <- S.readTextFile UTF8 (fp ["test", "Test.purs"])
   log "\n\nreadTextFile sync result:"
   log $ file
 
   catchException' (\err -> do
     log $ "Caught readTextFile error:\n" ++ show err
-    return "") $ S.readTextFile UTF8 (fp ["examples", "does not exist"])
+    return "") $ S.readTextFile UTF8 (fp ["test", "does not exist"])
 
   -- If an error is thrown, it's probably EEXIST, so ignore it. Should
   -- really check this instead.
@@ -81,15 +81,15 @@ main = do
       log "\n\ntruncate result:"
       either (log <<< show) (log <<< show) x
 
-  A.readFile (fp ["examples", "Test.purs"]) $ \x -> do
+  A.readFile (fp ["test", "Test.purs"]) $ \x -> do
     log "\n\nreadFile result:"
     either (log <<< show) (log <<< show) x
 
-  A.readTextFile UTF8 (fp ["examples", "Test.purs"]) $ \x -> do
+  A.readTextFile UTF8 (fp ["test", "Test.purs"]) $ \x -> do
     log "\n\nreadTextFile result:"
     either (log <<< show) log x
 
-  A.stat (fp ["examples", "Test.purs"]) $ \x -> do
+  A.stat (fp ["test", "Test.purs"]) $ \x -> do
     log "\n\nstat:"
     case x of
       Left err -> log $ "Error:" ++ show err
