@@ -6,11 +6,15 @@
 rename :: forall eff. FilePath -> FilePath -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 ```
 
+Renames a file.
+
 #### `truncate`
 
 ``` purescript
 truncate :: forall eff. FilePath -> Int -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 ```
+
+Truncates a file to the specified length.
 
 #### `chown`
 
@@ -18,11 +22,15 @@ truncate :: forall eff. FilePath -> Int -> Eff (fs :: FS, err :: EXCEPTION | eff
 chown :: forall eff. FilePath -> Int -> Int -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 ```
 
+Changes the ownership of a file.
+
 #### `chmod`
 
 ``` purescript
 chmod :: forall eff. FilePath -> Perms -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 ```
+
+Changes the permissions of a file.
 
 #### `stat`
 
@@ -30,11 +38,15 @@ chmod :: forall eff. FilePath -> Perms -> Eff (fs :: FS, err :: EXCEPTION | eff)
 stat :: forall eff. FilePath -> Eff (fs :: FS, err :: EXCEPTION | eff) Stats
 ```
 
+Gets file statistics.
+
 #### `link`
 
 ``` purescript
 link :: forall eff. FilePath -> FilePath -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 ```
+
+Creates a link to an existing file.
 
 #### `symlink`
 
@@ -42,11 +54,15 @@ link :: forall eff. FilePath -> FilePath -> Eff (fs :: FS, err :: EXCEPTION | ef
 symlink :: forall eff. FilePath -> FilePath -> SymlinkType -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 ```
 
+Creates a symlink.
+
 #### `readlink`
 
 ``` purescript
 readlink :: forall eff. FilePath -> Eff (fs :: FS, err :: EXCEPTION | eff) FilePath
 ```
+
+Reads the value of a symlink.
 
 #### `realpath`
 
@@ -54,11 +70,16 @@ readlink :: forall eff. FilePath -> Eff (fs :: FS, err :: EXCEPTION | eff) FileP
 realpath :: forall eff. FilePath -> Eff (fs :: FS, err :: EXCEPTION | eff) FilePath
 ```
 
+Find the canonicalized absolute location for a path.
+
 #### `realpath'`
 
 ``` purescript
 realpath' :: forall eff cache. FilePath -> {  | cache } -> Eff (fs :: FS, err :: EXCEPTION | eff) FilePath
 ```
+
+Find the canonicalized absolute location for a path using a cache object for
+already resolved paths.
 
 #### `unlink`
 
@@ -66,11 +87,15 @@ realpath' :: forall eff cache. FilePath -> {  | cache } -> Eff (fs :: FS, err ::
 unlink :: forall eff. FilePath -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 ```
 
+Deletes a file.
+
 #### `rmdir`
 
 ``` purescript
 rmdir :: forall eff. FilePath -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 ```
+
+Deletes a directory.
 
 #### `mkdir`
 
@@ -78,11 +103,15 @@ rmdir :: forall eff. FilePath -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 mkdir :: forall eff. FilePath -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 ```
 
+Makes a new directory.
+
 #### `mkdir'`
 
 ``` purescript
 mkdir' :: forall eff. FilePath -> Perms -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 ```
+
+Makes a new directory with the specified permissions.
 
 #### `readdir`
 
@@ -90,11 +119,15 @@ mkdir' :: forall eff. FilePath -> Perms -> Eff (fs :: FS, err :: EXCEPTION | eff
 readdir :: forall eff. FilePath -> Eff (fs :: FS, err :: EXCEPTION | eff) (Array FilePath)
 ```
 
+Reads the contents of a directory.
+
 #### `utimes`
 
 ``` purescript
 utimes :: forall eff. FilePath -> Date -> Date -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 ```
+
+Sets the accessed and modified times for the specified file.
 
 #### `readFile`
 
@@ -102,11 +135,15 @@ utimes :: forall eff. FilePath -> Date -> Date -> Eff (fs :: FS, err :: EXCEPTIO
 readFile :: forall eff. FilePath -> Eff (fs :: FS, err :: EXCEPTION | eff) Buffer
 ```
 
+Reads the entire contents of a file returning the result as a raw buffer.
+
 #### `readTextFile`
 
 ``` purescript
 readTextFile :: forall eff. Encoding -> FilePath -> Eff (fs :: FS, err :: EXCEPTION | eff) String
 ```
+
+Reads the entire contents of a text file with the specified encoding.
 
 #### `writeFile`
 
@@ -114,11 +151,15 @@ readTextFile :: forall eff. Encoding -> FilePath -> Eff (fs :: FS, err :: EXCEPT
 writeFile :: forall eff. FilePath -> Buffer -> Eff (buffer :: BUFFER, fs :: FS, err :: EXCEPTION | eff) Unit
 ```
 
+Writes a buffer to a file.
+
 #### `writeTextFile`
 
 ``` purescript
 writeTextFile :: forall eff. Encoding -> FilePath -> String -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 ```
+
+Writes text to a file using the specified encoding.
 
 #### `appendFile`
 
@@ -126,17 +167,23 @@ writeTextFile :: forall eff. Encoding -> FilePath -> String -> Eff (fs :: FS, er
 appendFile :: forall eff. FilePath -> Buffer -> Eff (buffer :: BUFFER, fs :: FS, err :: EXCEPTION | eff) Unit
 ```
 
+Appends the contents of a buffer to a file.
+
 #### `appendTextFile`
 
 ``` purescript
 appendTextFile :: forall eff. Encoding -> FilePath -> String -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 ```
 
+Appends text to a file using the specified encoding.
+
 #### `exists`
 
 ``` purescript
 exists :: forall eff. FilePath -> Eff (fs :: FS | eff) Boolean
 ```
+
+Check if the path exists.
 
 #### `fdOpen`
 
@@ -150,11 +197,18 @@ fdOpen :: forall eff. FilePath -> FileFlags -> Maybe FileMode -> Eff (err :: EXC
 fdRead :: forall eff. FileDescriptor -> Buffer -> BufferOffset -> BufferLength -> Maybe FilePosition -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
 ```
 
+Read to a file synchronously.  See <a
+href="http://nodejs.org/api/fs.html#fs_fs_readsync_fd_buffer_offset_length_position">Node
+ocumentation</a> for details.
+
 #### `fdNext`
 
 ``` purescript
 fdNext :: forall eff. FileDescriptor -> Buffer -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
 ```
+
+Convenience function to fill the whole buffer from the current
+file position.
 
 #### `fdWrite`
 
@@ -162,11 +216,18 @@ fdNext :: forall eff. FileDescriptor -> Buffer -> Eff (buffer :: BUFFER, err :: 
 fdWrite :: forall eff. FileDescriptor -> Buffer -> BufferOffset -> BufferLength -> Maybe FilePosition -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
 ```
 
+Write to a file synchronously.  See <a
+href="http://nodejs.org/api/fs.html#fs_fs_writesync_fd_buffer_offset_length_position">Node
+Documentation</a> for details.
+
 #### `fdAppend`
 
 ``` purescript
 fdAppend :: forall eff. FileDescriptor -> Buffer -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
 ```
+
+Convenience function to append the whole buffer to the current
+file position.
 
 #### `fdFlush`
 
@@ -174,10 +235,18 @@ fdAppend :: forall eff. FileDescriptor -> Buffer -> Eff (buffer :: BUFFER, err :
 fdFlush :: forall eff. FileDescriptor -> Eff (err :: EXCEPTION, fs :: FS | eff) Unit
 ```
 
+Flush a file synchronously.  See <a
+href="http://nodejs.org/api/fs.html#fs_fs_fsyncsync_fd">Node
+Documentation</a> for details.
+
 #### `fdClose`
 
 ``` purescript
 fdClose :: forall eff. FileDescriptor -> Eff (err :: EXCEPTION, fs :: FS | eff) Unit
 ```
+
+Close a file synchronously.  See <a
+href="http://nodejs.org/api/fs.html#fs_fs_closesync_fd">Node
+Documentation</a> for details.
 
 

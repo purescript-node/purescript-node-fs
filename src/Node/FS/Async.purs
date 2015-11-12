@@ -87,14 +87,10 @@ foreign import fs ::
   , close :: Fn2 FileDescriptor (JSCallback Unit) Unit
   }
 
--- |
--- Type synonym for callback functions.
---
+-- | Type synonym for callback functions.
 type Callback eff a = Either Error a -> Eff (fs :: FS | eff) Unit
 
--- |
--- Renames a file.
---
+-- | Renames a file.
 rename :: forall eff. FilePath
                    -> FilePath
                    -> Callback eff Unit
@@ -102,9 +98,7 @@ rename :: forall eff. FilePath
 rename oldFile newFile cb = mkEff $ \_ -> runFn3
   fs.rename oldFile newFile (handleCallback cb)
 
--- |
--- Truncates a file to the specified length.
---
+-- | Truncates a file to the specified length.
 truncate :: forall eff. FilePath
                      -> Int
                      -> Callback eff Unit
@@ -113,9 +107,7 @@ truncate :: forall eff. FilePath
 truncate file len cb = mkEff $ \_ -> runFn3
   fs.truncate file len (handleCallback cb)
 
--- |
--- Changes the ownership of a file.
---
+-- | Changes the ownership of a file.
 chown :: forall eff. FilePath
                   -> Int
                   -> Int
@@ -125,9 +117,7 @@ chown :: forall eff. FilePath
 chown file uid gid cb = mkEff $ \_ -> runFn4
   fs.chown file uid gid (handleCallback cb)
 
--- |
--- Changes the permissions of a file.
---
+-- | Changes the permissions of a file.
 chmod :: forall eff. FilePath
                   -> Perms
                   -> Callback eff Unit
@@ -136,9 +126,7 @@ chmod :: forall eff. FilePath
 chmod file perms cb = mkEff $ \_ -> runFn3
   fs.chmod file (permsToString perms) (handleCallback cb)
 
--- |
--- Gets file statistics.
---
+-- | Gets file statistics.
 stat :: forall eff. FilePath
                  -> Callback eff Stats
                  -> Eff (fs :: FS | eff) Unit
@@ -146,9 +134,7 @@ stat :: forall eff. FilePath
 stat file cb = mkEff $ \_ -> runFn2
   fs.stat file (handleCallback $ cb <<< (<$>) Stats)
 
--- |
--- Creates a link to an existing file.
---
+-- | Creates a link to an existing file.
 link :: forall eff. FilePath
                  -> FilePath
                  -> Callback eff Unit
@@ -157,9 +143,7 @@ link :: forall eff. FilePath
 link src dst cb = mkEff $ \_ -> runFn3
   fs.link src dst (handleCallback cb)
 
--- |
--- Creates a symlink.
---
+-- | Creates a symlink.
 symlink :: forall eff. FilePath
                     -> FilePath
                     -> SymlinkType
@@ -169,9 +153,7 @@ symlink :: forall eff. FilePath
 symlink src dest ty cb = mkEff $ \_ -> runFn4
   fs.symlink src dest (symlinkTypeToNode ty) (handleCallback cb)
 
--- |
--- Reads the value of a symlink.
---
+-- | Reads the value of a symlink.
 readlink :: forall eff. FilePath
                      -> Callback eff FilePath
                      -> Eff (fs :: FS | eff) Unit
@@ -179,9 +161,7 @@ readlink :: forall eff. FilePath
 readlink path cb = mkEff $ \_ -> runFn2
   fs.readlink path (handleCallback cb)
 
--- |
--- Find the canonicalized absolute location for a path.
---
+-- | Find the canonicalized absolute location for a path.
 realpath :: forall eff. FilePath
                      -> Callback eff FilePath
                      -> Eff (fs :: FS | eff) Unit
@@ -189,10 +169,8 @@ realpath :: forall eff. FilePath
 realpath path cb = mkEff $ \_ -> runFn3
   fs.realpath path {} (handleCallback cb)
 
--- |
--- Find the canonicalized absolute location for a path using a cache object for
--- already resolved paths.
---
+-- | Find the canonicalized absolute location for a path using a cache object
+-- | for already resolved paths.
 realpath' :: forall eff cache. FilePath
                             -> { | cache }
                             -> Callback eff FilePath
@@ -201,9 +179,7 @@ realpath' :: forall eff cache. FilePath
 realpath' path cache cb = mkEff $ \_ -> runFn3
   fs.realpath path cache (handleCallback cb)
 
--- |
--- Deletes a file.
---
+-- | Deletes a file.
 unlink :: forall eff. FilePath
                    -> Callback eff Unit
                    -> Eff (fs :: FS | eff) Unit
@@ -211,9 +187,7 @@ unlink :: forall eff. FilePath
 unlink file cb = mkEff $ \_ -> runFn2
   fs.unlink file (handleCallback cb)
 
--- |
--- Deletes a directory.
---
+-- | Deletes a directory.
 rmdir :: forall eff. FilePath
                    -> Callback eff Unit
                    -> Eff (fs :: FS | eff) Unit
@@ -221,18 +195,14 @@ rmdir :: forall eff. FilePath
 rmdir file cb = mkEff $ \_ -> runFn2
   fs.rmdir file (handleCallback cb)
 
--- |
--- Makes a new directory.
---
+-- | Makes a new directory.
 mkdir :: forall eff. FilePath
                   -> Callback eff Unit
                   -> Eff (fs :: FS | eff) Unit
 
 mkdir = flip mkdir' $ mkPerms all all all
 
--- |
--- Makes a new directory with the specified permissions.
---
+-- | Makes a new directory with the specified permissions.
 mkdir' :: forall eff. FilePath
                    -> Perms
                    -> Callback eff Unit
@@ -241,9 +211,7 @@ mkdir' :: forall eff. FilePath
 mkdir' file perms cb = mkEff $ \_ -> runFn3
   fs.mkdir file (permsToString perms) (handleCallback cb)
 
--- |
--- Reads the contents of a directory.
---
+-- | Reads the contents of a directory.
 readdir :: forall eff. FilePath
                     -> Callback eff (Array FilePath)
                     -> Eff (fs :: FS | eff) Unit
@@ -251,9 +219,7 @@ readdir :: forall eff. FilePath
 readdir file cb = mkEff $ \_ -> runFn2
   fs.readdir file (handleCallback cb)
 
--- |
--- Sets the accessed and modified times for the specified file.
---
+-- | Sets the accessed and modified times for the specified file.
 utimes :: forall eff. FilePath
                    -> Date
                    -> Date
@@ -269,9 +235,7 @@ utimes file atime mtime cb = mkEff $ \_ -> runFn4
   fromDate date = ms (toEpochMilliseconds date) / 1000
   ms (Milliseconds n) = round n
 
--- |
--- Reads the entire contents of a file returning the result as a raw buffer.
---
+-- | Reads the entire contents of a file returning the result as a raw buffer.
 readFile :: forall eff. FilePath
                      -> Callback (buffer :: BUFFER | eff) Buffer
                      -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
@@ -279,9 +243,7 @@ readFile :: forall eff. FilePath
 readFile file cb = mkEff $ \_ -> runFn3
   fs.readFile file {} (handleCallback cb)
 
--- |
--- Reads the entire contents of a text file with the specified encoding.
---
+-- | Reads the entire contents of a text file with the specified encoding.
 readTextFile :: forall eff. Encoding
                          -> FilePath
                          -> Callback eff String
@@ -290,9 +252,7 @@ readTextFile :: forall eff. Encoding
 readTextFile encoding file cb = mkEff $ \_ -> runFn3
   fs.readFile file { encoding: show encoding } (handleCallback cb)
 
--- |
--- Writes a buffer to a file.
---
+-- | Writes a buffer to a file.
 writeFile :: forall eff. FilePath
                       -> Buffer
                       -> Callback (buffer :: BUFFER | eff) Unit
@@ -301,9 +261,7 @@ writeFile :: forall eff. FilePath
 writeFile file buff cb = mkEff $ \_ -> runFn4
   fs.writeFile file buff {} (handleCallback cb)
 
--- |
--- Writes text to a file using the specified encoding.
---
+-- | Writes text to a file using the specified encoding.
 writeTextFile :: forall eff. Encoding
                           -> FilePath
                           -> String
@@ -313,9 +271,7 @@ writeTextFile :: forall eff. Encoding
 writeTextFile encoding file buff cb = mkEff $ \_ -> runFn4
   fs.writeFile file buff { encoding: show encoding } (handleCallback cb)
 
--- |
--- Appends the contents of a buffer to a file.
---
+-- | Appends the contents of a buffer to a file.
 appendFile :: forall eff. FilePath
                        -> Buffer
                        -> Callback (buffer :: BUFFER | eff) Unit
@@ -324,9 +280,7 @@ appendFile :: forall eff. FilePath
 appendFile file buff cb = mkEff $ \_ -> runFn4
   fs.appendFile file buff {} (handleCallback cb)
 
--- |
--- Appends text to a file using the specified encoding.
---
+-- | Appends text to a file using the specified encoding.
 appendTextFile :: forall eff. Encoding
                            -> FilePath
                            -> String
@@ -336,9 +290,7 @@ appendTextFile :: forall eff. Encoding
 appendTextFile encoding file buff cb = mkEff $ \_ -> runFn4
   fs.appendFile file buff { encoding: show encoding } (handleCallback cb)
 
--- |
--- Check if the path exists.
---
+-- | Check if the path exists.
 exists :: forall eff. FilePath
                    -> (Boolean -> Eff (fs :: FS | eff) Unit)
                    -> Eff (fs :: FS | eff) Unit
@@ -348,11 +300,8 @@ exists file cb = mkEff $ \_ -> runFn2
 
 {- Asynchronous File Descriptor Functions -}
 
---|
--- Open a file asynchronously.  See <a
--- href="https://nodejs.org/api/fs.html#fs_fs_open_path_flags_mode_callback">Node
--- Documentation</a> for details.
---
+-- | Open a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_open_path_flags_mode_callback)
+-- | for details.
 fdOpen :: forall eff.
           FilePath
        -> FileFlags
@@ -361,11 +310,8 @@ fdOpen :: forall eff.
        -> Eff (fs :: FS | eff) Unit
 fdOpen file flags mode cb = mkEff $ \_ -> runFn4 fs.open file (fileFlagsToNode flags) (toNullable mode) (handleCallback cb)
 
---|
--- Read from a file asynchronously.  See <a
--- href="https://nodejs.org/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback">Node
--- Documentation</a> for details.
---
+-- | Read from a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback)
+-- | for details.
 fdRead :: forall eff.
           FileDescriptor
        -> Buffer
@@ -376,10 +322,8 @@ fdRead :: forall eff.
        -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
 fdRead fd buff off len pos cb =  mkEff $ \_ -> runFn6 fs.read fd buff off len (toNullable pos) (handleCallback cb)
 
---|
--- Convienence function to fill the whole buffer from the current
--- file position.
---
+-- | Convenience function to fill the whole buffer from the current
+-- | file position.
 fdNext :: forall eff.
           FileDescriptor
        -> Buffer
@@ -389,11 +333,8 @@ fdNext fd buff cb = do
   sz <- size buff
   fdRead fd buff 0 sz Nothing cb
 
---|
--- Write to a file asynchronously.  See <a
--- href="https://nodejs.org/api/fs.html#fs_fs_write_fd_buffer_offset_length_position_callback">Node
--- Documentation</a> for details.
---
+-- | Write to a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_write_fd_buffer_offset_length_position_callback)
+-- | for details.
 fdWrite :: forall eff.
            FileDescriptor
         -> Buffer
@@ -404,10 +345,8 @@ fdWrite :: forall eff.
         -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
 fdWrite fd buff off len pos cb = mkEff $ \_ -> runFn6 fs.write fd buff off len (toNullable pos) (handleCallback cb)
 
---|
--- Convienence function to append the whole buffer to the current
--- file position.
---
+-- | Convenience function to append the whole buffer to the current
+-- | file position.
 fdAppend :: forall eff.
             FileDescriptor
          -> Buffer
@@ -417,13 +356,10 @@ fdAppend fd buff cb = do
   sz <- size buff
   fdWrite fd buff 0 sz Nothing cb
 
---|
--- Close a file asynchronously.  See <a
--- href="https://nodejs.org/api/fs.html#fs_fs_close_fd_callback">Node
--- Documentation</a> for details.
---
+-- | Close a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_close_fd_callback)
+-- | for details.
 fdClose :: forall eff.
            FileDescriptor
-        -> Callback eff Unit   
+        -> Callback eff Unit
         -> Eff (fs :: FS | eff) Unit
 fdClose fd cb = mkEff $ \_ -> runFn2 fs.close fd (handleCallback cb)

@@ -6,6 +6,8 @@
 data FS :: !
 ```
 
+Effect type for file system usage.
+
 #### `FileDescriptor`
 
 ``` purescript
@@ -30,11 +32,20 @@ data FileFlags
   | AX_PLUS
 ```
 
+##### Instances
+``` purescript
+instance showFileFlags :: Show FileFlags
+instance eqFileFlags :: Eq FileFlags
+```
+
 #### `fileFlagsToNode`
 
 ``` purescript
 fileFlagsToNode :: FileFlags -> String
 ```
+
+Convert a `FileFlags` to a `String` in the format expected by the Node.js
+filesystem API.
 
 #### `FileMode`
 
@@ -75,6 +86,8 @@ data SymlinkType
   | JunctionLink
 ```
 
+Symlink varieties.
+
 ##### Instances
 ``` purescript
 instance showSymlinkType :: Show SymlinkType
@@ -86,5 +99,8 @@ instance eqSymlinkType :: Eq SymlinkType
 ``` purescript
 symlinkTypeToNode :: SymlinkType -> String
 ```
+
+Convert a `SymlinkType` to a `String` in the format expected by the
+Node.js filesystem API.
 
 

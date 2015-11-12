@@ -38,9 +38,7 @@ type StatsObj =
   , isSocket :: Fn0 Boolean
   }
 
--- |
--- Stats wrapper to provide a usable interface to the underlying properties and methods.
---
+-- | Stats wrapper to provide a usable interface to the underlying properties and methods.
 data Stats = Stats StatsObj
 
 foreign import showStatsObj :: StatsObj -> String

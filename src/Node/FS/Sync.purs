@@ -75,9 +75,7 @@ foreign import fs ::
   , closeSync :: Fn1 FileDescriptor Unit
   }
 
--- |
--- Renames a file.
---
+-- | Renames a file.
 rename :: forall eff. FilePath
                    -> FilePath
                    -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
@@ -85,9 +83,7 @@ rename :: forall eff. FilePath
 rename oldFile newFile = mkEff $ \_ -> runFn2
   fs.renameSync oldFile newFile
 
--- |
--- Truncates a file to the specified length.
---
+-- | Truncates a file to the specified length.
 truncate :: forall eff. FilePath
                      -> Int
                      -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
@@ -95,9 +91,7 @@ truncate :: forall eff. FilePath
 truncate file len = mkEff $ \_ -> runFn2
   fs.truncateSync file len
 
--- |
--- Changes the ownership of a file.
---
+-- | Changes the ownership of a file.
 chown :: forall eff. FilePath
                   -> Int
                   -> Int
@@ -106,9 +100,7 @@ chown :: forall eff. FilePath
 chown file uid gid = mkEff $ \_ -> runFn3
   fs.chownSync file uid gid
 
--- |
--- Changes the permissions of a file.
---
+-- | Changes the permissions of a file.
 chmod :: forall eff. FilePath
                   -> Perms
                   -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
@@ -116,18 +108,14 @@ chmod :: forall eff. FilePath
 chmod file perms = mkEff $ \_ -> runFn2
   fs.chmodSync file (permsToString perms)
 
--- |
--- Gets file statistics.
---
+-- | Gets file statistics.
 stat :: forall eff. FilePath
                  -> Eff (fs :: FS, err :: EXCEPTION | eff) Stats
 
 stat file = return $ Stats $ runFn1
   fs.statSync file
 
--- |
--- Creates a link to an existing file.
---
+-- | Creates a link to an existing file.
 link :: forall eff. FilePath
                  -> FilePath
                  -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
@@ -135,9 +123,7 @@ link :: forall eff. FilePath
 link src dst = mkEff $ \_ -> runFn2
   fs.linkSync src dst
 
--- |
--- Creates a symlink.
---
+-- | Creates a symlink.
 symlink :: forall eff. FilePath
                     -> FilePath
                     -> SymlinkType
@@ -146,28 +132,22 @@ symlink :: forall eff. FilePath
 symlink src dst ty = mkEff $ \_ -> runFn3
   fs.symlinkSync src dst (symlinkTypeToNode ty)
 
--- |
--- Reads the value of a symlink.
---
+-- | Reads the value of a symlink.
 readlink :: forall eff. FilePath
                      -> Eff (fs :: FS, err :: EXCEPTION | eff) FilePath
 
 readlink path = mkEff $ \_ -> runFn1
   fs.readlinkSync path
 
--- |
--- Find the canonicalized absolute location for a path.
---
+-- | Find the canonicalized absolute location for a path.
 realpath :: forall eff. FilePath
                      -> Eff (fs :: FS, err :: EXCEPTION | eff) FilePath
 
 realpath path = mkEff $ \_ -> runFn2
   fs.realpathSync path {}
 
--- |
--- Find the canonicalized absolute location for a path using a cache object for
--- already resolved paths.
---
+-- | Find the canonicalized absolute location for a path using a cache object for
+-- | already resolved paths.
 realpath' :: forall eff cache. FilePath
                             -> { | cache }
                             -> Eff (fs :: FS, err :: EXCEPTION | eff) FilePath
@@ -175,35 +155,27 @@ realpath' :: forall eff cache. FilePath
 realpath' path cache = mkEff $ \_ -> runFn2
   fs.realpathSync path cache
 
--- |
--- Deletes a file.
---
+-- | Deletes a file.
 unlink :: forall eff. FilePath
                    -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 unlink file = mkEff $ \_ -> runFn1
   fs.unlinkSync file
 
--- |
--- Deletes a directory.
---
+-- | Deletes a directory.
 rmdir :: forall eff. FilePath
                   -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 rmdir file = mkEff $ \_ -> runFn1
   fs.rmdirSync file
 
--- |
--- Makes a new directory.
---
+-- | Makes a new directory.
 mkdir :: forall eff. FilePath
                   -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 mkdir = flip mkdir' $ mkPerms all all all
 
--- |
--- Makes a new directory with the specified permissions.
---
+-- | Makes a new directory with the specified permissions.
 mkdir' :: forall eff. FilePath
                    -> Perms
                    -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
@@ -211,18 +183,14 @@ mkdir' :: forall eff. FilePath
 mkdir' file perms = mkEff $ \_ -> runFn2
   fs.mkdirSync file (permsToString perms)
 
--- |
--- Reads the contents of a directory.
---
+-- | Reads the contents of a directory.
 readdir :: forall eff. FilePath
                     -> Eff (fs :: FS, err :: EXCEPTION | eff) (Array FilePath)
 
 readdir file = mkEff $ \_ -> runFn1
   fs.readdirSync file
 
--- |
--- Sets the accessed and modified times for the specified file.
---
+-- | Sets the accessed and modified times for the specified file.
 utimes :: forall eff. FilePath
                    -> Date
                    -> Date
@@ -236,18 +204,14 @@ utimes file atime mtime = mkEff $ \_ -> runFn3
   fromDate date = ms (toEpochMilliseconds date) / 1000
   ms (Milliseconds n) = round n
 
--- |
--- Reads the entire contents of a file returning the result as a raw buffer.
---
+-- | Reads the entire contents of a file returning the result as a raw buffer.
 readFile :: forall eff. FilePath
                      -> Eff (fs :: FS, err :: EXCEPTION | eff) Buffer
 
 readFile file = mkEff $ \_ -> runFn2
   fs.readFileSync file {}
 
--- |
--- Reads the entire contents of a text file with the specified encoding.
---
+-- | Reads the entire contents of a text file with the specified encoding.
 readTextFile :: forall eff. Encoding
                          -> FilePath
                          -> Eff (fs :: FS, err :: EXCEPTION | eff) String
@@ -255,9 +219,7 @@ readTextFile :: forall eff. Encoding
 readTextFile encoding file = mkEff $ \_ -> runFn2
   fs.readFileSync file { encoding: show encoding }
 
--- |
--- Writes a buffer to a file.
---
+-- | Writes a buffer to a file.
 writeFile :: forall eff. FilePath
                       -> Buffer
                       -> Eff (buffer :: BUFFER, fs :: FS, err :: EXCEPTION | eff) Unit
@@ -265,9 +227,7 @@ writeFile :: forall eff. FilePath
 writeFile file buff = mkEff $ \_ -> runFn3
   fs.writeFileSync file buff {}
 
--- |
--- Writes text to a file using the specified encoding.
---
+-- | Writes text to a file using the specified encoding.
 writeTextFile :: forall eff. Encoding
                           -> FilePath
                           -> String
@@ -276,9 +236,7 @@ writeTextFile :: forall eff. Encoding
 writeTextFile encoding file text = mkEff $ \_ -> runFn3
   fs.writeFileSync file text { encoding: show encoding }
 
--- |
--- Appends the contents of a buffer to a file.
---
+-- | Appends the contents of a buffer to a file.
 appendFile :: forall eff. FilePath
                        -> Buffer
                        -> Eff (buffer :: BUFFER, fs :: FS, err :: EXCEPTION | eff) Unit
@@ -286,9 +244,7 @@ appendFile :: forall eff. FilePath
 appendFile file buff = mkEff $ \_ -> runFn3
   fs.appendFileSync file buff {}
 
--- |
--- Appends text to a file using the specified encoding.
---
+-- | Appends text to a file using the specified encoding.
 appendTextFile :: forall eff. Encoding
                            -> FilePath
                            -> String
@@ -297,20 +253,16 @@ appendTextFile :: forall eff. Encoding
 appendTextFile encoding file buff = mkEff $ \_ -> runFn3
   fs.appendFileSync file buff { encoding: show encoding }
 
--- |
--- Check if the path exists.
---
+-- | Check if the path exists.
 exists :: forall eff. FilePath
                    -> Eff (fs :: FS | eff) Boolean
 exists file = return $ fs.existsSync file
 
 {- Synchronous File Descriptor Functions -}
 
---|
--- Open a file synchronously.  See <a
--- href="http://nodejs.org/api/fs.html#fs_fs_opensync_path_flags_mode">Node
--- Documentation</a> for details.
---
+-- | Open a file synchronously.  See <a
+-- | href="http://nodejs.org/api/fs.html#fs_fs_opensync_path_flags_mode">Node
+-- | Documentation</a> for details.
 fdOpen :: forall eff.
           FilePath
        -> FileFlags
@@ -319,11 +271,9 @@ fdOpen :: forall eff.
 fdOpen file flags mode = mkEff $ \_ ->
   runFn3 fs.openSync file (fileFlagsToNode flags) (toNullable mode)
 
---|
--- Read to a file synchronously.  See <a
--- href="http://nodejs.org/api/fs.html#fs_fs_readsync_fd_buffer_offset_length_position">Node
--- ocumentation</a> for details.
---
+-- | Read to a file synchronously.  See <a
+-- | href="http://nodejs.org/api/fs.html#fs_fs_readsync_fd_buffer_offset_length_position">Node
+-- | ocumentation</a> for details.
 fdRead :: forall eff.
           FileDescriptor
        -> Buffer
@@ -334,10 +284,8 @@ fdRead :: forall eff.
 fdRead fd buff off len pos =
   mkEff $ \_ -> runFn5 fs.readSync fd buff off len (toNullable pos)
 
---|
--- Convienence function to fill the whole buffer from the current
--- file position.
---
+-- | Convenience function to fill the whole buffer from the current
+-- | file position.
 fdNext :: forall eff.
           FileDescriptor
        -> Buffer
@@ -346,11 +294,9 @@ fdNext fd buff = do
   sz <- size buff
   fdRead fd buff 0 sz Nothing
 
---|
--- Write to a file synchronously.  See <a
--- href="http://nodejs.org/api/fs.html#fs_fs_writesync_fd_buffer_offset_length_position">Node
--- Documentation</a> for details.
---
+-- | Write to a file synchronously.  See <a
+-- | href="http://nodejs.org/api/fs.html#fs_fs_writesync_fd_buffer_offset_length_position">Node
+-- | Documentation</a> for details.
 fdWrite :: forall eff.
            FileDescriptor
         -> Buffer
@@ -361,10 +307,8 @@ fdWrite :: forall eff.
 fdWrite fd buff off len pos =
   mkEff $ \_ -> runFn5 fs.writeSync fd buff off len (toNullable pos)
 
---|
--- Convienence function to append the whole buffer to the current
--- file position.
---
+-- | Convenience function to append the whole buffer to the current
+-- | file position.
 fdAppend :: forall eff.
             FileDescriptor
          -> Buffer
@@ -373,21 +317,17 @@ fdAppend fd buff = do
   sz <- size buff
   fdWrite fd buff 0 sz Nothing
 
---|
--- Flush a file synchronously.  See <a
--- href="http://nodejs.org/api/fs.html#fs_fs_fsyncsync_fd">Node
--- Documentation</a> for details.
---
+-- | Flush a file synchronously.  See <a
+-- | href="http://nodejs.org/api/fs.html#fs_fs_fsyncsync_fd">Node
+-- | Documentation</a> for details.
 fdFlush :: forall eff.
            FileDescriptor
         -> Eff (err :: EXCEPTION, fs :: FS | eff) Unit
 fdFlush fd = mkEff $ \_ -> runFn1 fs.fsyncSync fd
 
---|
--- Close a file synchronously.  See <a
--- href="http://nodejs.org/api/fs.html#fs_fs_closesync_fd">Node
--- Documentation</a> for details.
---
+-- | Close a file synchronously.  See <a
+-- | href="http://nodejs.org/api/fs.html#fs_fs_closesync_fd">Node
+-- | Documentation</a> for details.
 fdClose :: forall eff.
            FileDescriptor
         -> Eff (err :: EXCEPTION, fs :: FS | eff) Unit

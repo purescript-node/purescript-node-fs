@@ -14,9 +14,7 @@ module Node.FS
 
 import Prelude
 
--- |
--- Effect type for file system usage.
---
+-- | Effect type for file system usage.
 foreign import data FS :: !
 
 foreign import data FileDescriptor :: *
@@ -42,6 +40,8 @@ instance showFileFlags :: Show FileFlags where
 instance eqFileFlags :: Eq FileFlags where
   eq x y = show x == show y
 
+-- | Convert a `FileFlags` to a `String` in the format expected by the Node.js
+-- | filesystem API.
 fileFlagsToNode :: FileFlags -> String
 fileFlagsToNode ff = case ff of
   R       -> "r"
@@ -63,15 +63,11 @@ type BufferLength = Int
 type BufferOffset = Int
 type ByteCount = Int
 
--- |
--- Symlink varieties.
---
+-- | Symlink varieties.
 data SymlinkType = FileLink | DirLink | JunctionLink
 
--- |
--- Convert a `SymlinkType` to a `String` expected by the Node.js filesystem
--- API.
---
+-- | Convert a `SymlinkType` to a `String` in the format expected by the
+-- | Node.js filesystem API.
 symlinkTypeToNode :: SymlinkType -> String
 symlinkTypeToNode ty = case ty of
   FileLink -> "file"

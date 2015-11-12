@@ -13,6 +13,8 @@ data Stats
   = Stats StatsObj
 ```
 
+Stats wrapper to provide a usable interface to the underlying properties and methods.
+
 ##### Instances
 ``` purescript
 instance showStats :: Show Stats
