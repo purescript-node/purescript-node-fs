@@ -297,9 +297,6 @@ exists :: forall eff. FilePath
 exists file cb = mkEff $ \_ -> runFn2
   fs.exists file $ \b -> runPure (unsafeInterleaveEff (cb b))
 
-
-{- Asynchronous File Descriptor Functions -}
-
 -- | Open a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_open_path_flags_mode_callback)
 -- | for details.
 fdOpen :: forall eff.

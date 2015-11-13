@@ -191,6 +191,9 @@ Check if the path exists.
 fdOpen :: forall eff. FilePath -> FileFlags -> Maybe FileMode -> Eff (err :: EXCEPTION, fs :: FS | eff) FileDescriptor
 ```
 
+Open a file synchronously. See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_opensync_path_flags_mode)
+for details.
+
 #### `fdRead`
 
 ``` purescript

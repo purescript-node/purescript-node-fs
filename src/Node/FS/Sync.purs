@@ -258,8 +258,6 @@ exists :: forall eff. FilePath
                    -> Eff (fs :: FS | eff) Boolean
 exists file = return $ fs.existsSync file
 
-{- Synchronous File Descriptor Functions -}
-
 -- | Open a file synchronously. See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_opensync_path_flags_mode)
 -- | for details.
 fdOpen :: forall eff.
