@@ -197,9 +197,8 @@ fdOpen :: forall eff. FilePath -> FileFlags -> Maybe FileMode -> Eff (err :: EXC
 fdRead :: forall eff. FileDescriptor -> Buffer -> BufferOffset -> BufferLength -> Maybe FilePosition -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
 ```
 
-Read to a file synchronously.  See <a
-href="http://nodejs.org/api/fs.html#fs_fs_readsync_fd_buffer_offset_length_position">Node
-ocumentation</a> for details.
+Read from a file synchronously. See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_readsync_fd_buffer_offset_length_position)
+for details.
 
 #### `fdNext`
 
@@ -216,9 +215,8 @@ file position.
 fdWrite :: forall eff. FileDescriptor -> Buffer -> BufferOffset -> BufferLength -> Maybe FilePosition -> Eff (buffer :: BUFFER, err :: EXCEPTION, fs :: FS | eff) ByteCount
 ```
 
-Write to a file synchronously.  See <a
-href="http://nodejs.org/api/fs.html#fs_fs_writesync_fd_buffer_offset_length_position">Node
-Documentation</a> for details.
+Write to a file synchronously. See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_writesync_fd_buffer_offset_length_position)
+for details.
 
 #### `fdAppend`
 
@@ -235,9 +233,8 @@ file position.
 fdFlush :: forall eff. FileDescriptor -> Eff (err :: EXCEPTION, fs :: FS | eff) Unit
 ```
 
-Flush a file synchronously.  See <a
-href="http://nodejs.org/api/fs.html#fs_fs_fsyncsync_fd">Node
-Documentation</a> for details.
+Flush a file synchronously.  See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_fsyncsync_fd)
+for details.
 
 #### `fdClose`
 
@@ -245,8 +242,7 @@ Documentation</a> for details.
 fdClose :: forall eff. FileDescriptor -> Eff (err :: EXCEPTION, fs :: FS | eff) Unit
 ```
 
-Close a file synchronously.  See <a
-href="http://nodejs.org/api/fs.html#fs_fs_closesync_fd">Node
-Documentation</a> for details.
+Close a file synchronously. See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_closesync_fd)
+for details.
 
 

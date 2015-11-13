@@ -260,9 +260,8 @@ exists file = return $ fs.existsSync file
 
 {- Synchronous File Descriptor Functions -}
 
--- | Open a file synchronously.  See <a
--- | href="http://nodejs.org/api/fs.html#fs_fs_opensync_path_flags_mode">Node
--- | Documentation</a> for details.
+-- | Open a file synchronously. See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_opensync_path_flags_mode)
+-- | for details.
 fdOpen :: forall eff.
           FilePath
        -> FileFlags
@@ -271,9 +270,8 @@ fdOpen :: forall eff.
 fdOpen file flags mode = mkEff $ \_ ->
   runFn3 fs.openSync file (fileFlagsToNode flags) (toNullable mode)
 
--- | Read to a file synchronously.  See <a
--- | href="http://nodejs.org/api/fs.html#fs_fs_readsync_fd_buffer_offset_length_position">Node
--- | ocumentation</a> for details.
+-- | Read from a file synchronously. See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_readsync_fd_buffer_offset_length_position)
+-- | for details.
 fdRead :: forall eff.
           FileDescriptor
        -> Buffer
@@ -294,9 +292,8 @@ fdNext fd buff = do
   sz <- size buff
   fdRead fd buff 0 sz Nothing
 
--- | Write to a file synchronously.  See <a
--- | href="http://nodejs.org/api/fs.html#fs_fs_writesync_fd_buffer_offset_length_position">Node
--- | Documentation</a> for details.
+-- | Write to a file synchronously. See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_writesync_fd_buffer_offset_length_position)
+-- | for details.
 fdWrite :: forall eff.
            FileDescriptor
         -> Buffer
@@ -317,17 +314,15 @@ fdAppend fd buff = do
   sz <- size buff
   fdWrite fd buff 0 sz Nothing
 
--- | Flush a file synchronously.  See <a
--- | href="http://nodejs.org/api/fs.html#fs_fs_fsyncsync_fd">Node
--- | Documentation</a> for details.
+-- | Flush a file synchronously.  See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_fsyncsync_fd)
+-- | for details.
 fdFlush :: forall eff.
            FileDescriptor
         -> Eff (err :: EXCEPTION, fs :: FS | eff) Unit
 fdFlush fd = mkEff $ \_ -> runFn1 fs.fsyncSync fd
 
--- | Close a file synchronously.  See <a
--- | href="http://nodejs.org/api/fs.html#fs_fs_closesync_fd">Node
--- | Documentation</a> for details.
+-- | Close a file synchronously. See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_closesync_fd)
+-- | for details.
 fdClose :: forall eff.
            FileDescriptor
         -> Eff (err :: EXCEPTION, fs :: FS | eff) Unit
