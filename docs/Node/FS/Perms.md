@@ -23,10 +23,10 @@ intersection respectively.
 
 ##### Instances
 ``` purescript
-instance eqPerm :: Eq Perm
-instance ordPerm :: Ord Perm
-instance showPerm :: Show Perm
-instance semiringPerm :: Semiring Perm
+Eq Perm
+Ord Perm
+Show Perm
+Semiring Perm
 ```
 
 #### `none`
@@ -84,9 +84,9 @@ file owner, the group, and any other users.
 
 ##### Instances
 ``` purescript
-instance eqPerms :: Eq Perms
-instance ordPerms :: Ord Perms
-instance showPerms :: Show Perms
+Eq Perms
+Ord Perms
+Show Perms
 ```
 
 #### `permsFromString`

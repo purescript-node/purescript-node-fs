@@ -17,7 +17,7 @@ Stats wrapper to provide a usable interface to the underlying properties and met
 
 ##### Instances
 ``` purescript
-instance showStats :: Show Stats
+Show Stats
 ```
 
 #### `isFile`

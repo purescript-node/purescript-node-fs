@@ -18,7 +18,7 @@ import Data.Maybe (Maybe(..), isNothing)
 import Data.Maybe.Unsafe (fromJust)
 import Data.Char (fromCharCode)
 import Data.String (toCharArray, joinWith, drop, charAt, indexOf)
-import Data.Int (fromNumber, toNumber)
+import Data.Int (fromNumber)
 
 -- | A `Perm` value specifies what is allowed to be done with a particular
 -- | file by a particular class of user &mdash; that is, whether it is
