@@ -43,7 +43,6 @@ import Data.Maybe
 import Data.Nullable
 import Node.Buffer (Buffer(), BUFFER(), size)
 import Data.Int (round)
-import Data.Maybe.Unsafe (fromJust)
 import Node.Encoding
 import Node.FS
 import Node.FS.Stats

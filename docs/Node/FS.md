@@ -34,8 +34,8 @@ data FileFlags
 
 ##### Instances
 ``` purescript
-instance showFileFlags :: Show FileFlags
-instance eqFileFlags :: Eq FileFlags
+Show FileFlags
+Eq FileFlags
 ```
 
 #### `fileFlagsToNode`
@@ -90,8 +90,8 @@ Symlink varieties.
 
 ##### Instances
 ``` purescript
-instance showSymlinkType :: Show SymlinkType
-instance eqSymlinkType :: Eq SymlinkType
+Show SymlinkType
+Eq SymlinkType
 ```
 
 #### `symlinkTypeToNode`

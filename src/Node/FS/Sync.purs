@@ -36,7 +36,6 @@ import Control.Monad.Eff
 import Control.Monad.Eff.Exception
 import Data.Date
 import Data.Time
-import Data.Either
 import Data.Function
 import Data.Nullable (Nullable(), toNullable)
 import Data.Int (round)
