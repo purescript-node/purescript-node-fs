@@ -42,6 +42,7 @@ import Data.Int (round)
 import Data.Maybe (Maybe(..))
 import Node.Buffer (Buffer(), BUFFER(), size)
 import Node.Encoding
+
 import Node.FS
 import Node.FS.Stats
 import Node.Path (FilePath())
