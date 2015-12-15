@@ -49,7 +49,7 @@ import Node.Path (FilePath())
 import Node.FS.Perms
 import Node.FS.Internal
 
-foreign import fs ::
+fs ::
   { renameSync :: Fn2 FilePath FilePath Unit
   , truncateSync :: Fn2 FilePath Int Unit
   , chownSync :: Fn3 FilePath Int Int Unit
@@ -74,6 +74,7 @@ foreign import fs ::
   , fsyncSync :: Fn1 FileDescriptor Unit
   , closeSync :: Fn1 FileDescriptor Unit
   }
+fs = unsafeRequireFS
 
 -- | Renames a file.
 rename :: forall eff. FilePath
