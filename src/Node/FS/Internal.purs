@@ -7,3 +7,5 @@ import Unsafe.Coerce
 
 mkEff :: forall e a. (Unit -> a) -> Eff e a
 mkEff = unsafeCoerce
+
+foreign import unsafeRequireFS :: forall props. { | props }

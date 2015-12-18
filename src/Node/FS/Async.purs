@@ -61,7 +61,7 @@ foreign import handleCallbackImpl ::
 handleCallback :: forall eff a. (Callback eff a) -> JSCallback a
 handleCallback cb = runFn3 handleCallbackImpl Left Right cb
 
-foreign import fs ::
+fs ::
   { rename :: Fn3 FilePath FilePath (JSCallback Unit) Unit
   , truncate :: Fn3 FilePath Int (JSCallback Unit) Unit
   , chown :: Fn4 FilePath Int Int (JSCallback Unit) Unit
@@ -85,6 +85,7 @@ foreign import fs ::
   , write :: Fn6 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) (JSCallback ByteCount) Unit
   , close :: Fn2 FileDescriptor (JSCallback Unit) Unit
   }
+fs = unsafeRequireFS
 
 -- | Type synonym for callback functions.
 type Callback eff a = Either Error a -> Eff (fs :: FS | eff) Unit
