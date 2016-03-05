@@ -5,6 +5,7 @@ import Data.Maybe
 import Data.Either
 import Control.Apply ((*>))
 import Control.Bind ((=<<))
+import Control.Monad (unless)
 import Control.Monad.Eff
 import Control.Monad.Eff.Exception
 import Control.Monad.Eff.Console (log)
@@ -125,3 +126,10 @@ main = do
   buf1 <- Buffer.create =<< Buffer.size buf0
   bytes1 <- S.fdNext fd1 buf1
   S.fdClose fd1
+
+  log "statSync on a non-existing file should be catchable"
+  r <- catchException'
+        (const (pure true))
+        (S.stat "this-does-not-exist" *> pure false)
+  unless r $
+    throwException (error "FS.Sync.stat should have thrown")
