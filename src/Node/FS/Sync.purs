@@ -113,7 +113,7 @@ chmod file perms = mkEff $ \_ -> runFn2
 stat :: forall eff. FilePath
                  -> Eff (fs :: FS, err :: EXCEPTION | eff) Stats
 
-stat file = return $ Stats $ runFn1
+stat file = map Stats $ mkEff $ \_ -> runFn1
   fs.statSync file
 
 -- | Creates a link to an existing file.
@@ -257,7 +257,7 @@ appendTextFile encoding file buff = mkEff $ \_ -> runFn3
 -- | Check if the path exists.
 exists :: forall eff. FilePath
                    -> Eff (fs :: FS | eff) Boolean
-exists file = return $ fs.existsSync file
+exists file = mkEff $ \_ -> fs.existsSync file
 
 -- | Open a file synchronously. See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_opensync_path_flags_mode)
 -- | for details.
