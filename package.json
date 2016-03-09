@@ -1,11 +1,11 @@
 {
   "private": true,
   "devDependencies": {
-    "pulp": "^4.0.1",
-    "rimraf": "^2.4.1"
+    "pulp": "^8.1.0",
+    "bower": "^1.7.7"
   },
   "scripts": {
-    "postinstall": "pulp dep install",
-    "build": "pulp build && rimraf docs && pulp docs"
+    "postinstall": "bower install",
+    "build": "pulp build"
   }
 }
