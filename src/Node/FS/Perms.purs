@@ -12,13 +12,15 @@ module Node.FS.Perms
   , permsToInt
   ) where
 
-import Prelude
+import Prelude (class Show, class Ord, class Eq, class Semiring, 
+                show, otherwise, compare, one, zero, 
+                (<<<), ($), (<>), (+), (<*>), (<$>), (==), (&&), (||))
 import Global (readInt)
-import Data.Maybe (Maybe(..), isNothing)
-import Data.Maybe.Unsafe (fromJust)
+import Data.Maybe (Maybe(..), isNothing, fromJust)
 import Data.Char (fromCharCode)
 import Data.String (toCharArray, joinWith, drop, charAt, indexOf)
 import Data.Int (fromNumber)
+import Partial.Unsafe (unsafePartial)
 
 -- | A `Perm` value specifies what is allowed to be done with a particular
 -- | file by a particular class of user &mdash; that is, whether it is
@@ -37,17 +39,17 @@ import Data.Int (fromNumber)
 newtype Perm = Perm { r :: Boolean, w :: Boolean, x :: Boolean }
 
 instance eqPerm :: Eq Perm where
-  eq (Perm { r = r1, w = w1, x = x1 }) (Perm { r = r2, w = w2, x = x2 }) =
+  eq (Perm { r: r1, w: w1, x: x1 }) (Perm { r: r2, w: w2, x: x2 }) =
     r1 == r2  && w1 == w2 && x1 == x2
 
 instance ordPerm :: Ord Perm where
-  compare (Perm { r = r1, w = w1, x = x1 }) (Perm { r = r2, w = w2, x = x2 }) =
+  compare (Perm { r: r1, w: w1, x: x1 }) (Perm { r: r2, w: w2, x: x2 }) =
     compare [r1, w1, x1] [r2, w2, x2]
 
 instance showPerm :: Show Perm where
   show p | p == none = "none"
   show p | p == all  = "all"
-  show (Perm { r = r, w = w, x = x }) =
+  show (Perm { r: r, w: w, x: x }) =
     joinWith " + " ps
     where
     ps =
@@ -56,10 +58,10 @@ instance showPerm :: Show Perm where
       (if x then ["execute"] else [])
 
 instance semiringPerm :: Semiring Perm where
-  add (Perm { r = r0, w = w0, x = x0 }) (Perm { r = r1, w = w1, x = x1 }) =
+  add (Perm { r: r0, w: w0, x: x0 }) (Perm { r: r1, w: w1, x: x1 }) =
     Perm { r: r0 || r1, w: w0 || w1, x: x0 || x1  }
   zero = Perm { r: false, w: false, x: false }
-  mul (Perm { r = r0, w = w0, x = x0 }) (Perm { r = r1, w = w1, x = x1 }) =
+  mul (Perm { r: r0, w: w0, x: x0 }) (Perm { r: r1, w: w1, x: x1 }) =
     Perm { r: r0 && r1, w: w0 && w1, x: x0 && x1  }
   one = Perm { r: true, w: true, x: true }
 
@@ -97,15 +99,15 @@ all = one
 newtype Perms = Perms { u :: Perm, g :: Perm, o :: Perm }
 
 instance eqPerms :: Eq Perms where
-  eq (Perms { u = u1, g = g1, o = o1 }) (Perms { u = u2, g = g2, o = o2 }) =
+  eq (Perms { u: u1, g: g1, o: o1 }) (Perms { u: u2, g: g2, o: o2 }) =
     u1 == u2  && g1 == g2 && o1 == o2
 
 instance ordPerms :: Ord Perms where
-  compare (Perms { u = u1, g = g1, o = o1 }) (Perms { u = u2, g = g2, o = o2 }) =
+  compare (Perms { u: u1, g: g1, o: o1 }) (Perms { u: u2, g: g2, o: o2 }) =
     compare [u1, g1, o1] [u2, g2, o2]
 
 instance showPerms :: Show Perms where
-  show (Perms { u = u, g = g, o = o }) =
+  show (Perms { u: u, g: g, o: o }) =
     "mkPerms " <> joinWith " " (f <$> [u, g, o])
     where
       f perm = let str = show perm
@@ -154,7 +156,7 @@ mkPerms u g o = Perms { u: u, g: g, o: o }
 -- | * `permToInt w == 2`
 -- | * `permToInt (r + w) == 6`
 permToInt :: Perm -> Int
-permToInt (Perm { r = r, w = w, x = x }) =
+permToInt (Perm { r: r, w: w, x: x }) =
       (if r then 4 else 0)
     + (if w then 2 else 0)
     + (if x then 1 else 0)
@@ -167,12 +169,12 @@ permToString = show <<< permToInt
 -- | accepted by `chmod`. For example:
 -- | `permsToString (mkPerms (read + write) read read) == "0644"`
 permsToString :: Perms -> String
-permsToString (Perms { u = u, g = g, o = o }) =
+permsToString (Perms { u: u, g: g, o: o }) =
      "0"
-  ++ permToString u
-  ++ permToString g
-  ++ permToString o
+  <> permToString u
+  <> permToString g
+  <> permToString o
 
 -- | Convert a `Perms` value to an `Int`, via `permsToString`.
 permsToInt :: Perms -> Int
-permsToInt = fromJust <<< fromNumber <<< readInt 8 <<< permsToString
+permsToInt = unsafePartial $ fromJust <<< fromNumber <<< readInt 8 <<< permsToString

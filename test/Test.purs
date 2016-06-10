@@ -1,23 +1,27 @@
 module Test where
 
-import Prelude
-import Data.Maybe
-import Data.Either
+import Prelude (Unit, unless, pure, const, bind, show, unit, 
+                ($), (*>), (=<<), (<>), (<<<))
+import Data.Maybe (Maybe(..))
+import Data.Either (Either(..), either)
 import Control.Apply ((*>))
 import Control.Bind ((=<<))
-import Control.Monad (unless)
-import Control.Monad.Eff
-import Control.Monad.Eff.Exception
-import Control.Monad.Eff.Console (log)
-import Node.Encoding
-import qualified Node.Buffer as Buffer
-import qualified Node.Path as Path
-import Unsafe.Coerce
+import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Exception (EXCEPTION, Error, error, throwException, 
+                                    catchException)
+import Control.Monad.Eff.Console (CONSOLE, log)
+ 
+import Node.Encoding (Encoding(..))
+import Node.Buffer as Buffer
+import Node.Path as Path
+import Unsafe.Coerce (unsafeCoerce)
 
-import Node.FS
-import Node.FS.Stats
-import qualified Node.FS.Async as A
-import qualified Node.FS.Sync as S
+import Node.FS (FS, FileFlags(..))
+import Node.FS.Stats (statusChangedTime, accessedTime, modifiedTime, 
+                      isSymbolicLink, isSocket, isFIFO, isCharacterDevice, 
+                      isBlockDevice, isDirectory, isFile)
+import Node.FS.Async as A
+import Node.FS.Sync as S
 
 -- Cheat to allow `main` to type check. See also issue #5 in
 -- purescript-exceptions.
@@ -28,23 +32,26 @@ catchException' ::
     -> Eff (err :: EXCEPTION | eff) a
 catchException' = unsafeCoerce catchException
 
+
+main::forall e. Eff (fs::FS, console::CONSOLE, err::EXCEPTION, 
+                     buffer::Buffer.BUFFER | e) Unit
 main = do
   let fp = Path.concat
 
   A.exists (fp ["test", "Test.purs"]) $ \e ->
-    log $ "Test.purs exists? " ++ show e
+    log $ "Test.purs exists? " <> show e
 
   file <- S.readTextFile UTF8 (fp ["test", "Test.purs"])
   log "\n\nreadTextFile sync result:"
   log $ file
 
   catchException' (\err -> do
-    log $ "Caught readTextFile error:\n" ++ show err
-    return "") $ S.readTextFile UTF8 (fp ["test", "does not exist"])
+    log $ "Caught readTextFile error:\n" <> show err
+    pure "") $ S.readTextFile UTF8 (fp ["test", "does not exist"])
 
   -- If an error is thrown, it's probably EEXIST, so ignore it. Should
   -- really check this instead.
-  catchException' (const (return unit)) (S.mkdir "tmp")
+  catchException' (const (pure unit)) (S.mkdir "tmp")
 
   S.writeTextFile ASCII (fp ["tmp", "Test.js"]) "console.log('hello world')"
   S.rename (fp ["tmp", "Test.js"]) (fp ["tmp", "Test1.js"])
@@ -78,9 +85,9 @@ main = do
     log "\n\nrename result:"
     either (log <<< show) (log <<< show) x
 
-    A.truncate (fp ["tmp", "Test.js"]) 10 $ \x -> do
+    A.truncate (fp ["tmp", "Test.js"]) 10 $ \y -> do
       log "\n\ntruncate result:"
-      either (log <<< show) (log <<< show) x
+      either (log <<< show) (log <<< show) y
 
   A.readFile (fp ["test", "Test.purs"]) $ \x -> do
     log "\n\nreadFile result:"
@@ -93,7 +100,7 @@ main = do
   A.stat (fp ["test", "Test.purs"]) $ \x -> do
     log "\n\nstat:"
     case x of
-      Left err -> log $ "Error:" ++ show err
+      Left err -> log $ "Error:" <> show err
       Right x' -> do
         log "isFile:"
         log $ show $ isFile x'
@@ -133,3 +140,4 @@ main = do
         (S.stat "this-does-not-exist" *> pure false)
   unless r $
     throwException (error "FS.Sync.stat should have thrown")
+

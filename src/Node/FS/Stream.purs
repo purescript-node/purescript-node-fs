@@ -13,18 +13,18 @@ module Node.FS.Stream
   , fdCreateReadStreamWith
   ) where
 
-import Prelude
+import Prelude (($), (<<<), (+))
 import Data.Maybe (Maybe(..))
-import Data.Function
-import Data.Nullable
-import Control.Monad.Eff
+import Data.Function.Uncurried (Fn2, runFn2)
+import Data.Nullable (Nullable, toNullable)
+import Control.Monad.Eff (Eff)
 import Node.Stream (Readable(), Writable())
 import Node.Path (FilePath())
 
-import Node.FS
+import Node.FS (FS, FileDescriptor, FileFlags(..), fileFlagsToNode)
 import Node.FS.Perms (Perms())
 import Node.FS.Perms as Perms
-import Node.FS.Internal
+import Node.FS.Internal (mkEff, unsafeRequireFS)
 
 fs ::
   { createReadStream  :: forall eff opts. Fn2 (Nullable FilePath) { | opts } (Readable () (fs :: FS | eff))
