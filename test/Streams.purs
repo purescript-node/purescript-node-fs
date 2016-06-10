@@ -1,8 +1,6 @@
 module Test.Streams where
 
-import Prelude (Unit, bind, (==))
-import Control.Apply ((*>))
-import Control.Bind ((=<<))
+import Prelude
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (log, CONSOLE)
 import Control.Monad.Eff.Exception (EXCEPTION)
@@ -10,7 +8,7 @@ import Node.Encoding (Encoding(..))
 import Node.Path as Path
 import Node.Stream as Stream
 
-import Node.FS
+import Node.FS (FS)
 import Node.FS.Stream (createWriteStream, createReadStream)
 import Node.FS.Sync as Sync
 

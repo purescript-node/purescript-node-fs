@@ -1,11 +1,8 @@
 module Test where
 
-import Prelude (Unit, unless, pure, const, bind, show, unit, 
-                ($), (*>), (=<<), (<>), (<<<))
+import Prelude 
 import Data.Maybe (Maybe(..))
 import Data.Either (Either(..), either)
-import Control.Apply ((*>))
-import Control.Bind ((=<<))
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Exception (EXCEPTION, Error, error, throwException, 
                                     catchException)
