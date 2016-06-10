@@ -13,7 +13,7 @@ module Node.FS.Stream
   , fdCreateReadStreamWith
   ) where
 
-import Prelude (($), (<<<), (+))
+import Prelude
 import Data.Maybe (Maybe(..))
 import Data.Function.Uncurried (Fn2, runFn2)
 import Data.Nullable (Nullable, toNullable)

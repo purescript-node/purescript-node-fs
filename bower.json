@@ -20,14 +20,14 @@
     "purescript-node-buffer": "^1.0.0",
     "purescript-node-path": "^1.0.0",
     "purescript-unsafe-coerce": "^1.0.0",
-    "purescript-nullable": "~1.0.0",
-    "purescript-node-streams": "~1.0.0",
-    "purescript-exceptions": "~1.0.0",
+    "purescript-nullable": "^1.0.0",
+    "purescript-node-streams": "^1.0.0",
+    "purescript-exceptions": "^1.0.0",
     "purescript-js-date": "^1.0.0",
     "purescript-globals": "^1.0.0"
   },
   "devDependencies": {
-    "purescript-console": "~1.0.0"
+    "purescript-console": "^1.0.0"
   },
   "repository": {
     "type": "git",

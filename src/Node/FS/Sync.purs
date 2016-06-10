@@ -31,7 +31,7 @@ module Node.FS.Sync
   , fdClose
   ) where
 
-import Prelude (Unit, bind, show, flip, map, ($), (<<<), (/))
+import Prelude
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Exception (EXCEPTION)
 import Data.DateTime (DateTime)

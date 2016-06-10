@@ -12,9 +12,7 @@ module Node.FS.Perms
   , permsToInt
   ) where
 
-import Prelude (class Show, class Ord, class Eq, class Semiring, 
-                show, otherwise, compare, one, zero, 
-                (<<<), ($), (<>), (+), (<*>), (<$>), (==), (&&), (||))
+import Prelude
 import Global (readInt)
 import Data.Maybe (Maybe(..), isNothing, fromJust)
 import Data.Char (fromCharCode)

@@ -31,7 +31,7 @@ module Node.FS.Async
   , fdClose
   ) where
 
-import Prelude (Unit, bind, show, flip, ($), (<<<), (/), (<$>))
+import Prelude
 import Control.Monad.Eff (Eff, runPure)
 import Control.Monad.Eff.Unsafe (unsafeInterleaveEff)
 import Control.Monad.Eff.Exception (Error)

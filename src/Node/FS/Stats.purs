@@ -13,7 +13,7 @@ module Node.FS.Stats
   , statusChangedTime
   ) where
 
-import Prelude (class Show, ($), (<>))
+import Prelude
 import Data.DateTime (DateTime)
 import Data.Function.Uncurried (Fn2, Fn0, runFn2)
 import Data.JSDate (JSDate, toDateTime)

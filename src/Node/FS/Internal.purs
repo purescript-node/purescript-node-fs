@@ -1,7 +1,7 @@
 
 module Node.FS.Internal where
 
-import Prelude (Unit)
+import Prelude
 import Control.Monad.Eff (Eff)
 import Unsafe.Coerce (unsafeCoerce)
 
