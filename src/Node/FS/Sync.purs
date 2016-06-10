@@ -32,22 +32,26 @@ module Node.FS.Sync
   ) where
 
 import Prelude
-import Control.Monad.Eff
-import Control.Monad.Eff.Exception
-import Data.Date
-import Data.Time
-import Data.Function
+import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Exception (EXCEPTION)
+import Data.DateTime (DateTime)
+import Data.Time.Duration (Milliseconds(..))
+import Data.DateTime.Instant (fromDateTime, unInstant)
+import Data.Function.Uncurried (Fn1, Fn5, Fn3, Fn2, 
+                                runFn1, runFn5, runFn3, runFn2)
 import Data.Nullable (Nullable(), toNullable)
 import Data.Int (round)
 import Data.Maybe (Maybe(..))
 import Node.Buffer (Buffer(), BUFFER(), size)
-import Node.Encoding
+import Node.Encoding (Encoding)
 
-import Node.FS
-import Node.FS.Stats
+import Node.FS (FS, FileDescriptor, ByteCount, FilePosition, BufferLength, 
+                BufferOffset, FileMode, FileFlags, SymlinkType, 
+                fileFlagsToNode, symlinkTypeToNode)
+import Node.FS.Stats (StatsObj, Stats(..))
 import Node.Path (FilePath())
-import Node.FS.Perms
-import Node.FS.Internal
+import Node.FS.Perms (Perms, permsToString, all, mkPerms)
+import Node.FS.Internal (mkEff, unsafeRequireFS)
 
 fs ::
   { renameSync :: Fn2 FilePath FilePath Unit
@@ -193,8 +197,8 @@ readdir file = mkEff $ \_ -> runFn1
 
 -- | Sets the accessed and modified times for the specified file.
 utimes :: forall eff. FilePath
-                   -> Date
-                   -> Date
+                   -> DateTime
+                   -> DateTime
                    -> Eff (fs :: FS, err :: EXCEPTION | eff) Unit
 
 utimes file atime mtime = mkEff $ \_ -> runFn3
@@ -204,6 +208,7 @@ utimes file atime mtime = mkEff $ \_ -> runFn3
   where
   fromDate date = ms (toEpochMilliseconds date) / 1000
   ms (Milliseconds n) = round n
+  toEpochMilliseconds = unInstant <<< fromDateTime
 
 -- | Reads the entire contents of a file returning the result as a raw buffer.
 readFile :: forall eff. FilePath

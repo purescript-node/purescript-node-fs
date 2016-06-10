@@ -32,23 +32,27 @@ module Node.FS.Async
   ) where
 
 import Prelude
-import Control.Monad.Eff
+import Control.Monad.Eff (Eff, runPure)
 import Control.Monad.Eff.Unsafe (unsafeInterleaveEff)
-import Control.Monad.Eff.Exception
-import Data.Date
-import Data.Time
-import Data.Either
-import Data.Function
-import Data.Maybe
-import Data.Nullable
+import Control.Monad.Eff.Exception (Error)
+import Data.DateTime (DateTime)
+import Data.Time.Duration (Milliseconds(..))
+import Data.DateTime.Instant (fromDateTime, unInstant)
+import Data.Either (Either(..))
+import Data.Function.Uncurried (Fn2, Fn6, Fn4, Fn3, 
+                                runFn2, runFn6, runFn4, runFn3)
+import Data.Maybe (Maybe(..))
+import Data.Nullable (Nullable, toNullable)
 import Node.Buffer (Buffer(), BUFFER(), size)
 import Data.Int (round)
-import Node.Encoding
-import Node.FS
-import Node.FS.Stats
+import Node.Encoding (Encoding)
+import Node.FS (FS, FileDescriptor, ByteCount, FilePosition, BufferLength, 
+                BufferOffset, FileMode, FileFlags, SymlinkType, 
+                fileFlagsToNode, symlinkTypeToNode)
+import Node.FS.Stats (StatsObj, Stats(..))
 import Node.Path (FilePath())
-import Node.FS.Perms
-import Node.FS.Internal
+import Node.FS.Perms (Perms, permsToString, all, mkPerms)
+import Node.FS.Internal (mkEff, unsafeRequireFS)
 
 type JSCallback a = Fn2 (Nullable Error) a Unit
 
@@ -221,8 +225,8 @@ readdir file cb = mkEff $ \_ -> runFn2
 
 -- | Sets the accessed and modified times for the specified file.
 utimes :: forall eff. FilePath
-                   -> Date
-                   -> Date
+                   -> DateTime
+                   -> DateTime
                    -> Callback eff Unit
                    -> Eff (fs :: FS | eff) Unit
 
@@ -234,6 +238,7 @@ utimes file atime mtime cb = mkEff $ \_ -> runFn4
   where
   fromDate date = ms (toEpochMilliseconds date) / 1000
   ms (Milliseconds n) = round n
+  toEpochMilliseconds = unInstant <<< fromDateTime
 
 -- | Reads the entire contents of a file returning the result as a raw buffer.
 readFile :: forall eff. FilePath

@@ -1,7 +1,7 @@
 {
   "private": true,
   "devDependencies": {
-    "pulp": "^8.1.0",
+    "pulp": "^9.0.1",
     "bower": "^1.7.7"
   },
   "scripts": {

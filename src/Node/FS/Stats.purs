@@ -14,9 +14,11 @@ module Node.FS.Stats
   ) where
 
 import Prelude
-import Data.Date
-import Data.Function
-import Data.Maybe.Unsafe (fromJust)
+import Data.DateTime (DateTime)
+import Data.Function.Uncurried (Fn2, Fn0, runFn2)
+import Data.JSDate (JSDate, toDateTime)
+import Data.Maybe (fromJust)
+import Partial.Unsafe (unsafePartial)
 
 type StatsObj =
   { dev :: Number
@@ -44,7 +46,7 @@ data Stats = Stats StatsObj
 foreign import showStatsObj :: StatsObj -> String
 
 instance showStats :: Show Stats where
-  show (Stats o) = "Stats " ++ showStatsObj o
+  show (Stats o) = "Stats " <> showStatsObj o
 
 foreign import statsMethod :: Fn2 String StatsObj Boolean
 
@@ -69,11 +71,11 @@ isSocket (Stats s) = runFn2 statsMethod "isSocket" s
 isSymbolicLink :: Stats -> Boolean
 isSymbolicLink (Stats s) = runFn2 statsMethod "isSymbolicLink" s
 
-accessedTime :: Stats -> Date
-accessedTime (Stats s) = fromJust (fromJSDate s.atime)
+accessedTime :: Stats -> DateTime
+accessedTime (Stats s) = unsafePartial $ fromJust (toDateTime s.atime)
 
-modifiedTime :: Stats -> Date
-modifiedTime (Stats s) = fromJust (fromJSDate s.mtime)
+modifiedTime :: Stats -> DateTime
+modifiedTime (Stats s) = unsafePartial $ fromJust (toDateTime s.mtime)
 
-statusChangedTime :: Stats -> Date
-statusChangedTime (Stats s) = fromJust (fromJSDate s.ctime)
+statusChangedTime :: Stats -> DateTime
+statusChangedTime (Stats s) = unsafePartial $ fromJust (toDateTime s.ctime)
