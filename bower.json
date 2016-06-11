@@ -6,10 +6,15 @@
     "purescript"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/purescript-node/purescript-node-fs"
+  },
   "ignore": [
     "**/.*",
     "bower_components",
     "node_modules",
+    "tmp",
     "output",
     "bower.json",
     "package.json"
@@ -28,9 +33,5 @@
   },
   "devDependencies": {
     "purescript-console": "^1.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/purescript-node/purescript-node-fs"
   }
 }
