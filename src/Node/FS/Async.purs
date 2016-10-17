@@ -33,21 +33,21 @@ module Node.FS.Async
 
 import Prelude
 import Control.Monad.Eff (Eff, runPure)
-import Control.Monad.Eff.Unsafe (unsafeInterleaveEff)
+import Control.Monad.Eff.Unsafe (unsafeCoerceEff)
 import Control.Monad.Eff.Exception (Error)
 import Data.DateTime (DateTime)
 import Data.Time.Duration (Milliseconds(..))
 import Data.DateTime.Instant (fromDateTime, unInstant)
 import Data.Either (Either(..))
-import Data.Function.Uncurried (Fn2, Fn6, Fn4, Fn3, 
+import Data.Function.Uncurried (Fn2, Fn6, Fn4, Fn3,
                                 runFn2, runFn6, runFn4, runFn3)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)
 import Node.Buffer (Buffer(), BUFFER(), size)
 import Data.Int (round)
 import Node.Encoding (Encoding)
-import Node.FS (FS, FileDescriptor, ByteCount, FilePosition, BufferLength, 
-                BufferOffset, FileMode, FileFlags, SymlinkType, 
+import Node.FS (FS, FileDescriptor, ByteCount, FilePosition, BufferLength,
+                BufferOffset, FileMode, FileFlags, SymlinkType,
                 fileFlagsToNode, symlinkTypeToNode)
 import Node.FS.Stats (StatsObj, Stats(..))
 import Node.Path (FilePath())
@@ -300,7 +300,7 @@ exists :: forall eff. FilePath
                    -> (Boolean -> Eff (fs :: FS | eff) Unit)
                    -> Eff (fs :: FS | eff) Unit
 exists file cb = mkEff $ \_ -> runFn2
-  fs.exists file $ \b -> runPure (unsafeInterleaveEff (cb b))
+  fs.exists file $ \b -> runPure (unsafeCoerceEff (cb b))
 
 -- | Open a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_open_path_flags_mode_callback)
 -- | for details.
