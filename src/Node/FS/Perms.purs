@@ -13,11 +13,11 @@ module Node.FS.Perms
   ) where
 
 import Prelude
-import Global (readInt)
-import Data.Maybe (Maybe(..), isNothing, fromJust)
 import Data.Char (fromCharCode)
-import Data.String (toCharArray, joinWith, drop, charAt, indexOf)
 import Data.Int (fromNumber)
+import Data.Maybe (Maybe(..), isNothing, fromJust)
+import Data.String (Pattern(Pattern), toCharArray, joinWith, drop, charAt, indexOf)
+import Global (readInt)
 import Partial.Unsafe (unsafePartial)
 
 -- | A `Perm` value specifies what is allowed to be done with a particular
@@ -109,7 +109,7 @@ instance showPerms :: Show Perms where
     "mkPerms " <> joinWith " " (f <$> [u, g, o])
     where
       f perm = let str = show perm
-               in  if isNothing $ indexOf " " str
+               in  if isNothing $ indexOf (Pattern " ") str
                      then str
                      else "(" <> str <> ")"
 
