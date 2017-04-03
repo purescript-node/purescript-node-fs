@@ -12,16 +12,16 @@ import Node.FS (FS)
 import Node.FS.Stream (createWriteStream, createReadStream)
 import Node.FS.Sync as Sync
 
-main::forall e. Eff (fs::FS, console::CONSOLE, err::EXCEPTION | e) Unit
+main::forall e. Eff (fs::FS, console::CONSOLE, exception::EXCEPTION | e) Unit
 main = do
   let fp = Path.concat
 
-  log "Testing streams"
+  _ <- log "Testing streams"
 
   r <- createReadStream (fp ["test", "Streams.purs"])
   w <- createWriteStream (fp ["tmp", "Streams.purs"])
 
-  Stream.pipe r w
+  _ <- Stream.pipe r w
 
   Stream.onEnd r do
     src <- Sync.readTextFile UTF8 (fp ["test", "Streams.purs"])

@@ -1,21 +1,21 @@
 module Test where
 
-import Prelude 
+import Prelude
 import Data.Maybe (Maybe(..))
 import Data.Either (Either(..), either)
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Exception (EXCEPTION, Error, error, throwException, 
+import Control.Monad.Eff.Exception (EXCEPTION, Error, error, throwException,
                                     catchException)
 import Control.Monad.Eff.Console (CONSOLE, log)
- 
+
 import Node.Encoding (Encoding(..))
 import Node.Buffer as Buffer
 import Node.Path as Path
 import Unsafe.Coerce (unsafeCoerce)
 
 import Node.FS (FS, FileFlags(..))
-import Node.FS.Stats (statusChangedTime, accessedTime, modifiedTime, 
-                      isSymbolicLink, isSocket, isFIFO, isCharacterDevice, 
+import Node.FS.Stats (statusChangedTime, accessedTime, modifiedTime,
+                      isSymbolicLink, isSocket, isFIFO, isCharacterDevice,
                       isBlockDevice, isDirectory, isFile)
 import Node.FS.Async as A
 import Node.FS.Sync as S
@@ -24,13 +24,13 @@ import Node.FS.Sync as S
 -- purescript-exceptions.
 catchException' ::
   forall a eff.
-    (Error -> Eff (err :: EXCEPTION | eff) a)
-    -> Eff (err :: EXCEPTION | eff) a
-    -> Eff (err :: EXCEPTION | eff) a
+    (Error -> Eff (exception :: EXCEPTION | eff) a)
+    -> Eff (exception :: EXCEPTION | eff) a
+    -> Eff (exception :: EXCEPTION | eff) a
 catchException' = unsafeCoerce catchException
 
 
-main::forall e. Eff (fs::FS, console::CONSOLE, err::EXCEPTION, 
+main::forall e. Eff (fs::FS, console::CONSOLE, exception::EXCEPTION,
                      buffer::Buffer.BUFFER | e) Unit
 main = do
   let fp = Path.concat
@@ -42,7 +42,7 @@ main = do
   log "\n\nreadTextFile sync result:"
   log $ file
 
-  catchException' (\err -> do
+  _ <- catchException' (\err -> do
     log $ "Caught readTextFile error:\n" <> show err
     pure "") $ S.readTextFile UTF8 (fp ["test", "does not exist"])
 

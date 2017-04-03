@@ -10,8 +10,8 @@ import Test as Test
 import TestAsync as TestAsync
 import Test.Streams as Streams
 
-main::forall e. Eff (fs :: FS , console :: CONSOLE , 
-                     err :: EXCEPTION , buffer :: BUFFER | e) Unit
+main::forall e. Eff (fs :: FS , console :: CONSOLE ,
+                     exception :: EXCEPTION , buffer :: BUFFER | e) Unit
 main = do
   Test.main
   TestAsync.main
