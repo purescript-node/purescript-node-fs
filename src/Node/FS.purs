@@ -13,11 +13,12 @@ module Node.FS
   ) where
 
 import Prelude
+import Control.Monad.Eff (kind Effect)
 
 -- | Effect type for file system usage.
-foreign import data FS :: !
+foreign import data FS :: Effect
 
-foreign import data FileDescriptor :: *
+foreign import data FileDescriptor :: Type
 
 data FileFlags = R | R_PLUS | RS | RS_PLUS
                | W | WX | W_PLUS | WX_PLUS

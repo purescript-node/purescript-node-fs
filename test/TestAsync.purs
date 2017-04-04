@@ -1,6 +1,6 @@
 module TestAsync where
 
-import Prelude (Unit, show, bind, (<>), ($))
+import Prelude (Unit, show, bind, discard, (<>), ($))
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Control.Monad.Eff (Eff)
@@ -9,7 +9,7 @@ import Control.Monad.Eff.Console(log,CONSOLE())
 import Node.FS (FileFlags(..), FS)
 import Node.FS.Async as A
 import Node.Path as FP
-import Node.Buffer as B 
+import Node.Buffer as B
 
 -- exercise the file descriptor based async IO functions
 
