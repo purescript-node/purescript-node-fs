@@ -24,8 +24,10 @@ module Node.FS.Sync
   , exists
   , fdOpen
   , fdRead
+  , fdReadLarge
   , fdNext
   , fdWrite
+  , fdWriteLarge
   , fdAppend
   , fdFlush
   , fdClose
@@ -40,7 +42,7 @@ import Data.DateTime.Instant (fromDateTime, unInstant)
 import Data.Function.Uncurried (Fn1, Fn5, Fn3, Fn2,
                                 runFn1, runFn5, runFn3, runFn2)
 import Data.Nullable (Nullable(), toNullable)
-import Data.Int (round)
+import Data.Int (round, toNumber)
 import Data.Maybe (Maybe(..))
 import Node.Buffer (Buffer(), BUFFER(), size)
 import Node.Encoding (Encoding)
@@ -73,8 +75,8 @@ fs ::
   , appendFileSync :: forall a opts. Fn3 FilePath a { | opts } Unit
   , existsSync :: FilePath -> Boolean
   , openSync :: Fn3 FilePath String (Nullable FileMode) FileDescriptor
-  , readSync :: Fn5 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) ByteCount
-  , writeSync :: Fn5 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) ByteCount
+  , readSync :: Fn5 FileDescriptor Buffer BufferOffset BufferLength (Nullable Number) ByteCount
+  , writeSync :: Fn5 FileDescriptor Buffer BufferOffset BufferLength (Nullable Number) ByteCount
   , fsyncSync :: Fn1 FileDescriptor Unit
   , closeSync :: Fn1 FileDescriptor Unit
   }
@@ -276,6 +278,10 @@ fdOpen file flags mode = mkEff $ \_ ->
 
 -- | Read from a file synchronously. See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_readsync_fd_buffer_offset_length_position)
 -- | for details.
+-- |
+-- | The use of an Int as FilePosition restricts this API to reading
+-- | files < 2GB.  The call is retained to not break existing code.
+-- | fdReadLarge does not have this restriction.
 fdRead :: forall eff.
           FileDescriptor
        -> Buffer
@@ -284,6 +290,20 @@ fdRead :: forall eff.
        -> Maybe FilePosition
        -> Eff (buffer :: BUFFER, exception :: EXCEPTION, fs :: FS | eff) ByteCount
 fdRead fd buff off len pos =
+  fdReadLarge fd buff off len (map toNumber pos)
+
+-- | Read from a file synchronously. See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_readsync_fd_buffer_offset_length_position)
+-- | for details.
+-- |
+-- | This version takes the file position as a Number.  It can read any file Node can.
+fdReadLarge :: forall eff.
+          FileDescriptor
+       -> Buffer
+       -> BufferOffset
+       -> BufferLength
+       -> Maybe Number
+       -> Eff (buffer :: BUFFER, exception :: EXCEPTION, fs :: FS | eff) ByteCount
+fdReadLarge fd buff off len pos =
   mkEff $ \_ -> runFn5 fs.readSync fd buff off len (toNullable pos)
 
 -- | Convenience function to fill the whole buffer from the current
@@ -298,6 +318,10 @@ fdNext fd buff = do
 
 -- | Write to a file synchronously. See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_writesync_fd_buffer_offset_length_position)
 -- | for details.
+-- |
+-- | The use of an Int as FilePosition restricts this API to writing
+-- | files < 2GB.  The call is retained to not break existing code.
+-- | fdWriteLarge does not have this restriction.
 fdWrite :: forall eff.
            FileDescriptor
         -> Buffer
@@ -306,6 +330,20 @@ fdWrite :: forall eff.
         -> Maybe FilePosition
         -> Eff (buffer :: BUFFER, exception :: EXCEPTION, fs :: FS | eff) ByteCount
 fdWrite fd buff off len pos =
+  fdWriteLarge fd buff off len (map toNumber pos)
+
+-- | Write to a file synchronously. See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_writesync_fd_buffer_offset_length_position)
+-- | for details.
+-- |
+-- | This version takes the file position as a Number.  It can write any file Node can.
+fdWriteLarge :: forall eff.
+           FileDescriptor
+        -> Buffer
+        -> BufferOffset
+        -> BufferLength
+        -> Maybe Number
+        -> Eff (buffer :: BUFFER, exception :: EXCEPTION, fs :: FS | eff) ByteCount
+fdWriteLarge fd buff off len pos =
   mkEff $ \_ -> runFn5 fs.writeSync fd buff off len (toNullable pos)
 
 -- | Convenience function to append the whole buffer to the current

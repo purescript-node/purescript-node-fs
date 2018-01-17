@@ -25,8 +25,10 @@ module Node.FS.Async
   , exists
   , fdOpen
   , fdRead
+  , fdReadLarge
   , fdNext
   , fdWrite
+  , fdWriteLarge
   , fdAppend
   , fdClose
   ) where
@@ -44,7 +46,7 @@ import Data.Function.Uncurried (Fn2, Fn6, Fn4, Fn3,
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)
 import Node.Buffer (Buffer(), BUFFER(), size)
-import Data.Int (round)
+import Data.Int (round, toNumber)
 import Node.Encoding (Encoding)
 import Node.FS (FS, FileDescriptor, ByteCount, FilePosition, BufferLength,
                 BufferOffset, FileMode, FileFlags, SymlinkType,
@@ -85,11 +87,12 @@ fs ::
   , appendFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
   , exists :: forall a. Fn2 FilePath (Boolean -> a) Unit
   , open :: Fn4 FilePath String (Nullable FileMode) (JSCallback FileDescriptor) Unit
-  , read :: Fn6 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) (JSCallback ByteCount) Unit
-  , write :: Fn6 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) (JSCallback ByteCount) Unit
+  , read :: Fn6 FileDescriptor Buffer BufferOffset BufferLength (Nullable Number) (JSCallback ByteCount) Unit
+  , write :: Fn6 FileDescriptor Buffer BufferOffset BufferLength (Nullable Number) (JSCallback ByteCount) Unit
   , close :: Fn2 FileDescriptor (JSCallback Unit) Unit
   }
 fs = unsafeRequireFS
+
 
 -- | Type synonym for callback functions.
 type Callback eff a = Either Error a -> Eff (fs :: FS | eff) Unit
@@ -314,6 +317,10 @@ fdOpen file flags mode cb = mkEff $ \_ -> runFn4 fs.open file (fileFlagsToNode f
 
 -- | Read from a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback)
 -- | for details.
+-- |
+-- | The use of an Int as FilePosition restricts this API to reading
+-- | files < 2GB.  The call is retained to not break existing code.
+-- | fdReadLarge does not have this restriction.
 fdRead :: forall eff.
           FileDescriptor
        -> Buffer
@@ -322,7 +329,22 @@ fdRead :: forall eff.
        -> Maybe FilePosition
        -> Callback (buffer :: BUFFER | eff) ByteCount
        -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
-fdRead fd buff off len pos cb =  mkEff $ \_ -> runFn6 fs.read fd buff off len (toNullable pos) (handleCallback cb)
+fdRead fd buff off len pos cb =
+  fdReadLarge fd buff off len (map toNumber pos) cb
+
+-- | Read from a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback)
+-- | for details.
+-- |
+-- | This version takes the file position as a Number.  It can read any file Node can.
+fdReadLarge :: forall eff.
+          FileDescriptor
+       -> Buffer
+       -> BufferOffset
+       -> BufferLength
+       -> Maybe Number
+       -> Callback (buffer :: BUFFER | eff) ByteCount
+       -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
+fdReadLarge fd buff off len pos cb = mkEff $ \_ -> runFn6 fs.read fd buff off len (toNullable pos) (handleCallback cb)
 
 -- | Convenience function to fill the whole buffer from the current
 -- | file position.
@@ -337,6 +359,10 @@ fdNext fd buff cb = do
 
 -- | Write to a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_write_fd_buffer_offset_length_position_callback)
 -- | for details.
+-- |
+-- | The use of an Int as FilePosition restricts this API to writing
+-- | files < 2GB.  The call is retained to not break existing code.
+-- | fdWriteLarge does not have this restriction.
 fdWrite :: forall eff.
            FileDescriptor
         -> Buffer
@@ -345,7 +371,23 @@ fdWrite :: forall eff.
         -> Maybe FilePosition
         -> Callback (buffer :: BUFFER | eff) ByteCount
         -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
-fdWrite fd buff off len pos cb = mkEff $ \_ -> runFn6 fs.write fd buff off len (toNullable pos) (handleCallback cb)
+fdWrite fd buff off len pos cb =
+  fdWriteLarge fd buff off len (map toNumber pos) cb
+
+-- | Write to a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_write_fd_buffer_offset_length_position_callback)
+-- | for details.
+-- |
+-- | This version takes file position as a Number.  It can write any file Node can.
+fdWriteLarge :: forall eff.
+           FileDescriptor
+        -> Buffer
+        -> BufferOffset
+        -> BufferLength
+        -> Maybe Number
+        -> Callback (buffer :: BUFFER | eff) ByteCount
+        -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
+fdWriteLarge fd buff off len pos cb = mkEff $ \_ -> runFn6 fs.write fd buff off len (toNullable pos) (handleCallback cb)
+
 
 -- | Convenience function to append the whole buffer to the current
 -- | file position.
