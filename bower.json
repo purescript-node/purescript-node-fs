@@ -28,7 +28,7 @@
     "purescript-nullable": "^3.0.0",
     "purescript-node-streams": "^3.0.0",
     "purescript-exceptions": "^3.0.0",
-    "purescript-js-date": "^4.0.0",
+    "purescript-js-date": ">= 4.0.0 < 6.0.0",
     "purescript-globals": "^3.0.0"
   },
   "devDependencies": {
