@@ -1,18 +1,16 @@
 module Test.Streams where
 
 import Prelude
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (log, CONSOLE)
-import Control.Monad.Eff.Exception (EXCEPTION)
+import Effect (Effect)
+import Effect.Console (log)
 import Node.Encoding (Encoding(..))
 import Node.Path as Path
 import Node.Stream as Stream
 
-import Node.FS (FS)
 import Node.FS.Stream (createWriteStream, createReadStream)
 import Node.FS.Sync as Sync
 
-main::forall e. Eff (fs::FS, console::CONSOLE, exception::EXCEPTION | e) Unit
+main :: Effect Unit
 main = do
   let fp = Path.concat
 

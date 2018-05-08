@@ -3,17 +3,16 @@ module Test where
 import Prelude
 import Data.Maybe (Maybe(..))
 import Data.Either (Either(..), either)
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Exception (EXCEPTION, Error, error, throwException,
-                                    catchException)
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Effect (Effect)
+import Effect.Exception (Error, error, throwException, catchException)
+import Effect.Console (log)
 
 import Node.Encoding (Encoding(..))
 import Node.Buffer as Buffer
 import Node.Path as Path
 import Unsafe.Coerce (unsafeCoerce)
 
-import Node.FS (FS, FileFlags(..))
+import Node.FS (FileFlags(..))
 import Node.FS.Stats (statusChangedTime, accessedTime, modifiedTime,
                       isSymbolicLink, isSocket, isFIFO, isCharacterDevice,
                       isBlockDevice, isDirectory, isFile)
@@ -23,15 +22,14 @@ import Node.FS.Sync as S
 -- Cheat to allow `main` to type check. See also issue #5 in
 -- purescript-exceptions.
 catchException' ::
-  forall a eff.
-    (Error -> Eff (exception :: EXCEPTION | eff) a)
-    -> Eff (exception :: EXCEPTION | eff) a
-    -> Eff (exception :: EXCEPTION | eff) a
+  forall a.
+    (Error -> Effect a)
+    -> Effect a
+    -> Effect a
 catchException' = unsafeCoerce catchException
 
 
-main::forall e. Eff (fs::FS, console::CONSOLE, exception::EXCEPTION,
-                     buffer::Buffer.BUFFER | e) Unit
+main :: Effect Unit
 main = do
   let fp = Path.concat
 
