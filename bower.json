@@ -20,18 +20,18 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-datetime": "^3.0.0",
-    "purescript-foreign": "^4.0.0",
-    "purescript-node-buffer": "^3.0.0",
-    "purescript-node-path": "^2.0.0",
-    "purescript-unsafe-coerce": "^3.0.0",
-    "purescript-nullable": "^3.0.0",
-    "purescript-node-streams": "^3.0.0",
-    "purescript-exceptions": "^3.0.0",
-    "purescript-js-date": ">= 4.0.0 < 6.0.0",
-    "purescript-globals": "^3.0.0"
+    "purescript-datetime": "#compiler/0.12",
+    "purescript-foreign": "#compiler/0.12",
+    "purescript-node-buffer": "justinwoo/purescript-node-buffer#compiler/0.12",
+    "purescript-node-path": "justinwoo/purescript-node-path#compiler/0.12",
+    "purescript-unsafe-coerce": "#compiler/0.12",
+    "purescript-nullable": "#compiler/0.12",
+    "purescript-node-streams": "justinwoo/purescript-node-streams#compiler/0.12",
+    "purescript-exceptions": "#compiler/0.12",
+    "purescript-js-date": "#compiler/0.12",
+    "purescript-globals": "#compiler/0.12"
   },
   "devDependencies": {
-    "purescript-console": "^3.0.0"
+    "purescript-console": "#compiler/0.12"
   }
 }

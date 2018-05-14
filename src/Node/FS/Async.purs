@@ -32,37 +32,35 @@ module Node.FS.Async
   ) where
 
 import Prelude
-import Control.Monad.Eff (Eff, runPure)
-import Control.Monad.Eff.Unsafe (unsafeCoerceEff)
-import Control.Monad.Eff.Exception (Error)
+
 import Data.DateTime (DateTime)
-import Data.Time.Duration (Milliseconds(..))
 import Data.DateTime.Instant (fromDateTime, unInstant)
 import Data.Either (Either(..))
-import Data.Function.Uncurried (Fn2, Fn6, Fn4, Fn3,
-                                runFn2, runFn6, runFn4, runFn3)
+import Data.Function.Uncurried (Fn2, Fn6, Fn4, Fn3, runFn2, runFn6, runFn4, runFn3)
+import Data.Int (round)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)
-import Node.Buffer (Buffer(), BUFFER(), size)
-import Data.Int (round)
+import Data.Time.Duration (Milliseconds(..))
+import Effect (Effect)
+import Effect.Exception (Error)
+import Effect.Unsafe (unsafePerformEffect)
+import Node.Buffer (Buffer, size)
 import Node.Encoding (Encoding)
-import Node.FS (FS, FileDescriptor, ByteCount, FilePosition, BufferLength,
-                BufferOffset, FileMode, FileFlags, SymlinkType,
-                fileFlagsToNode, symlinkTypeToNode)
-import Node.FS.Stats (StatsObj, Stats(..))
-import Node.Path (FilePath())
+import Node.FS (FileDescriptor, ByteCount, FilePosition, BufferLength, BufferOffset, FileMode, FileFlags, SymlinkType, fileFlagsToNode, symlinkTypeToNode)
+import Node.FS.Internal (mkEffect, unsafeRequireFS)
 import Node.FS.Perms (Perms, permsToString, all, mkPerms)
-import Node.FS.Internal (mkEff, unsafeRequireFS)
+import Node.FS.Stats (StatsObj, Stats(..))
+import Node.Path (FilePath)
 
 type JSCallback a = Fn2 (Nullable Error) a Unit
 
 foreign import handleCallbackImpl ::
-  forall eff a. Fn3 (Error -> Either Error a)
-                    (a -> Either Error a)
-                    (Callback eff a)
-                    (JSCallback a)
+  forall a. Fn3 (Error -> Either Error a)
+                (a -> Either Error a)
+                (Callback a)
+                (JSCallback a)
 
-handleCallback :: forall eff a. (Callback eff a) -> JSCallback a
+handleCallback :: forall a. (Callback a) -> JSCallback a
 handleCallback cb = runFn3 handleCallbackImpl Left Right cb
 
 fs ::
@@ -92,145 +90,145 @@ fs ::
 fs = unsafeRequireFS
 
 -- | Type synonym for callback functions.
-type Callback eff a = Either Error a -> Eff (fs :: FS | eff) Unit
+type Callback a = Either Error a -> Effect Unit
 
 -- | Renames a file.
-rename :: forall eff. FilePath
-                   -> FilePath
-                   -> Callback eff Unit
-                   -> Eff (fs :: FS | eff) Unit
-rename oldFile newFile cb = mkEff $ \_ -> runFn3
+rename :: FilePath
+       -> FilePath
+       -> Callback Unit
+       -> Effect Unit
+rename oldFile newFile cb = mkEffect $ \_ -> runFn3
   fs.rename oldFile newFile (handleCallback cb)
 
 -- | Truncates a file to the specified length.
-truncate :: forall eff. FilePath
-                     -> Int
-                     -> Callback eff Unit
-                     -> Eff (fs :: FS | eff) Unit
+truncate :: FilePath
+         -> Int
+         -> Callback Unit
+         -> Effect Unit
 
-truncate file len cb = mkEff $ \_ -> runFn3
+truncate file len cb = mkEffect $ \_ -> runFn3
   fs.truncate file len (handleCallback cb)
 
 -- | Changes the ownership of a file.
-chown :: forall eff. FilePath
-                  -> Int
-                  -> Int
-                  -> Callback eff Unit
-                  -> Eff (fs :: FS | eff) Unit
+chown :: FilePath
+      -> Int
+      -> Int
+      -> Callback Unit
+      -> Effect Unit
 
-chown file uid gid cb = mkEff $ \_ -> runFn4
+chown file uid gid cb = mkEffect $ \_ -> runFn4
   fs.chown file uid gid (handleCallback cb)
 
 -- | Changes the permissions of a file.
-chmod :: forall eff. FilePath
-                  -> Perms
-                  -> Callback eff Unit
-                  -> Eff (fs :: FS | eff) Unit
+chmod :: FilePath
+      -> Perms
+      -> Callback Unit
+      -> Effect Unit
 
-chmod file perms cb = mkEff $ \_ -> runFn3
+chmod file perms cb = mkEffect $ \_ -> runFn3
   fs.chmod file (permsToString perms) (handleCallback cb)
 
 -- | Gets file statistics.
-stat :: forall eff. FilePath
-                 -> Callback eff Stats
-                 -> Eff (fs :: FS | eff) Unit
+stat :: FilePath
+     -> Callback Stats
+     -> Effect Unit
 
-stat file cb = mkEff $ \_ -> runFn2
+stat file cb = mkEffect $ \_ -> runFn2
   fs.stat file (handleCallback $ cb <<< (<$>) Stats)
 
 -- | Creates a link to an existing file.
-link :: forall eff. FilePath
-                 -> FilePath
-                 -> Callback eff Unit
-                 -> Eff (fs :: FS | eff) Unit
+link :: FilePath
+     -> FilePath
+     -> Callback Unit
+     -> Effect Unit
 
-link src dst cb = mkEff $ \_ -> runFn3
+link src dst cb = mkEffect $ \_ -> runFn3
   fs.link src dst (handleCallback cb)
 
 -- | Creates a symlink.
-symlink :: forall eff. FilePath
-                    -> FilePath
-                    -> SymlinkType
-                    -> Callback eff Unit
-                    -> Eff (fs :: FS | eff) Unit
+symlink :: FilePath
+        -> FilePath
+        -> SymlinkType
+        -> Callback Unit
+        -> Effect Unit
 
-symlink src dest ty cb = mkEff $ \_ -> runFn4
+symlink src dest ty cb = mkEffect $ \_ -> runFn4
   fs.symlink src dest (symlinkTypeToNode ty) (handleCallback cb)
 
 -- | Reads the value of a symlink.
-readlink :: forall eff. FilePath
-                     -> Callback eff FilePath
-                     -> Eff (fs :: FS | eff) Unit
+readlink :: FilePath
+         -> Callback FilePath
+         -> Effect Unit
 
-readlink path cb = mkEff $ \_ -> runFn2
+readlink path cb = mkEffect $ \_ -> runFn2
   fs.readlink path (handleCallback cb)
 
 -- | Find the canonicalized absolute location for a path.
-realpath :: forall eff. FilePath
-                     -> Callback eff FilePath
-                     -> Eff (fs :: FS | eff) Unit
+realpath :: FilePath
+         -> Callback FilePath
+         -> Effect Unit
 
-realpath path cb = mkEff $ \_ -> runFn3
+realpath path cb = mkEffect $ \_ -> runFn3
   fs.realpath path {} (handleCallback cb)
 
 -- | Find the canonicalized absolute location for a path using a cache object
 -- | for already resolved paths.
-realpath' :: forall eff cache. FilePath
-                            -> { | cache }
-                            -> Callback eff FilePath
-                            -> Eff (fs :: FS | eff) Unit
+realpath' :: forall cache. FilePath
+          -> { | cache }
+          -> Callback FilePath
+          -> Effect Unit
 
-realpath' path cache cb = mkEff $ \_ -> runFn3
+realpath' path cache cb = mkEffect $ \_ -> runFn3
   fs.realpath path cache (handleCallback cb)
 
 -- | Deletes a file.
-unlink :: forall eff. FilePath
-                   -> Callback eff Unit
-                   -> Eff (fs :: FS | eff) Unit
+unlink :: FilePath
+       -> Callback Unit
+       -> Effect Unit
 
-unlink file cb = mkEff $ \_ -> runFn2
+unlink file cb = mkEffect $ \_ -> runFn2
   fs.unlink file (handleCallback cb)
 
 -- | Deletes a directory.
-rmdir :: forall eff. FilePath
-                   -> Callback eff Unit
-                   -> Eff (fs :: FS | eff) Unit
+rmdir :: FilePath
+      -> Callback Unit
+      -> Effect Unit
 
-rmdir file cb = mkEff $ \_ -> runFn2
+rmdir file cb = mkEffect $ \_ -> runFn2
   fs.rmdir file (handleCallback cb)
 
 -- | Makes a new directory.
-mkdir :: forall eff. FilePath
-                  -> Callback eff Unit
-                  -> Eff (fs :: FS | eff) Unit
+mkdir :: FilePath
+      -> Callback Unit
+      -> Effect Unit
 
 mkdir = flip mkdir' $ mkPerms all all all
 
 -- | Makes a new directory with the specified permissions.
-mkdir' :: forall eff. FilePath
-                   -> Perms
-                   -> Callback eff Unit
-                   -> Eff (fs :: FS | eff) Unit
+mkdir' :: FilePath
+       -> Perms
+       -> Callback Unit
+       -> Effect Unit
 
-mkdir' file perms cb = mkEff $ \_ -> runFn3
+mkdir' file perms cb = mkEffect $ \_ -> runFn3
   fs.mkdir file (permsToString perms) (handleCallback cb)
 
 -- | Reads the contents of a directory.
-readdir :: forall eff. FilePath
-                    -> Callback eff (Array FilePath)
-                    -> Eff (fs :: FS | eff) Unit
+readdir :: FilePath
+        -> Callback (Array FilePath)
+        -> Effect Unit
 
-readdir file cb = mkEff $ \_ -> runFn2
+readdir file cb = mkEffect $ \_ -> runFn2
   fs.readdir file (handleCallback cb)
 
 -- | Sets the accessed and modified times for the specified file.
-utimes :: forall eff. FilePath
-                   -> DateTime
-                   -> DateTime
-                   -> Callback eff Unit
-                   -> Eff (fs :: FS | eff) Unit
+utimes :: FilePath
+       -> DateTime
+       -> DateTime
+       -> Callback Unit
+       -> Effect Unit
 
-utimes file atime mtime cb = mkEff $ \_ -> runFn4
+utimes file atime mtime cb = mkEffect $ \_ -> runFn4
   fs.utimes file
             (fromDate atime)
             (fromDate mtime)
@@ -241,127 +239,121 @@ utimes file atime mtime cb = mkEff $ \_ -> runFn4
   toEpochMilliseconds = unInstant <<< fromDateTime
 
 -- | Reads the entire contents of a file returning the result as a raw buffer.
-readFile :: forall eff. FilePath
-                     -> Callback (buffer :: BUFFER | eff) Buffer
-                     -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
+readFile :: FilePath
+         -> Callback Buffer
+         -> Effect Unit
 
-readFile file cb = mkEff $ \_ -> runFn3
+readFile file cb = mkEffect $ \_ -> runFn3
   fs.readFile file {} (handleCallback cb)
 
 -- | Reads the entire contents of a text file with the specified encoding.
-readTextFile :: forall eff. Encoding
-                         -> FilePath
-                         -> Callback eff String
-                         -> Eff (fs :: FS | eff) Unit
+readTextFile ::  Encoding
+             -> FilePath
+             -> Callback String
+             -> Effect Unit
 
-readTextFile encoding file cb = mkEff $ \_ -> runFn3
+readTextFile encoding file cb = mkEffect $ \_ -> runFn3
   fs.readFile file { encoding: show encoding } (handleCallback cb)
 
 -- | Writes a buffer to a file.
-writeFile :: forall eff. FilePath
-                      -> Buffer
-                      -> Callback (buffer :: BUFFER | eff) Unit
-                      -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
+writeFile :: FilePath
+          -> Buffer
+          -> Callback Unit
+          -> Effect Unit
 
-writeFile file buff cb = mkEff $ \_ -> runFn4
+writeFile file buff cb = mkEffect $ \_ -> runFn4
   fs.writeFile file buff {} (handleCallback cb)
 
 -- | Writes text to a file using the specified encoding.
-writeTextFile :: forall eff. Encoding
-                          -> FilePath
-                          -> String
-                          -> Callback eff Unit
-                          -> Eff (fs :: FS | eff) Unit
+writeTextFile ::  Encoding
+              -> FilePath
+              -> String
+              -> Callback Unit
+              -> Effect Unit
 
-writeTextFile encoding file buff cb = mkEff $ \_ -> runFn4
+writeTextFile encoding file buff cb = mkEffect $ \_ -> runFn4
   fs.writeFile file buff { encoding: show encoding } (handleCallback cb)
 
 -- | Appends the contents of a buffer to a file.
-appendFile :: forall eff. FilePath
-                       -> Buffer
-                       -> Callback (buffer :: BUFFER | eff) Unit
-                       -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
+appendFile :: FilePath
+           -> Buffer
+           -> Callback Unit
+           -> Effect Unit
 
-appendFile file buff cb = mkEff $ \_ -> runFn4
+appendFile file buff cb = mkEffect $ \_ -> runFn4
   fs.appendFile file buff {} (handleCallback cb)
 
 -- | Appends text to a file using the specified encoding.
-appendTextFile :: forall eff. Encoding
-                           -> FilePath
-                           -> String
-                           -> Callback eff Unit
-                           -> Eff (fs :: FS | eff) Unit
+appendTextFile ::  Encoding
+               -> FilePath
+               -> String
+               -> Callback Unit
+               -> Effect Unit
 
-appendTextFile encoding file buff cb = mkEff $ \_ -> runFn4
+appendTextFile encoding file buff cb = mkEffect $ \_ -> runFn4
   fs.appendFile file buff { encoding: show encoding } (handleCallback cb)
 
 -- | Check if the path exists.
-exists :: forall eff. FilePath
-                   -> (Boolean -> Eff (fs :: FS | eff) Unit)
-                   -> Eff (fs :: FS | eff) Unit
-exists file cb = mkEff $ \_ -> runFn2
-  fs.exists file $ \b -> runPure (unsafeCoerceEff (cb b))
+exists :: FilePath
+       -> (Boolean -> Effect Unit)
+       -> Effect Unit
+exists file cb = mkEffect $ \_ -> runFn2
+  fs.exists file $ \b -> unsafePerformEffect (cb b)
 
 -- | Open a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_open_path_flags_mode_callback)
 -- | for details.
-fdOpen :: forall eff.
-          FilePath
+fdOpen :: FilePath
        -> FileFlags
        -> Maybe FileMode
-       -> Callback eff FileDescriptor
-       -> Eff (fs :: FS | eff) Unit
-fdOpen file flags mode cb = mkEff $ \_ -> runFn4 fs.open file (fileFlagsToNode flags) (toNullable mode) (handleCallback cb)
+       -> Callback FileDescriptor
+       -> Effect Unit
+fdOpen file flags mode cb = mkEffect $ \_ -> runFn4 fs.open file (fileFlagsToNode flags) (toNullable mode) (handleCallback cb)
 
 -- | Read from a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback)
 -- | for details.
-fdRead :: forall eff.
-          FileDescriptor
+fdRead :: FileDescriptor
        -> Buffer
        -> BufferOffset
        -> BufferLength
        -> Maybe FilePosition
-       -> Callback (buffer :: BUFFER | eff) ByteCount
-       -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
-fdRead fd buff off len pos cb =  mkEff $ \_ -> runFn6 fs.read fd buff off len (toNullable pos) (handleCallback cb)
+       -> Callback ByteCount
+       -> Effect Unit
+fdRead fd buff off len pos cb =  mkEffect $ \_ -> runFn6 fs.read fd buff off len (toNullable pos) (handleCallback cb)
 
 -- | Convenience function to fill the whole buffer from the current
 -- | file position.
-fdNext :: forall eff.
-          FileDescriptor
+fdNext :: FileDescriptor
        -> Buffer
-       -> Callback (buffer :: BUFFER | eff) ByteCount
-       -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
+       -> Callback ByteCount
+       -> Effect Unit
 fdNext fd buff cb = do
   sz <- size buff
   fdRead fd buff 0 sz Nothing cb
 
 -- | Write to a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_write_fd_buffer_offset_length_position_callback)
 -- | for details.
-fdWrite :: forall eff.
-           FileDescriptor
+fdWrite :: FileDescriptor
         -> Buffer
         -> BufferOffset
         -> BufferLength
         -> Maybe FilePosition
-        -> Callback (buffer :: BUFFER | eff) ByteCount
-        -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
-fdWrite fd buff off len pos cb = mkEff $ \_ -> runFn6 fs.write fd buff off len (toNullable pos) (handleCallback cb)
+        -> Callback ByteCount
+        -> Effect Unit
+fdWrite fd buff off len pos cb = mkEffect $ \_ -> runFn6 fs.write fd buff off len (toNullable pos) (handleCallback cb)
 
 -- | Convenience function to append the whole buffer to the current
 -- | file position.
-fdAppend :: forall eff.
-            FileDescriptor
+fdAppend :: FileDescriptor
          -> Buffer
-         -> Callback (buffer :: BUFFER | eff) ByteCount
-         -> Eff (buffer :: BUFFER, fs :: FS | eff) Unit
+         -> Callback ByteCount
+         -> Effect Unit
 fdAppend fd buff cb = do
   sz <- size buff
   fdWrite fd buff 0 sz Nothing cb
 
 -- | Close a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_close_fd_callback)
 -- | for details.
-fdClose :: forall eff.
-           FileDescriptor
-        -> Callback eff Unit
-        -> Eff (fs :: FS | eff) Unit
-fdClose fd cb = mkEff $ \_ -> runFn2 fs.close fd (handleCallback cb)
+fdClose :: FileDescriptor
+        -> Callback Unit
+        -> Effect Unit
+fdClose fd cb = mkEffect $ \_ -> runFn2 fs.close fd (handleCallback cb)
