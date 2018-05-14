@@ -22,11 +22,11 @@
   "dependencies": {
     "purescript-datetime": "#compiler/0.12",
     "purescript-foreign": "#compiler/0.12",
-    "purescript-node-buffer": "justinwoo/purescript-node-buffer#compiler/0.12",
-    "purescript-node-path": "justinwoo/purescript-node-path#compiler/0.12",
+    "purescript-node-buffer": "#compiler/0.12",
+    "purescript-node-path": "#compiler/0.12",
     "purescript-unsafe-coerce": "#compiler/0.12",
     "purescript-nullable": "#compiler/0.12",
-    "purescript-node-streams": "justinwoo/purescript-node-streams#compiler/0.12",
+    "purescript-node-streams": "#compiler/0.12",
     "purescript-exceptions": "#compiler/0.12",
     "purescript-js-date": "#compiler/0.12",
     "purescript-globals": "#compiler/0.12"
