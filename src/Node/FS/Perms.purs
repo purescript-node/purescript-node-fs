@@ -17,7 +17,8 @@ import Prelude
 import Data.Enum (toEnum)
 import Data.Int (fromNumber)
 import Data.Maybe (Maybe(..), isNothing, fromJust)
-import Data.String (Pattern(Pattern), toCharArray, joinWith, drop, charAt, indexOf)
+import Data.String (Pattern(Pattern), joinWith, drop, indexOf)
+import Data.String.CodeUnits (charAt, toCharArray)
 import Global (readInt)
 import Partial.Unsafe (unsafePartial)
 
