@@ -20,18 +20,26 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-datetime": "^3.0.0",
-    "purescript-foreign": "^4.0.0",
-    "purescript-node-buffer": "^3.0.0",
-    "purescript-node-path": "^2.0.0",
-    "purescript-unsafe-coerce": "^3.0.0",
-    "purescript-nullable": "^3.0.0",
-    "purescript-node-streams": "^3.0.0",
-    "purescript-exceptions": "^3.0.0",
-    "purescript-js-date": ">= 4.0.0 < 6.0.0",
-    "purescript-globals": "^3.0.0"
+    "purescript-datetime": "^4.0.0",
+    "purescript-effect": "^2.0.0",
+    "purescript-either": "^4.0.0",
+    "purescript-enums": "^4.0.0",
+    "purescript-exceptions": "^4.0.0",
+    "purescript-functions": "^4.0.0",
+    "purescript-globals": "^4.0.0",
+    "purescript-integers": "^4.0.0",
+    "purescript-js-date": "^6.0.0",
+    "purescript-maybe": "^4.0.0",
+    "purescript-node-buffer": "^5.0.0",
+    "purescript-node-path": "^3.0.0",
+    "purescript-node-streams": "^4.0.0",
+    "purescript-nullable": "^4.0.0",
+    "purescript-partial": "^2.0.0",
+    "purescript-prelude": "^4.0.0",
+    "purescript-strings": "^4.0.0",
+    "purescript-unsafe-coerce": "^4.0.0"
   },
   "devDependencies": {
-    "purescript-console": "^3.0.0"
+    "purescript-console": "^4.1.0"
   }
 }

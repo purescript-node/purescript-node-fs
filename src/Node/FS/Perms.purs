@@ -13,10 +13,12 @@ module Node.FS.Perms
   ) where
 
 import Prelude
-import Data.Char (fromCharCode)
+
+import Data.Enum (toEnum)
 import Data.Int (fromNumber)
 import Data.Maybe (Maybe(..), isNothing, fromJust)
-import Data.String (Pattern(Pattern), toCharArray, joinWith, drop, charAt, indexOf)
+import Data.String (Pattern(Pattern), joinWith, drop, indexOf)
+import Data.String.CodeUnits (charAt, toCharArray)
 import Global (readInt)
 import Partial.Unsafe (unsafePartial)
 
@@ -119,7 +121,7 @@ instance showPerms :: Show Perms where
 permsFromString :: String -> Maybe Perms
 permsFromString = _perms <<< toCharArray <<< dropPrefix zeroChar
   where
-    zeroChar = fromCharCode 48
+    zeroChar = unsafePartial $ fromJust $ toEnum 48
 
     dropPrefix x xs
       | charAt 0 xs == Just x = drop 1 xs

@@ -3,17 +3,17 @@ module TestAsync where
 import Prelude (Unit, show, bind, discard, (<>), ($))
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console(log,CONSOLE())
+import Effect (Effect)
+import Effect.Console (log)
 
-import Node.FS (FileFlags(..), FS)
+import Node.FS (FileFlags(..))
 import Node.FS.Async as A
 import Node.Path as FP
 import Node.Buffer as B
 
 -- exercise the file descriptor based async IO functions
 
-main ::forall e. Eff (fs::FS, console::CONSOLE, buffer::B.BUFFER |e) Unit
+main :: Effect Unit
 main = do
   let path1 = FP.concat( ["test", "TestAsync.purs"] )
       path2 = FP.concat( ["test", "TestAsync.purs.partial"] )

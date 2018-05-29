@@ -2,10 +2,11 @@
 module Node.FS.Internal where
 
 import Prelude
-import Control.Monad.Eff (Eff)
+
+import Effect (Effect)
 import Unsafe.Coerce (unsafeCoerce)
 
-mkEff :: forall e a. (Unit -> a) -> Eff e a
-mkEff = unsafeCoerce
+mkEffect :: forall a. (Unit -> a) -> Effect a
+mkEffect = unsafeCoerce
 
 foreign import unsafeRequireFS :: forall props. { | props }

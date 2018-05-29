@@ -1,6 +1,5 @@
 module Node.FS
-  ( FS()
-  , FileDescriptor(..)
+  ( FileDescriptor(..)
   , FileFlags(..)
   , FileMode(..)
   , SymlinkType(..)
@@ -13,10 +12,6 @@ module Node.FS
   ) where
 
 import Prelude
-import Control.Monad.Eff (kind Effect)
-
--- | Effect type for file system usage.
-foreign import data FS :: Effect
 
 foreign import data FileDescriptor :: Type
 
