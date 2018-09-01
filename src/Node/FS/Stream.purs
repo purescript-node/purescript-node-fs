@@ -15,9 +15,13 @@ module Node.FS.Stream
 
 import Prelude
 import Data.Maybe (Maybe(..))
+import Data.Either (Either(..))
 import Data.Function.Uncurried (Fn2, runFn2)
 import Data.Nullable (Nullable, toNullable)
 import Effect (Effect)
+import Effect.Exception (Error)
+import Foreign (Foreign)
+import Unsafe.Coerce (unsafeCoerce)
 import Node.Stream (Readable(), Writable())
 import Node.Path (FilePath())
 
@@ -27,8 +31,7 @@ import Node.FS.Perms as Perms
 import Node.FS.Internal (mkEffect, unsafeRequireFS)
 
 fs ::
-  { createReadStream  :: forall opts. Fn2 (Nullable FilePath) { | opts } (Readable ())
-  , createWriteStream :: forall opts. Fn2 (Nullable FilePath) { | opts } (Writable ())
+  { createWriteStream :: forall opts. Fn2 (Nullable FilePath) { | opts } (Writable ())
   }
 fs = unsafeRequireFS
 
@@ -90,13 +93,13 @@ fdCreateWriteStreamWith opts fd = mkEffect $ \_ -> runFn2
 -- | Create a Readable stream which reads data to the specified file, using
 -- | the default options.
 createReadStream :: FilePath
-                  -> Effect (Readable ())
+                  -> Effect (Either Error (Readable ()))
 createReadStream = createReadStreamWith defaultReadStreamOptions
 
 -- | Create a Readable stream which reads data to the specified file
 -- | descriptor, using the default options.
 fdCreateReadStream :: FileDescriptor
-                   -> Effect (Readable ())
+                   -> Effect (Either Error (Readable ()))
 fdCreateReadStream = fdCreateReadStreamWith defaultReadStreamOptions
 
 type ReadStreamOptions =
@@ -112,12 +115,19 @@ defaultReadStreamOptions =
   , autoClose: true
   }
 
+foreign import createReadStreamImpl ::
+  (Error -> Either Error (Readable ())) ->
+  (Readable () -> Either Error (Readable ())) ->
+  Nullable FilePath ->
+  Foreign ->
+  Effect (Either Error (Readable ()))
+
 -- | Create a Readable stream which reads data from the specified file.
 createReadStreamWith :: ReadStreamOptions
                      -> FilePath
-                     -> Effect (Readable ())
-createReadStreamWith opts file = mkEffect $ \_ -> runFn2
-  fs.createReadStream (nonnull file)
+                     -> Effect (Either Error (Readable ()))
+createReadStreamWith opts file =
+  createReadStreamImpl Left Right (nonnull file) $ unsafeCoerce
     { mode: Perms.permsToInt opts.perms
     , flags: fileFlagsToNode opts.flags
     , autoClose: opts.autoClose
@@ -126,9 +136,9 @@ createReadStreamWith opts file = mkEffect $ \_ -> runFn2
 -- | Create a Readable stream which reads data from the specified file descriptor.
 fdCreateReadStreamWith :: ReadStreamOptions
                        -> FileDescriptor
-                       -> Effect (Readable ())
-fdCreateReadStreamWith opts fd = mkEffect $ \_ -> runFn2
-  fs.createReadStream null
+                       -> Effect (Either Error (Readable ()))
+fdCreateReadStreamWith opts fd =
+  createReadStreamImpl Left Right null $ unsafeCoerce
     { fd
     , mode: Perms.permsToInt opts.perms
     , flags: fileFlagsToNode opts.flags
