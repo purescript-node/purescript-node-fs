@@ -3,6 +3,7 @@ module Test where
 import Prelude
 import Data.Maybe (Maybe(..))
 import Data.Either (Either(..), either)
+import Data.Traversable (traverse)
 import Effect (Effect)
 import Effect.Exception (Error, error, throwException, catchException)
 import Effect.Console (log)
@@ -84,9 +85,10 @@ main = do
       log "\n\ntruncate result:"
       either (log <<< show) (log <<< show) y
 
-  A.readFile (fp ["test", "Test.purs"]) $ \x -> do
+  A.readFile (fp ["test", "Test.purs"]) $ \mbuf -> do
+    buf <- traverse Buffer.freeze mbuf
     log "\n\nreadFile result:"
-    either (log <<< show) (log <<< show) x
+    either (log <<< show) (log <<< show) buf
 
   A.readTextFile UTF8 (fp ["test", "Test.purs"]) $ \x -> do
     log "\n\nreadTextFile result:"
