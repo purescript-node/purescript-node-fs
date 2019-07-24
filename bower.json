@@ -30,7 +30,7 @@
     "purescript-integers": "^4.0.0",
     "purescript-js-date": "^6.0.0",
     "purescript-maybe": "^4.0.0",
-    "purescript-node-buffer": "^5.0.0",
+    "purescript-node-buffer": ">=5.0.0 <7.0.0",
     "purescript-node-path": "^3.0.0",
     "purescript-node-streams": "^4.0.0",
     "purescript-nullable": "^4.0.0",
