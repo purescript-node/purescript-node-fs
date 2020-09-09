@@ -13,6 +13,7 @@ module Node.FS.Async
   , unlink
   , rmdir
   , mkdir
+  , mkdirRecursive
   , mkdir'
   , readdir
   , utimes
@@ -75,7 +76,7 @@ fs ::
   , realpath :: forall cache. Fn3 FilePath { | cache } (JSCallback FilePath) Unit
   , unlink :: Fn2 FilePath (JSCallback Unit) Unit
   , rmdir :: Fn2 FilePath (JSCallback Unit) Unit
-  , mkdir :: Fn3 FilePath String (JSCallback Unit) Unit
+  , mkdir :: Fn3 FilePath { recursive :: Boolean, mode :: String } (JSCallback Unit) Unit
   , readdir :: Fn2 FilePath (JSCallback (Array FilePath)) Unit
   , utimes :: Fn4 FilePath Int Int (JSCallback Unit) Unit
   , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
@@ -202,16 +203,25 @@ mkdir :: FilePath
       -> Callback Unit
       -> Effect Unit
 
-mkdir = flip mkdir' $ mkPerms all all all
+mkdir path = mkdir' path false (mkPerms all all all)
+
+-- | Makes a new directory and any directories that don't exist
+-- | in the path. Similar to `mkdir -p`.
+mkdirRecursive :: FilePath
+               -> Callback Unit
+               -> Effect Unit
+
+mkdirRecursive path = mkdir' path true (mkPerms all all all)
 
 -- | Makes a new directory with the specified permissions.
 mkdir' :: FilePath
+       -> Boolean
        -> Perms
        -> Callback Unit
        -> Effect Unit
 
-mkdir' file perms cb = mkEffect $ \_ -> runFn3
-  fs.mkdir file (permsToString perms) (handleCallback cb)
+mkdir' file recurse perms cb = mkEffect $ \_ -> runFn3
+  fs.mkdir file { recursive: recurse, mode: permsToString perms } (handleCallback cb)
 
 -- | Reads the contents of a directory.
 readdir :: FilePath
