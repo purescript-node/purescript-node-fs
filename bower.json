@@ -26,7 +26,6 @@
     "purescript-enums": "master",
     "purescript-exceptions": "master",
     "purescript-functions": "master",
-    "purescript-globals": "master",
     "purescript-integers": "master",
     "purescript-js-date": "main",
     "purescript-maybe": "master",
