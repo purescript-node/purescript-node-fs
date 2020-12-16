@@ -15,11 +15,10 @@ module Node.FS.Perms
 import Prelude
 
 import Data.Enum (toEnum)
-import Data.Int (fromNumber)
+import Data.Int (fromStringAs, octal)
 import Data.Maybe (Maybe(..), isNothing, fromJust)
 import Data.String (Pattern(Pattern), joinWith, drop, indexOf)
 import Data.String.CodeUnits (charAt, toCharArray)
-import Global (readInt)
 import Partial.Unsafe (unsafePartial)
 
 -- | A `Perm` value specifies what is allowed to be done with a particular
@@ -177,4 +176,4 @@ permsToString (Perms { u: u, g: g, o: o }) =
 
 -- | Convert a `Perms` value to an `Int`, via `permsToString`.
 permsToInt :: Perms -> Int
-permsToInt = unsafePartial $ fromJust <<< fromNumber <<< readInt 8 <<< permsToString
+permsToInt = unsafePartial $ fromJust <<< fromStringAs octal <<< permsToString
