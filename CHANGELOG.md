@@ -15,7 +15,7 @@ Other improvements:
 ## [v6.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v6.0.0) - 2021-MONTH-DAY
 
 Breaking changes:
-  - Updated dependencies for PureScript 0.14 (#46)
+  - Added support for PureScript 0.14 and dropped support for all previous versions (#46)
   - Dropped deprecated `globals` dependency (#47)
 
 Other improvements:
