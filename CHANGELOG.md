@@ -12,9 +12,19 @@ Bugfixes:
 
 Other improvements:
 
+## [v6.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v6.0.0) - 2021-MONTH-DAY
+
+Breaking changes:
+  - Added support for PureScript 0.14 and dropped support for all previous versions (#46)
+  - Dropped deprecated `globals` dependency (#47)
+
+Other improvements:
+  - Migrated CI to GitHub Actions, updated installation instructions to use Spago, and migrated from `jshint` to `eslint` (#45)
+  - Added a changelog and pull request template (#49)
+
 ## [v5.0.1](https://github.com/purescript-node/purescript-node-fs/releases/tag/v5.0.1) - 2019-07-24
 
-Relax upper bound on `node-buffer`
+- Relaxed upper bound on `node-buffer`
 
 ## [v5.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v5.0.0) - 2018-05-29
 
