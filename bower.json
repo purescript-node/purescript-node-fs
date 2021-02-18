@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/purescript-node/purescript-node-fs"
+    "url": "https://github.com/purescript-node/purescript-node-fs.git"
   },
   "ignore": [
     "**/.*",
