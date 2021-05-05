@@ -7,10 +7,12 @@ Notable changes to this project are documented in this file. The format is based
 Breaking changes:
 
 New features:
+- Export `mkPerm` (#42 by @JordanMartinez)
 
 Bugfixes:
 
 Other improvements:
+- Fix warnings revealed by v0.14.1 PS release (#42 by @JordanMartinez)
 
 ## [v6.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v6.0.0) - 2021-02-26
 
@@ -143,4 +145,3 @@ Fix type of `Async.exists`.
 ## [v0.1.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v0.1.0) - 2014-08-11
 
 Initial semver release.
-
