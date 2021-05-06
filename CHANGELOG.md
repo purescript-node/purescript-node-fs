@@ -7,22 +7,28 @@ Notable changes to this project are documented in this file. The format is based
 Breaking changes:
 
 New features:
-- Export `mkPerm` (#42 by @JordanMartinez)
 
 Bugfixes:
 
 Other improvements:
-- Fix warnings revealed by v0.14.1 PS release (#42 by @JordanMartinez)
+
+## [v6.1.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v6.1.0) - 2021-05-06
+
+New features:
+- Exported `mkPerm` (#42 by @JordanMartinez)
+
+Other improvements:
+- Fixed warnings revealed by v0.14.1 PS release (#42 by @JordanMartinez)
 
 ## [v6.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v6.0.0) - 2021-02-26
 
 Breaking changes:
-  - Added support for PureScript 0.14 and dropped support for all previous versions (#46)
-  - Dropped deprecated `globals` dependency (#47)
+- Added support for PureScript 0.14 and dropped support for all previous versions (#46)
+- Dropped deprecated `globals` dependency (#47)
 
 Other improvements:
-  - Migrated CI to GitHub Actions, updated installation instructions to use Spago, and migrated from `jshint` to `eslint` (#45)
-  - Added a changelog and pull request template (#49)
+- Migrated CI to GitHub Actions, updated installation instructions to use Spago, and migrated from `jshint` to `eslint` (#45)
+- Added a changelog and pull request template (#49)
 
 ## [v5.0.1](https://github.com/purescript-node/purescript-node-fs/releases/tag/v5.0.1) - 2019-07-24
 
