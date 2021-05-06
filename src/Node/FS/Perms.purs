@@ -1,5 +1,6 @@
 module Node.FS.Perms
   ( Perm()
+  , mkPerm
   , none
   , read
   , write
