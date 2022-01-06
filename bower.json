@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/purescript-node/purescript-node-fs"
+    "url": "https://github.com/purescript-node/purescript-node-fs.git"
   },
   "ignore": [
     "**/.*",
@@ -20,27 +20,26 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-datetime": "^4.0.0",
-    "purescript-effect": "^2.0.0",
-    "purescript-either": "^4.0.0",
-    "purescript-enums": "^4.0.0",
-    "purescript-exceptions": "^4.0.0",
-    "purescript-functions": "^4.0.0",
-    "purescript-globals": "^4.0.0",
-    "purescript-integers": "^4.0.0",
-    "purescript-js-date": "^6.0.0",
-    "purescript-maybe": "^4.0.0",
-    "purescript-node-buffer": ">=5.0.0 <7.0.0",
-    "purescript-node-path": "^3.0.0",
-    "purescript-node-streams": "^4.0.0",
-    "purescript-nullable": "^4.0.0",
-    "purescript-partial": "^2.0.0",
-    "purescript-prelude": "^4.0.0",
-    "purescript-strings": "^4.0.0",
-    "purescript-unsafe-coerce": "^4.0.0"
+    "purescript-datetime": "^5.0.0",
+    "purescript-effect": "^3.0.0",
+    "purescript-either": "^5.0.0",
+    "purescript-enums": "^5.0.0",
+    "purescript-exceptions": "^5.0.0",
+    "purescript-functions": "^5.0.0",
+    "purescript-integers": "^5.0.0",
+    "purescript-js-date": "^7.0.0",
+    "purescript-maybe": "^5.0.0",
+    "purescript-node-buffer": "^7.0.0",
+    "purescript-node-path": "^4.0.0",
+    "purescript-node-streams": "^5.0.0",
+    "purescript-nullable": "^5.0.0",
+    "purescript-partial": "^3.0.0",
+    "purescript-prelude": "^5.0.0",
+    "purescript-strings": "^5.0.0",
+    "purescript-unsafe-coerce": "^5.0.0"
   },
   "devDependencies": {
-    "purescript-console": "^4.1.0",
-    "purescript-node-buffer": "^6.0.0"
+    "purescript-console": "^5.0.0",
+    "purescript-node-buffer": "^7.0.0"
   }
 }
