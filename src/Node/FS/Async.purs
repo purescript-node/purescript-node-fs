@@ -203,7 +203,7 @@ mkdir :: FilePath
       -> Callback Unit
       -> Effect Unit
 
-mkdir path = mkdir' path false (mkPerms all all all)
+mkdir path = mkdir' path (mkPerms all all all)
 
 -- | Makes a new directory and any directories that don't exist
 -- | in the path. Similar to `mkdir -p`.
@@ -211,17 +211,25 @@ mkdirRecursive :: FilePath
                -> Callback Unit
                -> Effect Unit
 
-mkdirRecursive path = mkdir' path true (mkPerms all all all)
+mkdirRecursive path = mkdirRecursive' path (mkPerms all all all)
+
+-- | Makes a new directory (and any directories that don't exist
+-- | in the path) with the specified permissions.
+mkdirRecursive'
+  :: FilePath
+  -> Perms
+  -> Callback Unit
+  -> Effect Unit
+mkdirRecursive' file perms cb = mkEffect $ \_ -> runFn3
+  fs.mkdir file { recursive: true, mode: permsToString perms } (handleCallback cb)
 
 -- | Makes a new directory with the specified permissions.
 mkdir' :: FilePath
-       -> Boolean
        -> Perms
        -> Callback Unit
        -> Effect Unit
-
-mkdir' file recurse perms cb = mkEffect $ \_ -> runFn3
-  fs.mkdir file { recursive: recurse, mode: permsToString perms } (handleCallback cb)
+mkdir' file perms cb = mkEffect $ \_ -> runFn3
+  fs.mkdir file { recursive: false, mode: permsToString perms } (handleCallback cb)
 
 -- | Reads the contents of a directory.
 readdir :: FilePath
