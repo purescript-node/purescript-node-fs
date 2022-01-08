@@ -13,6 +13,8 @@ module Node.FS.Sync
   , rmdir
   , mkdir
   , mkdir'
+  , mkdirRecursive
+  , mkdirRecursive'
   , readdir
   , utimes
   , readFile
@@ -64,7 +66,7 @@ fs ::
   , realpathSync :: forall cache. Fn2 FilePath { | cache } FilePath
   , unlinkSync :: Fn1 FilePath Unit
   , rmdirSync :: Fn1 FilePath Unit
-  , mkdirSync :: Fn2 FilePath String Unit
+  , mkdirSync :: Fn2 FilePath { recursive :: Boolean, mode :: String } Unit
   , readdirSync :: Fn1 FilePath (Array FilePath)
   , utimesSync :: Fn3 FilePath Int Int Unit
   , readFileSync :: forall a opts. Fn2 FilePath { | opts } a
@@ -174,6 +176,20 @@ rmdir file = mkEffect $ \_ -> runFn1
   fs.rmdirSync file
 
 -- | Makes a new directory.
+mkdirRecursive
+  :: FilePath
+  -> Effect Unit
+mkdirRecursive = flip mkdirRecursive' $ mkPerms all all all
+
+-- | Makes a new directory with the specified permissions.
+mkdirRecursive'
+  :: FilePath
+  -> Perms
+  -> Effect Unit
+mkdirRecursive' file perms = mkEffect $ \_ -> runFn2
+  fs.mkdirSync file { recursive: true, mode: permsToString perms }
+
+-- | Makes a new directory.
 mkdir :: FilePath
       -> Effect Unit
 
@@ -185,7 +201,7 @@ mkdir' :: FilePath
        -> Effect Unit
 
 mkdir' file perms = mkEffect $ \_ -> runFn2
-  fs.mkdirSync file (permsToString perms)
+  fs.mkdirSync file { recursive: false, mode: permsToString perms }
 
 -- | Reads the contents of a directory.
 readdir :: FilePath
