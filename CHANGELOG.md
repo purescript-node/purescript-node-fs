@@ -7,7 +7,7 @@ Notable changes to this project are documented in this file. The format is based
 Breaking changes:
 
 New features:
-- Add bindings to `mkdir(path, { recursive: true })` via `mkdirRecursive` (#53 by @JordanMartinez)
+- Add bindings to `mkdir(path, { recursive: true })` via `mkdirRecursive` (#53, #55 by @JordanMartinez)
 
 Bugfixes:
 
