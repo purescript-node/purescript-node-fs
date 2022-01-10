@@ -13,6 +13,17 @@ Bugfixes:
 
 Other improvements:
 
+## [v6.2.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v6.2.0) - 2022-01-10
+
+Breaking changes:
+
+New features:
+- Add bindings to `mkdir(path, { recursive: true })` via `mkdirRecursive` (#53, #55 by @JordanMartinez)
+
+Bugfixes:
+
+Other improvements:
+
 ## [v6.1.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v6.1.0) - 2021-05-06
 
 New features:
