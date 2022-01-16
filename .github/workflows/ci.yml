@@ -19,15 +19,10 @@ jobs:
           node-version: "10"
 
       - name: Install dependencies
-        run: |
-          npm install -g bower
-          npm install
-          bower install --production
+        run: spago install
 
       - name: Build source
-        run: npm run-script build
+        run: spago build
 
       - name: Run tests
-        run: |
-          bower install
-          npm run-script test --if-present
+        run: spago test
