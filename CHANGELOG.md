@@ -12,6 +12,8 @@ New features:
 Bugfixes:
 
 Other improvements:
+- Replace pulp and bower with spago (#56 by @waynevanson)
+- Test against multiple os' and node versions in CI
 
 ## [v6.2.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v6.2.0) - 2022-01-10
 
