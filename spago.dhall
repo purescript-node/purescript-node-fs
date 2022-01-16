@@ -18,6 +18,7 @@ to generate this file without the comments in this block.
   , "either"
   , "enums"
   , "exceptions"
+  , "foldable-traversable"
   , "functions"
   , "integers"
   , "js-date"
