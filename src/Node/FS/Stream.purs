@@ -24,13 +24,11 @@ import Node.Path (FilePath())
 import Node.FS (FileDescriptor, FileFlags(..), fileFlagsToNode)
 import Node.FS.Perms (Perms())
 import Node.FS.Perms as Perms
-import Node.FS.Internal (mkEffect, unsafeRequireFS)
+import Node.FS.Internal (mkEffect)
+import Node.FS.Internal as FS
 
-fs ::
-  { createReadStream  :: forall opts. Fn2 (Nullable FilePath) { | opts } (Readable ())
-  , createWriteStream :: forall opts. Fn2 (Nullable FilePath) { | opts } (Writable ())
-  }
-fs = unsafeRequireFS
+foreign import createReadStream_  :: forall opts. Fn2 (Nullable FilePath) { | opts } (Readable ())
+foreign import createWriteStream_ :: forall opts. Fn2 (Nullable FilePath) { | opts } (Writable ())
 
 readWrite :: Perms
 readWrite = Perms.mkPerms rw rw rw
@@ -71,7 +69,7 @@ createWriteStreamWith :: WriteStreamOptions
                       -> FilePath
                       -> Effect (Writable ())
 createWriteStreamWith opts file = mkEffect $ \_ -> runFn2
-  fs.createWriteStream (nonnull file)
+  createWriteStream_ (nonnull file)
     { mode: Perms.permsToInt opts.perms
     , flags: fileFlagsToNode opts.flags
     }
@@ -81,7 +79,7 @@ fdCreateWriteStreamWith :: WriteStreamOptions
                         -> FileDescriptor
                         -> Effect (Writable ())
 fdCreateWriteStreamWith opts fd = mkEffect $ \_ -> runFn2
-  fs.createWriteStream null
+  createWriteStream_ null
     { fd
     , mode: Perms.permsToInt opts.perms
     , flags: fileFlagsToNode opts.flags
@@ -117,7 +115,7 @@ createReadStreamWith :: ReadStreamOptions
                      -> FilePath
                      -> Effect (Readable ())
 createReadStreamWith opts file = mkEffect $ \_ -> runFn2
-  fs.createReadStream (nonnull file)
+  createReadStream_ (nonnull file)
     { mode: Perms.permsToInt opts.perms
     , flags: fileFlagsToNode opts.flags
     , autoClose: opts.autoClose
@@ -128,7 +126,7 @@ fdCreateReadStreamWith :: ReadStreamOptions
                        -> FileDescriptor
                        -> Effect (Readable ())
 fdCreateReadStreamWith opts fd = mkEffect $ \_ -> runFn2
-  fs.createReadStream null
+  createReadStream_ null
     { fd
     , mode: Perms.permsToInt opts.perms
     , flags: fileFlagsToNode opts.flags
