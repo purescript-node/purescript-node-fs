@@ -1,3 +1,3 @@
 "use strict";
 
-exports.unsafeRequireFS = require("fs");
+export var unsafeRequireFS = require("fs");
