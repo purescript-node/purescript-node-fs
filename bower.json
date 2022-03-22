@@ -40,6 +40,6 @@
   },
   "devDependencies": {
     "purescript-console": "master",
-    "purescript-node-buffer": "^7.0.0"
+    "purescript-node-buffer": "master"
   }
 }
