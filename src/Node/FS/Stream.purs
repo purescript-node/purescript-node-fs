@@ -25,7 +25,6 @@ import Node.FS (FileDescriptor, FileFlags(..), fileFlagsToNode)
 import Node.FS.Perms (Perms())
 import Node.FS.Perms as Perms
 import Node.FS.Internal (mkEffect)
-import Node.FS.Internal as FS
 
 foreign import createReadStream_  :: forall opts. Fn2 (Nullable FilePath) { | opts } (Readable ())
 foreign import createWriteStream_ :: forall opts. Fn2 (Nullable FilePath) { | opts } (Writable ())
