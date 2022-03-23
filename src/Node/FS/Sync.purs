@@ -53,8 +53,6 @@ import Node.FS.Stats (StatsObj, Stats(..))
 import Node.Path (FilePath())
 import Node.FS.Perms (Perms, permsToString, all, mkPerms)
 import Node.FS.Internal (mkEffect)
-import Node.FS.Internal as FS
-
 
 foreign import renameSync_ :: Fn2 FilePath FilePath Unit
 foreign import truncateSync_ :: Fn2 FilePath Int Unit
