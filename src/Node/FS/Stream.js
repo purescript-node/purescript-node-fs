@@ -1,4 +1,4 @@
 export {
-  createReadStream as createReadStream_,
-  createWriteStream as createWriteStream_
+  createReadStream as createReadStreamImpl,
+  createWriteStream as createWriteStreamImpl
 } from "fs";
