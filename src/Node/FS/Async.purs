@@ -48,7 +48,7 @@ import Effect.Unsafe (unsafePerformEffect)
 import Node.Buffer (Buffer, size)
 import Node.Encoding (Encoding)
 import Node.FS (FileDescriptor, ByteCount, FilePosition, BufferLength, BufferOffset, FileMode, FileFlags, SymlinkType, fileFlagsToNode, symlinkTypeToNode)
-import Node.FS.Internal (mkEffect, unsafeRequireFS)
+import Node.FS.Internal (mkEffect)
 import Node.FS.Perms (Perms, permsToString, all, mkPerms)
 import Node.FS.Stats (StatsObj, Stats(..))
 import Node.Path (FilePath)
@@ -64,34 +64,33 @@ foreign import handleCallbackImpl ::
 handleCallback :: forall a. (Callback a) -> JSCallback a
 handleCallback cb = runFn3 handleCallbackImpl Left Right cb
 
-fs ::
-  { rename :: Fn3 FilePath FilePath (JSCallback Unit) Unit
-  , truncate :: Fn3 FilePath Int (JSCallback Unit) Unit
-  , chown :: Fn4 FilePath Int Int (JSCallback Unit) Unit
-  , chmod :: Fn3 FilePath String (JSCallback Unit) Unit
-  , stat :: Fn2 FilePath (JSCallback StatsObj) Unit
-  , link :: Fn3 FilePath FilePath (JSCallback Unit) Unit
-  , symlink :: Fn4 FilePath FilePath String (JSCallback Unit) Unit
-  , readlink :: Fn2 FilePath (JSCallback FilePath) Unit
-  , realpath :: forall cache. Fn3 FilePath { | cache } (JSCallback FilePath) Unit
-  , unlink :: Fn2 FilePath (JSCallback Unit) Unit
-  , rmdir :: Fn2 FilePath (JSCallback Unit) Unit
-  , mkdir :: Fn3 FilePath { recursive :: Boolean, mode :: String } (JSCallback Unit) Unit
-  , readdir :: Fn2 FilePath (JSCallback (Array FilePath)) Unit
-  , utimes :: Fn4 FilePath Int Int (JSCallback Unit) Unit
-  , readFile :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
-  , writeFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
-  , appendFile :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
-  , exists :: forall a. Fn2 FilePath (Boolean -> a) Unit
-  , open :: Fn4 FilePath String (Nullable FileMode) (JSCallback FileDescriptor) Unit
-  , read :: Fn6 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) (JSCallback ByteCount) Unit
-  , write :: Fn6 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) (JSCallback ByteCount) Unit
-  , close :: Fn2 FileDescriptor (JSCallback Unit) Unit
-  }
-fs = unsafeRequireFS
 
 -- | Type synonym for callback functions.
 type Callback a = Either Error a -> Effect Unit
+
+foreign import renameImpl :: Fn3 FilePath FilePath (JSCallback Unit) Unit
+foreign import truncateImpl :: Fn3 FilePath Int (JSCallback Unit) Unit
+foreign import chownImpl :: Fn4 FilePath Int Int (JSCallback Unit) Unit
+foreign import chmodImpl :: Fn3 FilePath String (JSCallback Unit) Unit
+foreign import statImpl :: Fn2 FilePath (JSCallback StatsObj) Unit
+foreign import linkImpl :: Fn3 FilePath FilePath (JSCallback Unit) Unit
+foreign import symlinkImpl :: Fn4 FilePath FilePath String (JSCallback Unit) Unit
+foreign import readlinkImpl :: Fn2 FilePath (JSCallback FilePath) Unit
+foreign import realpathImpl :: forall cache. Fn3 FilePath { | cache } (JSCallback FilePath) Unit
+foreign import unlinkImpl :: Fn2 FilePath (JSCallback Unit) Unit
+foreign import rmdirImpl :: Fn2 FilePath (JSCallback Unit) Unit
+foreign import mkdirImpl :: Fn3 FilePath { recursive :: Boolean, mode :: String } (JSCallback Unit) Unit
+foreign import readdirImpl :: Fn2 FilePath (JSCallback (Array FilePath)) Unit
+foreign import utimesImpl :: Fn4 FilePath Int Int (JSCallback Unit) Unit
+foreign import readFileImpl :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
+foreign import writeFileImpl :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
+foreign import appendFileImpl :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
+foreign import existsImpl :: forall a. Fn2 FilePath (Boolean -> a) Unit
+foreign import openImpl :: Fn4 FilePath String (Nullable FileMode) (JSCallback FileDescriptor) Unit
+foreign import readImpl :: Fn6 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) (JSCallback ByteCount) Unit
+foreign import writeImpl :: Fn6 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) (JSCallback ByteCount) Unit
+foreign import closeImpl :: Fn2 FileDescriptor (JSCallback Unit) Unit
+
 
 -- | Renames a file.
 rename :: FilePath
@@ -99,7 +98,7 @@ rename :: FilePath
        -> Callback Unit
        -> Effect Unit
 rename oldFile newFile cb = mkEffect $ \_ -> runFn3
-  fs.rename oldFile newFile (handleCallback cb)
+  renameImpl oldFile newFile (handleCallback cb)
 
 -- | Truncates a file to the specified length.
 truncate :: FilePath
@@ -108,7 +107,7 @@ truncate :: FilePath
          -> Effect Unit
 
 truncate file len cb = mkEffect $ \_ -> runFn3
-  fs.truncate file len (handleCallback cb)
+  truncateImpl file len (handleCallback cb)
 
 -- | Changes the ownership of a file.
 chown :: FilePath
@@ -118,7 +117,7 @@ chown :: FilePath
       -> Effect Unit
 
 chown file uid gid cb = mkEffect $ \_ -> runFn4
-  fs.chown file uid gid (handleCallback cb)
+  chownImpl file uid gid (handleCallback cb)
 
 -- | Changes the permissions of a file.
 chmod :: FilePath
@@ -127,7 +126,7 @@ chmod :: FilePath
       -> Effect Unit
 
 chmod file perms cb = mkEffect $ \_ -> runFn3
-  fs.chmod file (permsToString perms) (handleCallback cb)
+  chmodImpl file (permsToString perms) (handleCallback cb)
 
 -- | Gets file statistics.
 stat :: FilePath
@@ -135,7 +134,7 @@ stat :: FilePath
      -> Effect Unit
 
 stat file cb = mkEffect $ \_ -> runFn2
-  fs.stat file (handleCallback $ cb <<< (<$>) Stats)
+  statImpl file (handleCallback $ cb <<< (<$>) Stats)
 
 -- | Creates a link to an existing file.
 link :: FilePath
@@ -144,7 +143,7 @@ link :: FilePath
      -> Effect Unit
 
 link src dst cb = mkEffect $ \_ -> runFn3
-  fs.link src dst (handleCallback cb)
+  linkImpl src dst (handleCallback cb)
 
 -- | Creates a symlink.
 symlink :: FilePath
@@ -154,7 +153,7 @@ symlink :: FilePath
         -> Effect Unit
 
 symlink src dest ty cb = mkEffect $ \_ -> runFn4
-  fs.symlink src dest (symlinkTypeToNode ty) (handleCallback cb)
+  symlinkImpl src dest (symlinkTypeToNode ty) (handleCallback cb)
 
 -- | Reads the value of a symlink.
 readlink :: FilePath
@@ -162,7 +161,7 @@ readlink :: FilePath
          -> Effect Unit
 
 readlink path cb = mkEffect $ \_ -> runFn2
-  fs.readlink path (handleCallback cb)
+  readlinkImpl path (handleCallback cb)
 
 -- | Find the canonicalized absolute location for a path.
 realpath :: FilePath
@@ -170,7 +169,7 @@ realpath :: FilePath
          -> Effect Unit
 
 realpath path cb = mkEffect $ \_ -> runFn3
-  fs.realpath path {} (handleCallback cb)
+  realpathImpl path {} (handleCallback cb)
 
 -- | Find the canonicalized absolute location for a path using a cache object
 -- | for already resolved paths.
@@ -180,7 +179,7 @@ realpath' :: forall cache. FilePath
           -> Effect Unit
 
 realpath' path cache cb = mkEffect $ \_ -> runFn3
-  fs.realpath path cache (handleCallback cb)
+  realpathImpl path cache (handleCallback cb)
 
 -- | Deletes a file.
 unlink :: FilePath
@@ -188,7 +187,7 @@ unlink :: FilePath
        -> Effect Unit
 
 unlink file cb = mkEffect $ \_ -> runFn2
-  fs.unlink file (handleCallback cb)
+  unlinkImpl file (handleCallback cb)
 
 -- | Deletes a directory.
 rmdir :: FilePath
@@ -196,7 +195,7 @@ rmdir :: FilePath
       -> Effect Unit
 
 rmdir file cb = mkEffect $ \_ -> runFn2
-  fs.rmdir file (handleCallback cb)
+  rmdirImpl file (handleCallback cb)
 
 -- | Makes a new directory.
 mkdir :: FilePath
@@ -221,7 +220,7 @@ mkdirRecursive'
   -> Callback Unit
   -> Effect Unit
 mkdirRecursive' file perms cb = mkEffect $ \_ -> runFn3
-  fs.mkdir file { recursive: true, mode: permsToString perms } (handleCallback cb)
+  mkdirImpl file { recursive: true, mode: permsToString perms } (handleCallback cb)
 
 -- | Makes a new directory with the specified permissions.
 mkdir' :: FilePath
@@ -229,7 +228,7 @@ mkdir' :: FilePath
        -> Callback Unit
        -> Effect Unit
 mkdir' file perms cb = mkEffect $ \_ -> runFn3
-  fs.mkdir file { recursive: false, mode: permsToString perms } (handleCallback cb)
+  mkdirImpl file { recursive: false, mode: permsToString perms } (handleCallback cb)
 
 -- | Reads the contents of a directory.
 readdir :: FilePath
@@ -237,7 +236,7 @@ readdir :: FilePath
         -> Effect Unit
 
 readdir file cb = mkEffect $ \_ -> runFn2
-  fs.readdir file (handleCallback cb)
+  readdirImpl file (handleCallback cb)
 
 -- | Sets the accessed and modified times for the specified file.
 utimes :: FilePath
@@ -247,7 +246,7 @@ utimes :: FilePath
        -> Effect Unit
 
 utimes file atime mtime cb = mkEffect $ \_ -> runFn4
-  fs.utimes file
+  utimesImpl file
             (fromDate atime)
             (fromDate mtime)
             (handleCallback cb)
@@ -262,7 +261,7 @@ readFile :: FilePath
          -> Effect Unit
 
 readFile file cb = mkEffect $ \_ -> runFn3
-  fs.readFile file {} (handleCallback cb)
+  readFileImpl file {} (handleCallback cb)
 
 -- | Reads the entire contents of a text file with the specified encoding.
 readTextFile ::  Encoding
@@ -271,7 +270,7 @@ readTextFile ::  Encoding
              -> Effect Unit
 
 readTextFile encoding file cb = mkEffect $ \_ -> runFn3
-  fs.readFile file { encoding: show encoding } (handleCallback cb)
+  readFileImpl file { encoding: show encoding } (handleCallback cb)
 
 -- | Writes a buffer to a file.
 writeFile :: FilePath
@@ -280,7 +279,7 @@ writeFile :: FilePath
           -> Effect Unit
 
 writeFile file buff cb = mkEffect $ \_ -> runFn4
-  fs.writeFile file buff {} (handleCallback cb)
+  writeFileImpl file buff {} (handleCallback cb)
 
 -- | Writes text to a file using the specified encoding.
 writeTextFile ::  Encoding
@@ -290,7 +289,7 @@ writeTextFile ::  Encoding
               -> Effect Unit
 
 writeTextFile encoding file buff cb = mkEffect $ \_ -> runFn4
-  fs.writeFile file buff { encoding: show encoding } (handleCallback cb)
+  writeFileImpl file buff { encoding: show encoding } (handleCallback cb)
 
 -- | Appends the contents of a buffer to a file.
 appendFile :: FilePath
@@ -299,7 +298,7 @@ appendFile :: FilePath
            -> Effect Unit
 
 appendFile file buff cb = mkEffect $ \_ -> runFn4
-  fs.appendFile file buff {} (handleCallback cb)
+  appendFileImpl file buff {} (handleCallback cb)
 
 -- | Appends text to a file using the specified encoding.
 appendTextFile ::  Encoding
@@ -309,14 +308,14 @@ appendTextFile ::  Encoding
                -> Effect Unit
 
 appendTextFile encoding file buff cb = mkEffect $ \_ -> runFn4
-  fs.appendFile file buff { encoding: show encoding } (handleCallback cb)
+  appendFileImpl file buff { encoding: show encoding } (handleCallback cb)
 
 -- | Check if the path exists.
 exists :: FilePath
        -> (Boolean -> Effect Unit)
        -> Effect Unit
 exists file cb = mkEffect $ \_ -> runFn2
-  fs.exists file $ \b -> unsafePerformEffect (cb b)
+  existsImpl file $ \b -> unsafePerformEffect (cb b)
 
 -- | Open a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_open_path_flags_mode_callback)
 -- | for details.
@@ -325,7 +324,7 @@ fdOpen :: FilePath
        -> Maybe FileMode
        -> Callback FileDescriptor
        -> Effect Unit
-fdOpen file flags mode cb = mkEffect $ \_ -> runFn4 fs.open file (fileFlagsToNode flags) (toNullable mode) (handleCallback cb)
+fdOpen file flags mode cb = mkEffect $ \_ -> runFn4 openImpl file (fileFlagsToNode flags) (toNullable mode) (handleCallback cb)
 
 -- | Read from a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback)
 -- | for details.
@@ -336,7 +335,7 @@ fdRead :: FileDescriptor
        -> Maybe FilePosition
        -> Callback ByteCount
        -> Effect Unit
-fdRead fd buff off len pos cb =  mkEffect $ \_ -> runFn6 fs.read fd buff off len (toNullable pos) (handleCallback cb)
+fdRead fd buff off len pos cb =  mkEffect $ \_ -> runFn6 readImpl fd buff off len (toNullable pos) (handleCallback cb)
 
 -- | Convenience function to fill the whole buffer from the current
 -- | file position.
@@ -357,7 +356,7 @@ fdWrite :: FileDescriptor
         -> Maybe FilePosition
         -> Callback ByteCount
         -> Effect Unit
-fdWrite fd buff off len pos cb = mkEffect $ \_ -> runFn6 fs.write fd buff off len (toNullable pos) (handleCallback cb)
+fdWrite fd buff off len pos cb = mkEffect $ \_ -> runFn6 writeImpl fd buff off len (toNullable pos) (handleCallback cb)
 
 -- | Convenience function to append the whole buffer to the current
 -- | file position.
@@ -374,4 +373,4 @@ fdAppend fd buff cb = do
 fdClose :: FileDescriptor
         -> Callback Unit
         -> Effect Unit
-fdClose fd cb = mkEffect $ \_ -> runFn2 fs.close fd (handleCallback cb)
+fdClose fd cb = mkEffect $ \_ -> runFn2 closeImpl fd (handleCallback cb)

@@ -1,7 +1,5 @@
-"use strict";
+export { inspect as showStatsObj } from "util";
 
-exports.showStatsObj = require("util").inspect;
-
-exports.statsMethod = function (m, s) {
+export function statsMethod(m, s) {
   return s[m]();
-};
+}
