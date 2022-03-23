@@ -8,6 +8,7 @@ Breaking changes:
 
 New features:
 - Add bindings to `mkdir(path, { recursive: true })` via `mkdirRecursive` (#53, #55 by @JordanMartinez)
+- Update project and deps to PureScript v0.15.0 (#59 by @JordanMartinez, @thomashoneyman, @sigma-andex)
 
 Bugfixes:
 
