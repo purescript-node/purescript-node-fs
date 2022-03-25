@@ -13,8 +13,6 @@ module Node.FS.Sync
   , rmdir
   , mkdir
   , mkdir'
-  , mkdirRecursive
-  , mkdirRecursive'
   , readdir
   , utimes
   , readFile
@@ -173,32 +171,17 @@ rmdir file = mkEffect $ \_ -> runFn1
   rmdirSyncImpl file
 
 -- | Makes a new directory.
-mkdirRecursive
-  :: FilePath
-  -> Effect Unit
-mkdirRecursive = flip mkdirRecursive' $ mkPerms all all all
-
--- | Makes a new directory with the specified permissions.
-mkdirRecursive'
-  :: FilePath
-  -> Perms
-  -> Effect Unit
-mkdirRecursive' file perms = mkEffect $ \_ -> runFn2
-  mkdirSyncImpl file { recursive: true, mode: permsToString perms }
-
--- | Makes a new directory.
 mkdir :: FilePath
       -> Effect Unit
-
-mkdir = flip mkdir' $ mkPerms all all all
+mkdir path = mkdir' path { recursive: false, mode: mkPerms all all all }
 
 -- | Makes a new directory with the specified permissions.
-mkdir' :: FilePath
-       -> Perms
-       -> Effect Unit
-
-mkdir' file perms = mkEffect $ \_ -> runFn2
-  mkdirSyncImpl file { recursive: false, mode: permsToString perms }
+mkdir'
+  :: FilePath
+  -> { recursive :: Boolean, mode :: Perms }
+  -> Effect Unit
+mkdir' file { recursive, mode: perms } = mkEffect $ \_ -> runFn2
+  mkdirSyncImpl file { recursive, mode: permsToString perms }
 
 -- | Reads the contents of a directory.
 readdir :: FilePath
