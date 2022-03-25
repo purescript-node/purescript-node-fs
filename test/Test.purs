@@ -47,7 +47,7 @@ main = do
 
   -- If an error is thrown, it's probably EEXIST, so ignore it. Should
   -- really check this instead.
-  catchException' (const (pure unit)) (S.mkdir "tmp" false)
+  catchException' (const (pure unit)) (S.mkdir "tmp")
 
   S.writeTextFile ASCII (fp ["tmp", "Test.js"]) "console.log('hello world')"
   S.rename (fp ["tmp", "Test.js"]) (fp ["tmp", "Test1.js"])

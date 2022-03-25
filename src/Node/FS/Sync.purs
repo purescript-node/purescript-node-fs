@@ -172,17 +172,15 @@ rmdir file = mkEffect $ \_ -> runFn1
 
 -- | Makes a new directory.
 mkdir :: FilePath
-      -> Boolean
       -> Effect Unit
-mkdir path recursive = mkdir' path recursive $ mkPerms all all all
+mkdir path = mkdir' path { recursive: false, mode: mkPerms all all all }
 
 -- | Makes a new directory with the specified permissions.
-mkdir' :: FilePath
-       -> Boolean
-       -> Perms
-       -> Effect Unit
-
-mkdir' file recursive perms = mkEffect $ \_ -> runFn2
+mkdir'
+  :: FilePath
+  -> { recursive :: Boolean, mode :: Perms }
+  -> Effect Unit
+mkdir' file { recursive, mode: perms } = mkEffect $ \_ -> runFn2
   mkdirSyncImpl file { recursive, mode: permsToString perms }
 
 -- | Reads the contents of a directory.

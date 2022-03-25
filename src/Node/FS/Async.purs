@@ -198,18 +198,17 @@ rmdir file cb = mkEffect $ \_ -> runFn2
 
 -- | Makes a new directory.
 mkdir :: FilePath
-      -> Boolean
       -> Callback Unit
       -> Effect Unit
-mkdir path recursive = mkdir' path recursive (mkPerms all all all)
+mkdir path = mkdir' path { recursive: false, mode: mkPerms all all all }
 
 -- | Makes a new directory with the specified permissions.
-mkdir' :: FilePath
-       -> Boolean
-       -> Perms
-       -> Callback Unit
-       -> Effect Unit
-mkdir' file recursive perms cb = mkEffect $ \_ -> runFn3
+mkdir'
+  :: FilePath
+  -> { recursive :: Boolean, mode :: Perms }
+  -> Callback Unit
+  -> Effect Unit
+mkdir' file { recursive, mode: perms } cb = mkEffect $ \_ -> runFn3
   mkdirImpl file { recursive, mode: permsToString perms } (handleCallback cb)
 
 -- | Reads the contents of a directory.
