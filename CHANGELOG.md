@@ -5,7 +5,9 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
-- Update `mkdir` to take `Boolean` arg for `recursive` option (#53, #55, #58 by @JordanMartinez)
+- Update `mkdir` to take an options record arg, exposing `recursive` option (#53, #55, #58 by @JordanMartinez)
+
+  To get back the old behavior of `mkdir'`, you would call `mkdir' { recursive: false, mode: mkPerms all all all }`
 
 New features:
 - Update project and deps to PureScript v0.15.0 (#59 by @JordanMartinez, @thomashoneyman, @sigma-andex)
