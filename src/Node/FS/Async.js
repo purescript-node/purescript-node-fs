@@ -16,7 +16,6 @@ export {
   readFile as readFileImpl,
   writeFile as writeFileImpl,
   appendFile as appendFileImpl,
-  exists as existsImpl,
   open as openImpl,
   read as readImpl,
   write as writeImpl,

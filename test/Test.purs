@@ -1,24 +1,21 @@
 module Test where
 
 import Prelude
-import Data.Maybe (Maybe(..))
+
 import Data.Either (Either(..), either)
+import Data.Maybe (Maybe(..))
 import Data.Traversable (traverse)
 import Effect (Effect)
-import Effect.Exception (Error, error, throwException, catchException)
 import Effect.Console (log)
-
-import Node.Encoding (Encoding(..))
+import Effect.Exception (Error, error, throwException, catchException)
 import Node.Buffer as Buffer
+import Node.Encoding (Encoding(..))
+import Node.FS (FileFlags(..))
+import Node.FS.Async as A
+import Node.FS.Stats (statusChangedTime, accessedTime, modifiedTime, isSymbolicLink, isSocket, isFIFO, isCharacterDevice, isBlockDevice, isDirectory, isFile)
+import Node.FS.Sync as S
 import Node.Path as Path
 import Unsafe.Coerce (unsafeCoerce)
-
-import Node.FS (FileFlags(..))
-import Node.FS.Stats (statusChangedTime, accessedTime, modifiedTime,
-                      isSymbolicLink, isSocket, isFIFO, isCharacterDevice,
-                      isBlockDevice, isDirectory, isFile)
-import Node.FS.Async as A
-import Node.FS.Sync as S
 
 -- Cheat to allow `main` to type check. See also issue #5 in
 -- purescript-exceptions.
@@ -34,8 +31,8 @@ main :: Effect Unit
 main = do
   let fp = Path.concat
 
-  A.exists (fp ["test", "Test.purs"]) $ \e ->
-    log $ "Test.purs exists? " <> show e
+  e <- S.exists (fp ["test", "Test.purs"])
+  log $ "Test.purs exists? " <> show e
 
   file <- S.readTextFile UTF8 (fp ["test", "Test.purs"])
   log "\n\nreadTextFile sync result:"
