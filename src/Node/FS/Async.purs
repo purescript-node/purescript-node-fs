@@ -22,7 +22,6 @@ module Node.FS.Async
   , writeTextFile
   , appendFile
   , appendTextFile
-  , exists
   , fdOpen
   , fdRead
   , fdNext
@@ -43,7 +42,6 @@ import Data.Nullable (Nullable, toNullable)
 import Data.Time.Duration (Milliseconds(..))
 import Effect (Effect)
 import Effect.Exception (Error)
-import Effect.Unsafe (unsafePerformEffect)
 import Node.Buffer (Buffer, size)
 import Node.Encoding (Encoding)
 import Node.FS (FileDescriptor, ByteCount, FilePosition, BufferLength, BufferOffset, FileMode, FileFlags, SymlinkType, fileFlagsToNode, symlinkTypeToNode)
@@ -84,7 +82,6 @@ foreign import utimesImpl :: Fn4 FilePath Int Int (JSCallback Unit) Unit
 foreign import readFileImpl :: forall a opts. Fn3 FilePath { | opts } (JSCallback a) Unit
 foreign import writeFileImpl :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
 foreign import appendFileImpl :: forall a opts. Fn4 FilePath a { | opts } (JSCallback Unit) Unit
-foreign import existsImpl :: forall a. Fn2 FilePath (Boolean -> a) Unit
 foreign import openImpl :: Fn4 FilePath String (Nullable FileMode) (JSCallback FileDescriptor) Unit
 foreign import readImpl :: Fn6 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) (JSCallback ByteCount) Unit
 foreign import writeImpl :: Fn6 FileDescriptor Buffer BufferOffset BufferLength (Nullable FilePosition) (JSCallback ByteCount) Unit
@@ -291,12 +288,6 @@ appendTextFile ::  Encoding
 appendTextFile encoding file buff cb = mkEffect $ \_ -> runFn4
   appendFileImpl file buff { encoding: show encoding } (handleCallback cb)
 
--- | Check if the path exists.
-exists :: FilePath
-       -> (Boolean -> Effect Unit)
-       -> Effect Unit
-exists file cb = mkEffect $ \_ -> runFn2
-  existsImpl file $ \b -> unsafePerformEffect (cb b)
 
 -- | Open a file asynchronously. See the [Node Documentation](https://nodejs.org/api/fs.html#fs_fs_open_path_flags_mode_callback)
 -- | for details.
