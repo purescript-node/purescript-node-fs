@@ -12,12 +12,16 @@ Bugfixes:
 
 Other improvements:
 
+## [v7.0.1](https://github.com/purescript-node/purescript-node-fs/releases/tag/v7.0.1) - 2022-04-27
+
+Other improvements:
+- Remove duplicate `node-buffer` from bower.json (@thomashoneyman)
+
 ## [v7.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v7.0.0) - 2022-04-27
 
 Breaking changes:
 - Remove `Async.exists` (#61 by @sigma-andex)
 - Update `mkdir` to take an options record arg, exposing `recursive` option (#53, #55, #58 by @JordanMartinez)
-
   To get back the old behavior of `mkdir'`, you would call `mkdir' { recursive: false, mode: mkPerms all all all }`
 
 New features:
