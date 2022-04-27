@@ -5,6 +5,16 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
+
+New features:
+
+Bugfixes:
+
+Other improvements:
+
+## [v7.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v7.0.0) - 2022-04-27
+
+Breaking changes:
 - Remove `Async.exists` (#61 by @sigma-andex)
 - Update `mkdir` to take an options record arg, exposing `recursive` option (#53, #55, #58 by @JordanMartinez)
 
