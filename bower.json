@@ -39,7 +39,6 @@
     "purescript-unsafe-coerce": "^6.0.0"
   },
   "devDependencies": {
-    "purescript-console": "^6.0.0",
-    "purescript-node-buffer": "^8.0.0"
+    "purescript-console": "^6.0.0"
   }
 }
