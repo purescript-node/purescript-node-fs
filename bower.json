@@ -20,26 +20,26 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-datetime": "master",
-    "purescript-effect": "master",
-    "purescript-either": "master",
-    "purescript-enums": "master",
-    "purescript-exceptions": "master",
-    "purescript-functions": "master",
-    "purescript-integers": "master",
-    "purescript-js-date": "main",
-    "purescript-maybe": "master",
-    "purescript-node-buffer": "master",
-    "purescript-node-path": "master",
-    "purescript-node-streams": "master",
-    "purescript-nullable": "main",
-    "purescript-partial": "master",
-    "purescript-prelude": "master",
-    "purescript-strings": "master",
-    "purescript-unsafe-coerce": "master"
+    "purescript-datetime": "^6.0.0",
+    "purescript-effect": "^4.0.0",
+    "purescript-either": "^6.0.0",
+    "purescript-enums": "^6.0.0",
+    "purescript-exceptions": "^6.0.0",
+    "purescript-functions": "^6.0.0",
+    "purescript-integers": "^6.0.0",
+    "purescript-js-date": "^8.0.0",
+    "purescript-maybe": "^6.0.0",
+    "purescript-node-buffer": "^8.0.0",
+    "purescript-node-path": "^5.0.0",
+    "purescript-node-streams": "^6.0.0",
+    "purescript-nullable": "^6.0.0",
+    "purescript-partial": "^4.0.0",
+    "purescript-prelude": "^6.0.0",
+    "purescript-strings": "^6.0.0",
+    "purescript-unsafe-coerce": "^6.0.0"
   },
   "devDependencies": {
-    "purescript-console": "master",
-    "purescript-node-buffer": "master"
+    "purescript-console": "^6.0.0",
+    "purescript-node-buffer": "^8.0.0"
   }
 }
