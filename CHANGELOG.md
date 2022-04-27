@@ -12,6 +12,11 @@ Bugfixes:
 
 Other improvements:
 
+## [v7.0.1](https://github.com/purescript-node/purescript-node-fs/releases/tag/v7.0.1) - 2022-04-27
+
+Other improvements:
+- Remove duplicate `node-buffer` dependency in bower.json (#63 by @JordanMartinez)
+
 ## [v7.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v7.0.0) - 2022-04-27
 
 Breaking changes:
