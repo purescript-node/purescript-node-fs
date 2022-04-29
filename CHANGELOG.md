@@ -12,12 +12,7 @@ Bugfixes:
 
 Other improvements:
 
-## [v7.0.1](https://github.com/purescript-node/purescript-node-fs/releases/tag/v7.0.1) - 2022-04-27
-
-Other improvements:
-- Remove duplicate `node-buffer` from bower.json (@thomashoneyman)
-
-## [v7.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v7.0.0) - 2022-04-27
+## [v8.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v8.0.0) - 2022-04-29
 
 Breaking changes:
 - Remove `Async.exists` (#61 by @sigma-andex)
@@ -26,10 +21,15 @@ Breaking changes:
 
 New features:
 - Update project and deps to PureScript v0.15.0 (#59 by @JordanMartinez, @thomashoneyman, @sigma-andex)
+- Remove duplicate `node-buffer` from bower.json (@thomashoneyman)
 
-Bugfixes:
+## [v7.0.1](https://github.com/purescript-node/purescript-node-fs/releases/tag/v7.0.1) - 2022-04-27
 
-Other improvements:
+Due to an incorrectly-implemented breaking change, use v8.0.0
+
+## [v7.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v7.0.0) - 2022-04-27
+
+Due to an incorrectly-implemented breaking change, use v8.0.0
 
 ## [v6.2.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v6.2.0) - 2022-01-10
 
