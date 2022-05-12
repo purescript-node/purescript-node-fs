@@ -8,6 +8,8 @@ Breaking changes:
 
 New features:
 
+- Add `stdin, stdout, stderr :: FileDescriptor` (#65 by @jamesdbrock)
+
 Bugfixes:
 
 Other improvements:

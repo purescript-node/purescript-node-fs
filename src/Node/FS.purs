@@ -1,5 +1,8 @@
 module Node.FS
   ( FileDescriptor(..)
+  , stdin
+  , stdout
+  , stderr
   , FileFlags(..)
   , FileMode(..)
   , SymlinkType(..)
@@ -12,8 +15,18 @@ module Node.FS
   ) where
 
 import Prelude
+import Unsafe.Coerce (unsafeCoerce)
 
 foreign import data FileDescriptor :: Type
+
+stdin :: FileDescriptor
+stdin = unsafeCoerce 0
+
+stdout :: FileDescriptor
+stdout = unsafeCoerce 1
+
+stderr :: FileDescriptor
+stderr = unsafeCoerce 2
 
 data FileFlags = R | R_PLUS | RS | RS_PLUS
                | W | WX | W_PLUS | WX_PLUS
