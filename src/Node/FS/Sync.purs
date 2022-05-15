@@ -4,6 +4,7 @@ module Node.FS.Sync
   , chown
   , chmod
   , stat
+  , lstat
   , link
   , symlink
   , readlink
@@ -57,6 +58,7 @@ foreign import truncateSyncImpl :: Fn2 FilePath Int Unit
 foreign import chownSyncImpl :: Fn3 FilePath Int Int Unit
 foreign import chmodSyncImpl :: Fn2 FilePath String Unit
 foreign import statSyncImpl :: Fn1 FilePath StatsObj
+foreign import lstatSyncImpl :: Fn1 FilePath StatsObj
 foreign import linkSyncImpl :: Fn2 FilePath FilePath Unit
 foreign import symlinkSyncImpl :: Fn3 FilePath FilePath String Unit
 foreign import readlinkSyncImpl :: Fn1 FilePath FilePath
@@ -115,6 +117,15 @@ stat :: FilePath
 
 stat file = map Stats $ mkEffect $ \_ -> runFn1
   statSyncImpl file
+
+-- | Gets file or symlink statistics. `lstat` is identical to `stat`, except
+-- | that if the `FilePath` is a symbolic link, then the link itself is stat-ed,
+-- | not the file that it refers to.
+lstat :: FilePath
+     -> Effect Stats
+
+lstat file = map Stats $ mkEffect $ \_ -> runFn1
+  lstatSyncImpl file
 
 -- | Creates a link to an existing file.
 link :: FilePath

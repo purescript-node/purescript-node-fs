@@ -10,7 +10,7 @@ import Effect.Console (log)
 import Effect.Exception (Error, error, throwException, catchException)
 import Node.Buffer as Buffer
 import Node.Encoding (Encoding(..))
-import Node.FS (FileFlags(..))
+import Node.FS (FileFlags(..), SymlinkType(..))
 import Node.FS.Async as A
 import Node.FS.Stats (statusChangedTime, accessedTime, modifiedTime, isSymbolicLink, isSocket, isFIFO, isCharacterDevice, isBlockDevice, isDirectory, isFile)
 import Node.FS.Sync as S
@@ -74,6 +74,15 @@ main = do
   log "statusChangedTime:"
   log $ show $ statusChangedTime stats
 
+  S.symlink (fp ["tmp", "Test1.js"]) (fp ["tmp", "TestSymlink.js"]) FileLink
+
+  lstats <- S.lstat (fp ["tmp", "TestSymlink.js"])
+  log "\n\nS.lstat:"
+  log "isSymbolicLink:"
+  log $ show $ isSymbolicLink lstats
+
+  S.unlink (fp ["tmp", "TestSymlink.js"])
+
   A.rename (fp ["tmp", "Test1.js"]) (fp ["tmp", "Test.js"]) $ \x -> do
     log "\n\nrename result:"
     either (log <<< show) (log <<< show) x
@@ -92,7 +101,7 @@ main = do
     either (log <<< show) log x
 
   A.stat (fp ["test", "Test.purs"]) $ \x -> do
-    log "\n\nstat:"
+    log "\n\nA.stat:"
     case x of
       Left err -> log $ "Error:" <> show err
       Right x' -> do
@@ -116,6 +125,21 @@ main = do
         log $ show $ accessedTime x'
         log "statusChangedTime:"
         log $ show $ statusChangedTime x'
+
+  A.symlink (fp ["tmp", "Test.js"]) (fp ["tmp", "TestSymlink.js"]) FileLink \u ->
+    case u of
+      Left err -> log $ "Error:" <> show err
+      Right _ -> A.lstat (fp ["tmp", "TestSymlink.js"]) \s -> do
+        log "\n\nA.lstat:"
+        case s of
+          Left err -> log $ "Error:" <> show err
+          Right s' -> do
+            log "isSymbolicLink:"
+            log $ show $ isSymbolicLink s'
+
+            A.unlink (fp ["tmp", "TestSymlink.js"]) \result -> do
+              log "\n\nA.unlink result:"
+              either (log <<< show) (\_ -> log "Success") result
 
   let fdFile = fp ["tmp", "FD.json"]
   fd0 <- S.fdOpen fdFile W (Just 420)

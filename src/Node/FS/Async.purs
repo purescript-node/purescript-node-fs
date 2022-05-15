@@ -4,6 +4,7 @@ module Node.FS.Async
   , truncate
   , chown
   , chmod
+  , lstat
   , stat
   , link
   , symlink
@@ -70,6 +71,7 @@ foreign import truncateImpl :: Fn3 FilePath Int (JSCallback Unit) Unit
 foreign import chownImpl :: Fn4 FilePath Int Int (JSCallback Unit) Unit
 foreign import chmodImpl :: Fn3 FilePath String (JSCallback Unit) Unit
 foreign import statImpl :: Fn2 FilePath (JSCallback StatsObj) Unit
+foreign import lstatImpl :: Fn2 FilePath (JSCallback StatsObj) Unit
 foreign import linkImpl :: Fn3 FilePath FilePath (JSCallback Unit) Unit
 foreign import symlinkImpl :: Fn4 FilePath FilePath String (JSCallback Unit) Unit
 foreign import readlinkImpl :: Fn2 FilePath (JSCallback FilePath) Unit
@@ -131,6 +133,15 @@ stat :: FilePath
 
 stat file cb = mkEffect $ \_ -> runFn2
   statImpl file (handleCallback $ cb <<< (<$>) Stats)
+
+-- | Gets file or symlink statistics. `lstat` is identical to `stat`, except
+-- | that if the `FilePath` is a symbolic link, then the link itself is stat-ed,
+-- | not the file that it refers to.
+lstat :: FilePath
+     -> Callback Stats
+     -> Effect Unit
+lstat file cb = mkEffect $ \_ -> runFn2
+  lstatImpl file (handleCallback $ cb <<< (<$>) Stats)
 
 -- | Creates a link to an existing file.
 link :: FilePath
