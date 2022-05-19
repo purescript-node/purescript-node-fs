@@ -132,7 +132,7 @@ stat :: FilePath
      -> Effect Unit
 
 stat file cb = mkEffect $ \_ -> runFn2
-  statImpl file (handleCallback $ cb <<< (<$>) Stats)
+  statImpl file (handleCallback $ cb <<< map Stats)
 
 -- | Gets file or symlink statistics. `lstat` is identical to `stat`, except
 -- | that if the `FilePath` is a symbolic link, then the link itself is stat-ed,
@@ -141,7 +141,7 @@ lstat :: FilePath
      -> Callback Stats
      -> Effect Unit
 lstat file cb = mkEffect $ \_ -> runFn2
-  lstatImpl file (handleCallback $ cb <<< (<$>) Stats)
+  lstatImpl file (handleCallback $ cb <<< map Stats)
 
 -- | Creates a link to an existing file.
 link :: FilePath
