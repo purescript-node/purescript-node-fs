@@ -10,6 +10,7 @@ export {
   realpathSync as realpathSyncImpl,
   unlinkSync as unlinkSyncImpl,
   rmdirSync as rmdirSyncImpl,
+  rmSync as rmSyncImpl,
   mkdirSync as mkdirSyncImpl,
   readdirSync as readdirSyncImpl,
   utimesSync as utimesSyncImpl,

@@ -11,6 +11,9 @@ module Node.FS.Sync
   , realpath'
   , unlink
   , rmdir
+  , rmdir'
+  , rm
+  , rm'
   , mkdir
   , mkdir'
   , readdir
@@ -62,7 +65,8 @@ foreign import symlinkSyncImpl :: Fn3 FilePath FilePath String Unit
 foreign import readlinkSyncImpl :: Fn1 FilePath FilePath
 foreign import realpathSyncImpl :: forall cache. Fn2 FilePath { | cache } FilePath
 foreign import unlinkSyncImpl :: Fn1 FilePath Unit
-foreign import rmdirSyncImpl :: Fn1 FilePath Unit
+foreign import rmdirSyncImpl :: Fn2 FilePath { maxRetries :: Int, retryDelay :: Int } Unit
+foreign import rmSyncImpl :: Fn2 FilePath { force :: Boolean, maxRetries :: Int, recursive :: Boolean, retryDelay :: Int } Unit
 foreign import mkdirSyncImpl :: Fn2 FilePath { recursive :: Boolean, mode :: String } Unit
 foreign import readdirSyncImpl :: Fn1 FilePath (Array FilePath)
 foreign import utimesSyncImpl :: Fn3 FilePath Int Int Unit
@@ -166,9 +170,27 @@ unlink file = mkEffect $ \_ -> runFn1
 -- | Deletes a directory.
 rmdir :: FilePath
       -> Effect Unit
+rmdir path = rmdir' path { maxRetries: 0, retryDelay: 100 }
 
-rmdir file = mkEffect $ \_ -> runFn1
-  rmdirSyncImpl file
+-- | Deletes a directory with options.
+rmdir' :: FilePath
+      -> { maxRetries :: Int, retryDelay :: Int }
+      -> Effect Unit
+rmdir' path opts = mkEffect $ \_ -> runFn2
+  rmdirSyncImpl path opts
+
+-- | Deletes a file or directory.
+rm :: FilePath
+      -> Effect Unit
+rm path = rm' path { force: false, maxRetries: 100, recursive: false, retryDelay: 1000 }
+
+-- | Deletes a file or directory with options.
+rm' :: FilePath
+      -> { force :: Boolean, maxRetries :: Int, recursive :: Boolean, retryDelay :: Int }
+      -> Effect Unit
+rm' path opts = mkEffect $ \_ -> runFn2
+  rmSyncImpl path opts
+
 
 -- | Makes a new directory.
 mkdir :: FilePath

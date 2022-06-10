@@ -10,6 +10,7 @@ export {
   realpath as realpathImpl,
   unlink as unlinkImpl,
   rmdir as rmdirImpl,
+  rm as rmImpl,
   mkdir as mkdirImpl,
   readdir as readdirImpl,
   utimes as utimesImpl,
