@@ -4,6 +4,7 @@ export {
   chown as chownImpl,
   chmod as chmodImpl,
   stat as statImpl,
+  lstat as lstatImpl,
   link as linkImpl,
   symlink as symlinkImpl,
   readlink as readlinkImpl,

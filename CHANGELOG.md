@@ -7,6 +7,7 @@ Notable changes to this project are documented in this file. The format is based
 Breaking changes:
 
 New features:
+- Add `lstat` (#66 by @artemisSystem)
 
 - Update rmdir' to take options arg
 - Added rm and rm' version with and without options arg

@@ -4,6 +4,7 @@ export {
   chownSync as chownSyncImpl,
   chmodSync as chmodSyncImpl,
   statSync as statSyncImpl,
+  lstatSync as lstatSyncImpl,
   linkSync as linkSyncImpl,
   symlinkSync as symlinkSyncImpl,
   readlinkSync as readlinkSyncImpl,
