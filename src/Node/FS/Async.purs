@@ -12,6 +12,9 @@ module Node.FS.Async
   , realpath'
   , unlink
   , rmdir
+  , rmdir'
+  , rm
+  , rm'
   , mkdir
   , mkdir'
   , readdir
@@ -75,7 +78,8 @@ foreign import symlinkImpl :: Fn4 FilePath FilePath String (JSCallback Unit) Uni
 foreign import readlinkImpl :: Fn2 FilePath (JSCallback FilePath) Unit
 foreign import realpathImpl :: forall cache. Fn3 FilePath { | cache } (JSCallback FilePath) Unit
 foreign import unlinkImpl :: Fn2 FilePath (JSCallback Unit) Unit
-foreign import rmdirImpl :: Fn2 FilePath (JSCallback Unit) Unit
+foreign import rmdirImpl :: Fn3 FilePath { maxRetries :: Int, retryDelay :: Int } (JSCallback Unit) Unit
+foreign import rmImpl :: Fn3 FilePath { force :: Boolean, maxRetries :: Int, recursive :: Boolean, retryDelay :: Int } (JSCallback Unit) Unit
 foreign import mkdirImpl :: Fn3 FilePath { recursive :: Boolean, mode :: String } (JSCallback Unit) Unit
 foreign import readdirImpl :: Fn2 FilePath (JSCallback (Array FilePath)) Unit
 foreign import utimesImpl :: Fn4 FilePath Int Int (JSCallback Unit) Unit
@@ -189,9 +193,30 @@ unlink file cb = mkEffect $ \_ -> runFn2
 rmdir :: FilePath
       -> Callback Unit
       -> Effect Unit
+rmdir path cb = rmdir' path { maxRetries: 0, retryDelay: 100 } cb
 
-rmdir file cb = mkEffect $ \_ -> runFn2
-  rmdirImpl file (handleCallback cb)
+-- | Deletes a directory with options.
+rmdir' :: FilePath
+      -> { maxRetries :: Int, retryDelay :: Int }
+      -> Callback Unit
+      -> Effect Unit
+rmdir' path opts cb = mkEffect $ \_ -> runFn3
+  rmdirImpl path opts (handleCallback cb)
+
+-- | Deletes a file or directory.
+rm :: FilePath
+      -> Callback Unit
+      -> Effect Unit
+rm path = rm' path { force: false, maxRetries: 100, recursive: false, retryDelay: 1000 }
+
+-- | Deletes a file or directory with options.
+rm' :: FilePath
+      -> { force :: Boolean, maxRetries :: Int, recursive :: Boolean, retryDelay :: Int }
+      -> Callback Unit
+      -> Effect Unit
+rm' path opts cb = mkEffect $ \_ -> runFn3
+  rmImpl path opts (handleCallback cb)
+
 
 -- | Makes a new directory.
 mkdir :: FilePath
