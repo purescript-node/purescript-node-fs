@@ -7,14 +7,17 @@ Notable changes to this project are documented in this file. The format is based
 Breaking changes:
 
 New features:
-- Add `lstat` (#66 by @artemisSystem)
-
-- Update rmdir' to take options arg
-- Added rm and rm' version with and without options arg
 
 Bugfixes:
 
 Other improvements:
+
+## [v8.1.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v8.1.0) - 2022-06-10
+
+New features:
+- Add `lstat` (#66 by @artemisSystem)
+- Add rmdir', which takes an take options arg (#67 by @wclr)
+- Added rm and rm' version with and without options arg (#67 by @wclr)
 
 ## [v8.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v8.0.0) - 2022-04-29
 
