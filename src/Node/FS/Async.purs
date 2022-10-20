@@ -39,14 +39,13 @@ import Prelude
 import Data.DateTime (DateTime)
 import Data.DateTime.Instant (fromDateTime, unInstant)
 import Data.Either (Either(..))
-import Data.Function.Uncurried (Fn2, Fn3, runFn3)
 import Data.Int (round)
 import Data.Maybe (Maybe(..))
-import Data.Nullable (Nullable, toNullable)
+import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.Time.Duration (Milliseconds(..))
 import Effect (Effect)
 import Effect.Exception (Error)
-import Effect.Uncurried (EffectFn2, EffectFn3, EffectFn4, EffectFn6, runEffectFn2, runEffectFn3, runEffectFn4, runEffectFn6)
+import Effect.Uncurried (EffectFn2, EffectFn3, EffectFn4, EffectFn6, mkEffectFn2, runEffectFn2, runEffectFn3, runEffectFn4, runEffectFn6)
 import Node.Buffer (Buffer, size)
 import Node.Encoding (Encoding)
 import Node.FS (FileDescriptor, ByteCount, FilePosition, BufferLength, BufferOffset, FileMode, FileFlags, SymlinkType, fileFlagsToNode, symlinkTypeToNode)
@@ -54,17 +53,12 @@ import Node.FS.Perms (Perms, permsToString, all, mkPerms)
 import Node.FS.Stats (StatsObj, Stats(..))
 import Node.Path (FilePath)
 
-type JSCallback a = Fn2 (Nullable Error) a Unit
+type JSCallback a = EffectFn2 (Nullable Error) a Unit
 
-foreign import handleCallbackImpl ::
-  forall a. Fn3 (Error -> Either Error a)
-                (a -> Either Error a)
-                (Callback a)
-                (JSCallback a)
-
-handleCallback :: forall a. (Callback a) -> JSCallback a
-handleCallback cb = runFn3 handleCallbackImpl Left Right cb
-
+handleCallback :: forall a. Callback a -> JSCallback a
+handleCallback cb = mkEffectFn2 \err a -> case toMaybe err of
+  Nothing -> cb (Right a)
+  Just err' -> cb (Left err')
 
 -- | Type synonym for callback functions.
 type Callback a = Either Error a -> Effect Unit
