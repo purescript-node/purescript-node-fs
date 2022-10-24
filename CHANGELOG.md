@@ -11,6 +11,10 @@ New features:
 Bugfixes:
 
 Other improvements:
+
+## [v8.1.1](https://github.com/purescript-node/purescript-node-fs/releases/tag/v8.1.1) - 2022-10-24
+
+Other improvements:
 - Use `EffectFn` throughout instead of unsafe `mkEffect` utility (#70 by @colinwahl)
 
 ## [v8.1.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v8.1.0) - 2022-06-10
