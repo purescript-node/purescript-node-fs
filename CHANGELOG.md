@@ -6,6 +6,8 @@ Notable changes to this project are documented in this file. The format is based
 
 Breaking changes:
 
+- Remove redundant/impure `StatsObj` methods (#72 by @ptrfrncsmrph)
+
 New features:
 
 Bugfixes:

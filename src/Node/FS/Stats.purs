@@ -15,7 +15,7 @@ module Node.FS.Stats
 
 import Prelude
 import Data.DateTime (DateTime)
-import Data.Function.Uncurried (Fn2, Fn0, runFn2)
+import Data.Function.Uncurried (Fn2, runFn2)
 import Data.JSDate (JSDate, toDateTime)
 import Data.Maybe (fromJust)
 import Partial.Unsafe (unsafePartial)
@@ -32,12 +32,6 @@ type StatsObj =
   , atime :: JSDate
   , mtime :: JSDate
   , ctime :: JSDate
-  , isFile :: Fn0 Boolean
-  , isDirectory :: Fn0 Boolean
-  , isBlockDevice :: Fn0 Boolean
-  , isCharacterDevice :: Fn0 Boolean
-  , isFIFO :: Fn0 Boolean
-  , isSocket :: Fn0 Boolean
   }
 
 -- | Stats wrapper to provide a usable interface to the underlying properties and methods.
