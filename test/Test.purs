@@ -13,7 +13,7 @@ import Node.Encoding (Encoding(..))
 import Node.FS (FileFlags(..), SymlinkType(..))
 import Node.FS.Async as A
 import Node.FS.Constants (copyFile_EXCL, r_OK, w_OK)
-import Node.FS.Perms (mkPerms)
+import Node.FS.Perms (mkPerms, permsAll)
 import Node.FS.Perms as Perms
 import Node.FS.Stats (statusChangedTime, accessedTime, modifiedTime, isSymbolicLink, isSocket, isFIFO, isCharacterDevice, isBlockDevice, isDirectory, isFile)
 import Node.FS.Sync (chmod)
@@ -183,6 +183,7 @@ main = do
 
   log "copy tests"
   tempDir <- S.mkdtemp "/temp/node-fs-tests_"
+  S.mkdir' tempDir { recursive: true, mode: permsAll }
   let destReadPath = Path.concat [ tempDir, "readable.txt" ]
   S.copyFile readableFixturePath destReadPath
   unlessM (S.exists destReadPath) do
