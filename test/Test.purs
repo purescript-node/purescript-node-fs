@@ -191,6 +191,8 @@ main = do
   unlessM (S.exists destReadPath) do
     throw $ destReadPath <> " does not exist after copy"
 
-  unlessM (map isRight $ try $ S.copyFile' readableFixturePath destReadPath copyFile_EXCL) do
-    throw $ destReadPath <> " already exists, but copying a file to there did not throw an error with COPYFILE_EXCL option"
+  copyErr <- try $ S.copyFile' readableFixturePath destReadPath copyFile_EXCL
+  case copyErr of
+    Left _ -> pure unit
+    Right _ -> throw $ destReadPath <> " already exists, but copying a file to there did not throw an error with COPYFILE_EXCL option"
 
