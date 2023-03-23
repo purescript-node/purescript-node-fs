@@ -25,7 +25,7 @@ import Node.FS.Perms as Perms
 import Node.Path (FilePath)
 import Node.Stream (Readable, Writable)
 
-foreign import createReadStreamImpl  :: forall opts. EffectFn2 (Nullable FilePath) { | opts } (Readable ())
+foreign import createReadStreamImpl :: forall opts. EffectFn2 (Nullable FilePath) { | opts } (Readable ())
 foreign import createWriteStreamImpl :: forall opts. EffectFn2 (Nullable FilePath) { | opts } (Writable ())
 
 readWrite :: Perms
@@ -41,14 +41,16 @@ nonnull = toNullable <<< Just
 
 -- | Create a Writable stream which writes data to the specified file, using
 -- | the default options.
-createWriteStream :: FilePath
-                  -> Effect (Writable ())
+createWriteStream
+  :: FilePath
+  -> Effect (Writable ())
 createWriteStream = createWriteStreamWith defaultWriteStreamOptions
 
 -- | Create a Writable stream which writes data to the specified file
 -- | descriptor, using the default options.
-fdCreateWriteStream :: FileDescriptor
-                    -> Effect (Writable ())
+fdCreateWriteStream
+  :: FileDescriptor
+  -> Effect (Writable ())
 fdCreateWriteStream = fdCreateWriteStreamWith defaultWriteStreamOptions
 
 type WriteStreamOptions =
@@ -63,41 +65,47 @@ defaultWriteStreamOptions =
   }
 
 -- | Like `createWriteStream`, but allows you to pass options.
-createWriteStreamWith :: WriteStreamOptions
-                      -> FilePath
-                      -> Effect (Writable ())
+createWriteStreamWith
+  :: WriteStreamOptions
+  -> FilePath
+  -> Effect (Writable ())
 createWriteStreamWith opts file = runEffectFn2
-  createWriteStreamImpl (nonnull file)
-    { mode: Perms.permsToInt opts.perms
-    , flags: fileFlagsToNode opts.flags
-    }
+  createWriteStreamImpl
+  (nonnull file)
+  { mode: Perms.permsToInt opts.perms
+  , flags: fileFlagsToNode opts.flags
+  }
 
 -- | Like `fdCreateWriteStream`, but allows you to pass options.
-fdCreateWriteStreamWith :: WriteStreamOptions
-                        -> FileDescriptor
-                        -> Effect (Writable ())
+fdCreateWriteStreamWith
+  :: WriteStreamOptions
+  -> FileDescriptor
+  -> Effect (Writable ())
 fdCreateWriteStreamWith opts fd = runEffectFn2
-  createWriteStreamImpl null
-    { fd
-    , mode: Perms.permsToInt opts.perms
-    , flags: fileFlagsToNode opts.flags
-    }
+  createWriteStreamImpl
+  null
+  { fd
+  , mode: Perms.permsToInt opts.perms
+  , flags: fileFlagsToNode opts.flags
+  }
 
 -- | Create a Readable stream which reads data to the specified file, using
 -- | the default options.
-createReadStream :: FilePath
-                  -> Effect (Readable ())
+createReadStream
+  :: FilePath
+  -> Effect (Readable ())
 createReadStream = createReadStreamWith defaultReadStreamOptions
 
 -- | Create a Readable stream which reads data to the specified file
 -- | descriptor, using the default options.
-fdCreateReadStream :: FileDescriptor
-                   -> Effect (Readable ())
+fdCreateReadStream
+  :: FileDescriptor
+  -> Effect (Readable ())
 fdCreateReadStream = fdCreateReadStreamWith defaultReadStreamOptions
 
 type ReadStreamOptions =
-  { flags     :: FileFlags
-  , perms     :: Perms
+  { flags :: FileFlags
+  , perms :: Perms
   , autoClose :: Boolean
   }
 
@@ -109,24 +117,28 @@ defaultReadStreamOptions =
   }
 
 -- | Create a Readable stream which reads data from the specified file.
-createReadStreamWith :: ReadStreamOptions
-                     -> FilePath
-                     -> Effect (Readable ())
+createReadStreamWith
+  :: ReadStreamOptions
+  -> FilePath
+  -> Effect (Readable ())
 createReadStreamWith opts file = runEffectFn2
-  createReadStreamImpl (nonnull file)
-    { mode: Perms.permsToInt opts.perms
-    , flags: fileFlagsToNode opts.flags
-    , autoClose: opts.autoClose
-    }
+  createReadStreamImpl
+  (nonnull file)
+  { mode: Perms.permsToInt opts.perms
+  , flags: fileFlagsToNode opts.flags
+  , autoClose: opts.autoClose
+  }
 
 -- | Create a Readable stream which reads data from the specified file descriptor.
-fdCreateReadStreamWith :: ReadStreamOptions
-                       -> FileDescriptor
-                       -> Effect (Readable ())
+fdCreateReadStreamWith
+  :: ReadStreamOptions
+  -> FileDescriptor
+  -> Effect (Readable ())
 fdCreateReadStreamWith opts fd = runEffectFn2
-  createReadStreamImpl null
-    { fd
-    , mode: Perms.permsToInt opts.perms
-    , flags: fileFlagsToNode opts.flags
-    , autoClose: opts.autoClose
-    }
+  createReadStreamImpl
+  null
+  { fd
+  , mode: Perms.permsToInt opts.perms
+  , flags: fileFlagsToNode opts.flags
+  , autoClose: opts.autoClose
+  }
