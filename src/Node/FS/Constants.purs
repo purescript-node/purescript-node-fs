@@ -22,10 +22,16 @@ foreign import x_OK :: AccessMode
 
 defaultAccessMode = f_OK :: AccessMode
 
+-- | A constant used in `copyFile`.
 foreign import data CopyMode :: Type
 
+-- | If present, the copy operation will fail with an error if the destination path already exists.
 foreign import copyFile_EXCL :: CopyMode
+
+-- | If present, the copy operation will attempt to create a copy-on-write reflink. If the underlying platform does not support copy-on-write, then a fallback copy mechanism is used.
 foreign import copyFile_FICLONE :: CopyMode
+
+-- |  	If present, the copy operation will attempt to create a copy-on-write reflink. If the underlying platform does not support copy-on-write, then the operation will fail with an error.
 foreign import copyFile_FICLONE_FORCE :: CopyMode
 
 defaultCopyMode = copyFile_EXCL :: CopyMode
