@@ -171,13 +171,15 @@ main = do
     throw "`access \"./test/not-exists.txt\"` should produce error"
 
   let readableFixturePath = "./test/fixtures/readable.txt"
-  chmod readableFixturePath $ mkPerms Perms.read Perms.none Perms.none
+  chmod readableFixturePath $ mkPerms Perms.read Perms.read Perms.read
 
   mbErr <- S.access' readableFixturePath r_OK
   for_ mbErr \err -> do
     throw $ "`access \"" <> readableFixturePath <> "\" R_OK` should not produce error.\n" <> message err
-  unlessM (map isNothing $ S.access' readableFixturePath w_OK) do
-    throw $ "`access \"" <> readableFixturePath <> "\" W_OK` should produce error"
+  mbWriteErr <- S.access' readableFixturePath w_OK
+  case mbWriteErr of
+    Just _ -> pure unit
+    Nothing -> throw $ "`access \"" <> readableFixturePath <> "\" W_OK` should produce error"
 
   log "copy tests"
   tempDir <- S.mkdtemp "/temp/node-fs-tests_"
