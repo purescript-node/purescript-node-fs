@@ -14,7 +14,10 @@ import Node.Encoding (Encoding(..))
 import Node.FS (FileFlags(..), SymlinkType(..))
 import Node.FS.Async as A
 import Node.FS.Constants (copyFile_EXCL, r_OK, w_OK)
+import Node.FS.Perms (mkPerms)
+import Node.FS.Perms as Perms
 import Node.FS.Stats (statusChangedTime, accessedTime, modifiedTime, isSymbolicLink, isSocket, isFIFO, isCharacterDevice, isBlockDevice, isDirectory, isFile)
+import Node.FS.Sync (chmod)
 import Node.FS.Sync as S
 import Node.Path as Path
 import Unsafe.Coerce (unsafeCoerce)
@@ -168,22 +171,21 @@ main = do
   when (isNothing mbNotExistsErr) do
     throw "`access \"./test/not-exists.txt\"` should produce error"
 
-  mbNotReadableErr <- S.access' "./test/readable.txt" r_OK
-  when (isJust mbNotReadableErr) do
+  let readableFixturePath = "./test/readable.txt"
+  chmod readableFixturePath $ mkPerms Perms.read Perms.none Perms.none
+
+  unlessM (map isJust $ S.access' readableFixturePath r_OK) do
     throw "`access \"./test/readable.txt\" R_OK` should not produce error"
-  mbNotWriteableErr <- S.access' "./test/readable.txt" w_OK
-  when (isNothing mbNotWriteableErr) do
+  unlessM (map isNothing $ S.access' readableFixturePath w_OK) do
     throw "`access \"./test/readable.txt\" W_OK` should produce error"
 
   log "copy tests"
   tempDir <- S.mkdtemp "/temp/node-fs-tests_"
-  let
-    srcReadPath = "./test/readable.txt"
-    destReadPath = Path.concat [ tempDir, "readable.txt" ]
-  S.copyFile srcReadPath destReadPath
+  let destReadPath = Path.concat [ tempDir, "readable.txt" ]
+  S.copyFile readableFixturePath destReadPath
   unlessM (S.exists destReadPath) do
     throw $ destReadPath <> " does not exist after copy"
 
-  unlessM (map isRight $ try $ S.copyFile' srcReadPath destReadPath copyFile_EXCL) do
+  unlessM (map isRight $ try $ S.copyFile' readableFixturePath destReadPath copyFile_EXCL) do
     throw $ destReadPath <> " already exists, but copying a file to there did not throw an error with COPYFILE_EXCL option"
 
