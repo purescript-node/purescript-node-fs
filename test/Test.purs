@@ -182,7 +182,9 @@ main = do
     Nothing -> throw $ "`access \"" <> readableFixturePath <> "\" W_OK` should produce error"
 
   log "copy tests"
-  tempDir <- S.mkdtemp "/temp/node-fs-tests_"
+  let outerTmpDir = "./test/node-fs-tests"
+  S.mkdir' outerTmpDir { recursive: true, mode: permsAll }
+  tempDir <- S.mkdtemp outerTmpDir
   S.mkdir' tempDir { recursive: true, mode: permsAll }
   let destReadPath = Path.concat [ tempDir, "readable.txt" ]
   S.copyFile readableFixturePath destReadPath
