@@ -2,16 +2,18 @@ module Test where
 
 import Prelude
 
-import Data.Either (Either(..), either)
-import Data.Maybe (Maybe(..))
+import Control.Monad.Error.Class (throwError)
+import Data.Either (Either(..), either, isRight)
+import Data.Maybe (Maybe(..), isJust, isNothing)
 import Data.Traversable (traverse)
 import Effect (Effect)
 import Effect.Console (log)
-import Effect.Exception (Error, error, throwException, catchException)
+import Effect.Exception (Error, catchException, error, throw, throwException, try)
 import Node.Buffer as Buffer
 import Node.Encoding (Encoding(..))
 import Node.FS (FileFlags(..), SymlinkType(..))
 import Node.FS.Async as A
+import Node.FS.Constants (copyFile_EXCL, r_OK, w_OK)
 import Node.FS.Stats (statusChangedTime, accessedTime, modifiedTime, isSymbolicLink, isSocket, isFIFO, isCharacterDevice, isBlockDevice, isDirectory, isFile)
 import Node.FS.Sync as S
 import Node.Path as Path
@@ -160,4 +162,28 @@ main = do
     (S.stat "this-does-not-exist" *> pure false)
   unless r $
     throwException (error "FS.Sync.stat should have thrown")
+
+  log "access tests"
+  mbNotExistsErr <- S.access "./test/not-exists.txt"
+  when (isNothing mbNotExistsErr) do
+    throw "`access \"./test/not-exists.txt\"` should produce error"
+
+  mbNotReadableErr <- S.access' "./test/readable.txt" r_OK
+  when (isJust mbNotReadableErr) do
+    throw "`access \"./test/readable.txt\" R_OK` should not produce error"
+  mbNotWriteableErr <- S.access' "./test/readable.txt" w_OK
+  when (isNothing mbNotWriteableErr) do
+    throw "`access \"./test/readable.txt\" W_OK` should produce error"
+
+  log "copy tests"
+  tempDir <- S.mkdtemp "/temp/node-fs-tests_"
+  let
+    srcReadPath = "./test/readable.txt"
+    destReadPath = Path.concat [ tempDir, "readable.txt" ]
+  S.copyFile srcReadPath destReadPath
+  unlessM (S.exists destReadPath) do
+    throw $ destReadPath <> " does not exist after copy"
+
+  unlessM (map isRight $ try $ S.copyFile' srcReadPath destReadPath copyFile_EXCL) do
+    throw $ destReadPath <> " already exists, but copying a file to there did not throw an error with COPYFILE_EXCL option"
 
