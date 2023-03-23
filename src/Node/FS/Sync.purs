@@ -113,26 +113,15 @@ foreign import fsyncSyncImpl :: EffectFn1 FileDescriptor Unit
 foreign import closeSyncImpl :: EffectFn1 FileDescriptor Unit
 
 -- | Renames a file.
-rename
-  :: FilePath
-  -> FilePath
-  -> Effect Unit
-
-rename oldFile newFile = runEffectFn2
-  renameSyncImpl
-  oldFile
-  newFile
+rename :: FilePath -> FilePath -> Effect Unit
+rename oldFile newFile = runEffectFn2 renameSyncImpl oldFile newFile
 
 -- | Truncates a file to the specified length.
 truncate
   :: FilePath
   -> Int
   -> Effect Unit
-
-truncate file len = runEffectFn2
-  truncateSyncImpl
-  file
-  len
+truncate file len = runEffectFn2 truncateSyncImpl file len
 
 -- | Changes the ownership of a file.
 chown
@@ -140,32 +129,20 @@ chown
   -> Int
   -> Int
   -> Effect Unit
-
-chown file uid gid = runEffectFn3
-  chownSyncImpl
-  file
-  uid
-  gid
+chown file uid gid = runEffectFn3 chownSyncImpl file uid gid
 
 -- | Changes the permissions of a file.
 chmod
   :: FilePath
   -> Perms
   -> Effect Unit
-
-chmod file perms = runEffectFn2
-  chmodSyncImpl
-  file
-  (permsToString perms)
+chmod file perms = runEffectFn2 chmodSyncImpl file (permsToString perms)
 
 -- | Gets file statistics.
 stat
   :: FilePath
   -> Effect Stats
-
-stat file = map Stats $ runEffectFn1
-  statSyncImpl
-  file
+stat file = map Stats $ runEffectFn1 statSyncImpl file
 
 -- | Gets file or symlink statistics. `lstat` is identical to `stat`, except
 -- | that if the `FilePath` is a symbolic link, then the link itself is stat-ed,
@@ -173,21 +150,14 @@ stat file = map Stats $ runEffectFn1
 lstat
   :: FilePath
   -> Effect Stats
-
-lstat file = map Stats $ runEffectFn1
-  lstatSyncImpl
-  file
+lstat file = map Stats $ runEffectFn1 lstatSyncImpl file
 
 -- | Creates a link to an existing file.
 link
   :: FilePath
   -> FilePath
   -> Effect Unit
-
-link src dst = runEffectFn2
-  linkSyncImpl
-  src
-  dst
+link src dst = runEffectFn2 linkSyncImpl src dst
 
 -- | Creates a symlink.
 symlink
@@ -195,31 +165,19 @@ symlink
   -> FilePath
   -> SymlinkType
   -> Effect Unit
-
-symlink src dst ty = runEffectFn3
-  symlinkSyncImpl
-  src
-  dst
-  (symlinkTypeToNode ty)
+symlink src dst ty = runEffectFn3 symlinkSyncImpl src dst (symlinkTypeToNode ty)
 
 -- | Reads the value of a symlink.
 readlink
   :: FilePath
   -> Effect FilePath
-
-readlink path = runEffectFn1
-  readlinkSyncImpl
-  path
+readlink path = runEffectFn1 readlinkSyncImpl path
 
 -- | Find the canonicalized absolute location for a path.
 realpath
   :: FilePath
   -> Effect FilePath
-
-realpath path = runEffectFn2
-  realpathSyncImpl
-  path
-  {}
+realpath path = runEffectFn2 realpathSyncImpl path {}
 
 -- | Find the canonicalized absolute location for a path using a cache object for
 -- | already resolved paths.
@@ -228,20 +186,13 @@ realpath'
    . FilePath
   -> { | cache }
   -> Effect FilePath
-
-realpath' path cache = runEffectFn2
-  realpathSyncImpl
-  path
-  cache
+realpath' path cache = runEffectFn2 realpathSyncImpl path cache
 
 -- | Deletes a file.
 unlink
   :: FilePath
   -> Effect Unit
-
-unlink file = runEffectFn1
-  unlinkSyncImpl
-  file
+unlink file = runEffectFn1 unlinkSyncImpl file
 
 -- | Deletes a directory.
 rmdir
@@ -254,10 +205,7 @@ rmdir'
   :: FilePath
   -> { maxRetries :: Int, retryDelay :: Int }
   -> Effect Unit
-rmdir' path opts = runEffectFn2
-  rmdirSyncImpl
-  path
-  opts
+rmdir' path opts = runEffectFn2 rmdirSyncImpl path opts
 
 -- | Deletes a file or directory.
 rm
@@ -270,10 +218,7 @@ rm'
   :: FilePath
   -> { force :: Boolean, maxRetries :: Int, recursive :: Boolean, retryDelay :: Int }
   -> Effect Unit
-rm' path opts = runEffectFn2
-  rmSyncImpl
-  path
-  opts
+rm' path opts = runEffectFn2 rmSyncImpl path opts
 
 -- | Makes a new directory.
 mkdir
@@ -286,19 +231,13 @@ mkdir'
   :: FilePath
   -> { recursive :: Boolean, mode :: Perms }
   -> Effect Unit
-mkdir' file { recursive, mode: perms } = runEffectFn2
-  mkdirSyncImpl
-  file
-  { recursive, mode: permsToString perms }
+mkdir' file { recursive, mode: perms } = runEffectFn2 mkdirSyncImpl file { recursive, mode: permsToString perms }
 
 -- | Reads the contents of a directory.
 readdir
   :: FilePath
   -> Effect (Array FilePath)
-
-readdir file = runEffectFn1
-  readdirSyncImpl
-  file
+readdir file = runEffectFn1 readdirSyncImpl file
 
 -- | Sets the accessed and modified times for the specified file.
 utimes
@@ -306,12 +245,7 @@ utimes
   -> DateTime
   -> DateTime
   -> Effect Unit
-
-utimes file atime mtime = runEffectFn3
-  utimesSyncImpl
-  file
-  (fromDate atime)
-  (fromDate mtime)
+utimes file atime mtime = runEffectFn3 utimesSyncImpl file (fromDate atime) (fromDate mtime)
   where
   fromDate date = ms (toEpochMilliseconds date) / 1000
   ms (Milliseconds n) = round n
@@ -321,34 +255,21 @@ utimes file atime mtime = runEffectFn3
 readFile
   :: FilePath
   -> Effect Buffer
-
-readFile file = runEffectFn2
-  readFileSyncImpl
-  file
-  {}
+readFile file = runEffectFn2 readFileSyncImpl file {}
 
 -- | Reads the entire contents of a text file with the specified encoding.
 readTextFile
   :: Encoding
   -> FilePath
   -> Effect String
-
-readTextFile encoding file = runEffectFn2
-  readFileSyncImpl
-  file
-  { encoding: show encoding }
+readTextFile encoding file = runEffectFn2 readFileSyncImpl file { encoding: show encoding }
 
 -- | Writes a buffer to a file.
 writeFile
   :: FilePath
   -> Buffer
   -> Effect Unit
-
-writeFile file buff = runEffectFn3
-  writeFileSyncImpl
-  file
-  buff
-  {}
+writeFile file buff = runEffectFn3 writeFileSyncImpl file buff {}
 
 -- | Writes text to a file using the specified encoding.
 writeTextFile
@@ -356,24 +277,14 @@ writeTextFile
   -> FilePath
   -> String
   -> Effect Unit
-
-writeTextFile encoding file text = runEffectFn3
-  writeFileSyncImpl
-  file
-  text
-  { encoding: show encoding }
+writeTextFile encoding file text = runEffectFn3 writeFileSyncImpl file text { encoding: show encoding }
 
 -- | Appends the contents of a buffer to a file.
 appendFile
   :: FilePath
   -> Buffer
   -> Effect Unit
-
-appendFile file buff = runEffectFn3
-  appendFileSyncImpl
-  file
-  buff
-  {}
+appendFile file buff = runEffectFn3 appendFileSyncImpl file buff {}
 
 -- | Appends text to a file using the specified encoding.
 appendTextFile
@@ -381,12 +292,7 @@ appendTextFile
   -> FilePath
   -> String
   -> Effect Unit
-
-appendTextFile encoding file buff = runEffectFn3
-  appendFileSyncImpl
-  file
-  buff
-  { encoding: show encoding }
+appendTextFile encoding file buff = runEffectFn3 appendFileSyncImpl file buff { encoding: show encoding }
 
 -- | Check if the path exists.
 exists
@@ -401,11 +307,7 @@ fdOpen
   -> FileFlags
   -> Maybe FileMode
   -> Effect FileDescriptor
-fdOpen file flags mode = runEffectFn3
-  openSyncImpl
-  file
-  (fileFlagsToNode flags)
-  (toNullable mode)
+fdOpen file flags mode = runEffectFn3 openSyncImpl file (fileFlagsToNode flags) (toNullable mode)
 
 -- | Read from a file synchronously. See the [Node documentation](http://nodejs.org/api/fs.html#fs_fs_readsync_fd_buffer_offset_length_position)
 -- | for details.
