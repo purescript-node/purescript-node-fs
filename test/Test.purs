@@ -2,13 +2,12 @@ module Test where
 
 import Prelude
 
-import Control.Monad.Error.Class (throwError)
 import Data.Either (Either(..), either, isRight)
-import Data.Maybe (Maybe(..), isJust, isNothing)
-import Data.Traversable (traverse)
+import Data.Maybe (Maybe(..), isNothing)
+import Data.Traversable (for_, traverse)
 import Effect (Effect)
 import Effect.Console (log)
-import Effect.Exception (Error, catchException, error, throw, throwException, try)
+import Effect.Exception (Error, catchException, error, message, throw, throwException, try)
 import Node.Buffer as Buffer
 import Node.Encoding (Encoding(..))
 import Node.FS (FileFlags(..), SymlinkType(..))
@@ -174,8 +173,9 @@ main = do
   let readableFixturePath = "./test/fixtures/readable.txt"
   chmod readableFixturePath $ mkPerms Perms.read Perms.none Perms.none
 
-  unlessM (map isJust $ S.access' readableFixturePath r_OK) do
-    throw $ "`access \"" <> readableFixturePath <> "\" R_OK` should not produce error"
+  mbErr <- S.access' readableFixturePath r_OK
+  for_ mbErr \err -> do
+    throw $ "`access \"" <> readableFixturePath <> "\" R_OK` should not produce error.\n" <> message err
   unlessM (map isNothing $ S.access' readableFixturePath w_OK) do
     throw $ "`access \"" <> readableFixturePath <> "\" W_OK` should produce error"
 
