@@ -1,5 +1,11 @@
 module Node.FS.Async
   ( Callback(..)
+  , access
+  , access'
+  , copyFile
+  , copyFile'
+  , mkdtemp
+  , mkdtemp'
   , rename
   , truncate
   , chown
@@ -45,10 +51,11 @@ import Data.Nullable (Nullable, toMaybe, toNullable)
 import Data.Time.Duration (Milliseconds(..))
 import Effect (Effect)
 import Effect.Exception (Error)
-import Effect.Uncurried (EffectFn2, EffectFn3, EffectFn4, EffectFn6, mkEffectFn2, runEffectFn2, runEffectFn3, runEffectFn4, runEffectFn6)
+import Effect.Uncurried (EffectFn1, EffectFn2, EffectFn3, EffectFn4, EffectFn6, mkEffectFn1, mkEffectFn2, runEffectFn2, runEffectFn3, runEffectFn4, runEffectFn6)
 import Node.Buffer (Buffer, size)
-import Node.Encoding (Encoding)
+import Node.Encoding (Encoding(..), encodingToNode)
 import Node.FS (FileDescriptor, ByteCount, FilePosition, BufferLength, BufferOffset, FileMode, FileFlags, SymlinkType, fileFlagsToNode, symlinkTypeToNode)
+import Node.FS.Constants (AccessMode, CopyMode, defaultAccessMode, defaultCopyMode)
 import Node.FS.Perms (Perms, permsToString, all, mkPerms)
 import Node.FS.Stats (StatsObj, Stats(..))
 import Node.Path (FilePath)
@@ -62,6 +69,31 @@ handleCallback cb = mkEffectFn2 \err a -> case toMaybe err of
 
 -- | Type synonym for callback functions.
 type Callback a = Either Error a -> Effect Unit
+
+access :: FilePath -> (Maybe Error -> Effect Unit) -> Effect Unit
+access path = access' path defaultAccessMode
+
+access' :: FilePath -> AccessMode -> (Maybe Error -> Effect Unit) -> Effect Unit
+access' path mode cb = runEffectFn3 accessImpl path mode $ mkEffectFn1 \err -> do
+  cb $ toMaybe err
+
+foreign import accessImpl :: EffectFn3 FilePath AccessMode (EffectFn1 (Nullable Error) Unit) Unit
+
+copyFile :: FilePath -> FilePath -> Callback Unit -> Effect Unit
+copyFile src dest = copyFile' src dest defaultCopyMode
+
+copyFile' :: FilePath -> FilePath -> CopyMode -> Callback Unit -> Effect Unit
+copyFile' src dest mode cb = runEffectFn4 copyFileImpl src dest mode (handleCallback cb)
+
+foreign import copyFileImpl :: EffectFn4 FilePath FilePath CopyMode (JSCallback Unit) Unit
+
+mkdtemp :: String -> Callback String -> Effect Unit
+mkdtemp prefix = mkdtemp' prefix UTF8
+
+mkdtemp' :: String -> Encoding -> Callback String -> Effect Unit
+mkdtemp' prefix encoding cb = runEffectFn3 mkdtempImpl prefix (encodingToNode encoding) (handleCallback cb)
+
+foreign import mkdtempImpl :: EffectFn3 FilePath String (JSCallback String) Unit
 
 foreign import renameImpl :: EffectFn3 FilePath FilePath (JSCallback Unit) Unit
 foreign import truncateImpl :: EffectFn3 FilePath Int (JSCallback Unit) Unit

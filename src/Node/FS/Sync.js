@@ -1,4 +1,7 @@
-export {
+export { 
+  accessSync as accessImpl,
+  copyFileSync as copyFileImpl,
+  mkdtempSync as mkdtempImpl,
   renameSync as renameSyncImpl,
   truncateSync as truncateSyncImpl,
   chownSync as chownSyncImpl,
@@ -24,4 +27,4 @@ export {
   writeSync as writeSyncImpl,
   fsyncSync as fsyncSyncImpl,
   closeSync as closeSyncImpl
-} from "fs";
+} from "node:fs";

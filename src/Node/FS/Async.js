@@ -1,4 +1,7 @@
 export {
+  access as accessImpl,
+  copyFile as copyFileImpl,
+  mkdtemp as mkdtempImpl,
   rename as renameImpl,
   truncate as truncateImpl,
   chown as chownImpl,
@@ -22,4 +25,4 @@ export {
   read as readImpl,
   write as writeImpl,
   close as closeImpl
-} from "fs";
+} from "node:fs";

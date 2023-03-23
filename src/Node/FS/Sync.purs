@@ -1,5 +1,11 @@
 module Node.FS.Sync
-  ( rename
+  ( access
+  , access'
+  , copyFile
+  , copyFile'
+  , mkdtemp
+  , mkdtemp'
+  , rename
   , truncate
   , chown
   , chmod
@@ -37,20 +43,48 @@ module Node.FS.Sync
 
 import Prelude
 
-import Effect (Effect)
 import Data.DateTime (DateTime)
-import Data.Time.Duration (Milliseconds(..))
 import Data.DateTime.Instant (fromDateTime, unInstant)
-import Data.Nullable (Nullable(), toNullable)
+import Data.Either (blush)
 import Data.Int (round)
 import Data.Maybe (Maybe(..))
+import Data.Nullable (Nullable, toNullable)
+import Data.Time.Duration (Milliseconds(..))
+import Effect (Effect)
+import Effect.Exception (Error, try)
 import Effect.Uncurried (EffectFn1, EffectFn2, EffectFn3, EffectFn5, runEffectFn1, runEffectFn2, runEffectFn3, runEffectFn5)
-import Node.Buffer (Buffer(), size)
-import Node.Encoding (Encoding)
+import Node.Buffer (Buffer, size)
+import Node.Encoding (Encoding(..), encodingToNode)
 import Node.FS (FileDescriptor, ByteCount, FilePosition, BufferLength, BufferOffset, FileMode, FileFlags, SymlinkType, fileFlagsToNode, symlinkTypeToNode)
-import Node.FS.Stats (StatsObj, Stats(..))
-import Node.Path (FilePath())
+import Node.FS.Constants (AccessMode, CopyMode, defaultAccessMode, defaultCopyMode)
 import Node.FS.Perms (Perms, permsToString, all, mkPerms)
+import Node.FS.Stats (StatsObj, Stats(..))
+import Node.Path (FilePath)
+
+access :: FilePath -> Effect (Maybe Error)
+access = flip access' defaultAccessMode
+
+access' :: FilePath -> AccessMode -> Effect (Maybe Error)
+access' path mode = do
+  map blush $ try $ runEffectFn2 accessImpl path mode
+
+foreign import accessImpl :: EffectFn2 FilePath AccessMode (Maybe Error)
+
+copyFile :: FilePath -> FilePath -> Effect Unit
+copyFile src dest = runEffectFn3 copyFileImpl src dest defaultCopyMode
+
+copyFile' :: FilePath -> FilePath -> CopyMode -> Effect Unit
+copyFile' src dest mode = runEffectFn3 copyFileImpl src dest mode
+
+foreign import copyFileImpl :: EffectFn3 FilePath FilePath CopyMode Unit
+
+mkdtemp :: String -> Effect String
+mkdtemp prefix = mkdtemp' prefix UTF8
+
+mkdtemp' :: String -> Encoding -> Effect String
+mkdtemp' prefix encoding = runEffectFn2 mkdtempImpl prefix (encodingToNode encoding)
+
+foreign import mkdtempImpl :: EffectFn2 String String String
 
 foreign import renameSyncImpl :: EffectFn2 FilePath FilePath Unit
 foreign import truncateSyncImpl :: EffectFn2 FilePath Int Unit
