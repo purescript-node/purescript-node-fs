@@ -1,13 +1,15 @@
 module Node.FS.Perms
-  ( Perm()
+  ( Perm
   , mkPerm
   , none
   , read
   , write
   , execute
   , all
-  , Perms()
+  , Perms
   , mkPerms
+  , permsAll
+  , permsReadWrite
   , permsFromString
   , permsToString
   , permsToInt
@@ -152,6 +154,12 @@ permFromChar c = case c of
 -- | other users' permission sets, respectively.
 mkPerms :: Perm -> Perm -> Perm -> Perms
 mkPerms u g o = Perms { u: u, g: g, o: o }
+
+permsAll :: Perms
+permsAll = mkPerms all all all
+
+permsReadWrite :: Perms
+permsReadWrite = mkPerms all all none
 
 -- | Convert a `Perm` to an octal digit. For example:
 -- |
