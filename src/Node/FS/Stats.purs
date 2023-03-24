@@ -1,6 +1,6 @@
 module Node.FS.Stats
-  ( Stats (..)
-  , StatsObj (..)
+  ( Stats(..)
+  , StatsObj(..)
   , isFile
   , isDirectory
   , isBlockDevice
@@ -14,6 +14,7 @@ module Node.FS.Stats
   ) where
 
 import Prelude
+
 import Data.DateTime (DateTime)
 import Data.Function.Uncurried (Fn2, Fn0, runFn2)
 import Data.JSDate (JSDate, toDateTime)

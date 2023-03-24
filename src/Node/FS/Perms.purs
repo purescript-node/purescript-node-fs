@@ -1,13 +1,15 @@
 module Node.FS.Perms
-  ( Perm()
+  ( Perm
   , mkPerm
   , none
   , read
   , write
   , execute
   , all
-  , Perms()
+  , Perms
   , mkPerms
+  , permsAll
+  , permsReadWrite
   , permsFromString
   , permsToString
   , permsToInt
@@ -40,29 +42,30 @@ newtype Perm = Perm { r :: Boolean, w :: Boolean, x :: Boolean }
 
 instance eqPerm :: Eq Perm where
   eq (Perm { r: r1, w: w1, x: x1 }) (Perm { r: r2, w: w2, x: x2 }) =
-    r1 == r2  && w1 == w2 && x1 == x2
+    r1 == r2 && w1 == w2 && x1 == x2
 
 instance ordPerm :: Ord Perm where
   compare (Perm { r: r1, w: w1, x: x1 }) (Perm { r: r2, w: w2, x: x2 }) =
-    compare [r1, w1, x1] [r2, w2, x2]
+    compare [ r1, w1, x1 ] [ r2, w2, x2 ]
 
 instance showPerm :: Show Perm where
   show p | p == none = "none"
-  show p | p == all  = "all"
+  show p | p == all = "all"
   show (Perm { r: r, w: w, x: x }) =
     joinWith " + " ps
     where
     ps =
-      (if r then ["read"] else []) <>
-      (if w then ["write"] else []) <>
-      (if x then ["execute"] else [])
+      (if r then [ "read" ] else [])
+        <> (if w then [ "write" ] else [])
+        <>
+          (if x then [ "execute" ] else [])
 
 instance semiringPerm :: Semiring Perm where
   add (Perm { r: r0, w: w0, x: x0 }) (Perm { r: r1, w: w1, x: x1 }) =
-    Perm { r: r0 || r1, w: w0 || w1, x: x0 || x1  }
+    Perm { r: r0 || r1, w: w0 || w1, x: x0 || x1 }
   zero = Perm { r: false, w: false, x: false }
   mul (Perm { r: r0, w: w0, x: x0 }) (Perm { r: r1, w: w1, x: x1 }) =
-    Perm { r: r0 && r1, w: w0 && w1, x: x0 && x1  }
+    Perm { r: r0 && r1, w: w0 && w1, x: x0 && x1 }
   one = Perm { r: true, w: true, x: true }
 
 -- | Create a `Perm` value. The arguments represent the readable, writable, and
@@ -100,20 +103,22 @@ newtype Perms = Perms { u :: Perm, g :: Perm, o :: Perm }
 
 instance eqPerms :: Eq Perms where
   eq (Perms { u: u1, g: g1, o: o1 }) (Perms { u: u2, g: g2, o: o2 }) =
-    u1 == u2  && g1 == g2 && o1 == o2
+    u1 == u2 && g1 == g2 && o1 == o2
 
 instance ordPerms :: Ord Perms where
   compare (Perms { u: u1, g: g1, o: o1 }) (Perms { u: u2, g: g2, o: o2 }) =
-    compare [u1, g1, o1] [u2, g2, o2]
+    compare [ u1, g1, o1 ] [ u2, g2, o2 ]
 
 instance showPerms :: Show Perms where
   show (Perms { u: u, g: g, o: o }) =
-    "mkPerms " <> joinWith " " (f <$> [u, g, o])
+    "mkPerms " <> joinWith " " (f <$> [ u, g, o ])
     where
-      f perm = let str = show perm
-               in  if isNothing $ indexOf (Pattern " ") str
-                     then str
-                     else "(" <> str <> ")"
+    f perm =
+      let
+        str = show perm
+      in
+        if isNothing $ indexOf (Pattern " ") str then str
+        else "(" <> str <> ")"
 
 -- | Attempt to parse a `Perms` value from a `String` containing an octal
 -- | integer. For example,
@@ -121,17 +126,17 @@ instance showPerms :: Show Perms where
 permsFromString :: String -> Maybe Perms
 permsFromString = _perms <<< toCharArray <<< dropPrefix zeroChar
   where
-    zeroChar = unsafePartial $ fromJust $ toEnum 48
+  zeroChar = unsafePartial $ fromJust $ toEnum 48
 
-    dropPrefix x xs
-      | charAt 0 xs == Just x = drop 1 xs
-      | otherwise             = xs
+  dropPrefix x xs
+    | charAt 0 xs == Just x = drop 1 xs
+    | otherwise = xs
 
-    _perms [u, g, o] =
-      mkPerms <$> permFromChar u
-              <*> permFromChar g
-              <*> permFromChar o
-    _perms _ = Nothing
+  _perms [ u, g, o ] =
+    mkPerms <$> permFromChar u
+      <*> permFromChar g
+      <*> permFromChar o
+  _perms _ = Nothing
 
 permFromChar :: Char -> Maybe Perm
 permFromChar c = case c of
@@ -143,12 +148,18 @@ permFromChar c = case c of
   '5' -> Just $ read + execute
   '6' -> Just $ read + write
   '7' -> Just $ read + write + execute
-  _   -> Nothing
+  _ -> Nothing
 
 -- | Create a `Perms` value. The arguments represent the owner's, group's, and
 -- | other users' permission sets, respectively.
 mkPerms :: Perm -> Perm -> Perm -> Perms
 mkPerms u g o = Perms { u: u, g: g, o: o }
+
+permsAll :: Perms
+permsAll = mkPerms all all all
+
+permsReadWrite :: Perms
+permsReadWrite = mkPerms all all none
 
 -- | Convert a `Perm` to an octal digit. For example:
 -- |
@@ -157,7 +168,7 @@ mkPerms u g o = Perms { u: u, g: g, o: o }
 -- | * `permToInt (r + w) == 6`
 permToInt :: Perm -> Int
 permToInt (Perm { r: r, w: w, x: x }) =
-      (if r then 4 else 0)
+  (if r then 4 else 0)
     + (if w then 2 else 0)
     + (if x then 1 else 0)
 
@@ -170,10 +181,10 @@ permToString = show <<< permToInt
 -- | `permsToString (mkPerms (read + write) read read) == "0644"`
 permsToString :: Perms -> String
 permsToString (Perms { u: u, g: g, o: o }) =
-     "0"
-  <> permToString u
-  <> permToString g
-  <> permToString o
+  "0"
+    <> permToString u
+    <> permToString g
+    <> permToString o
 
 -- | Convert a `Perms` value to an `Int`, via `permsToString`.
 permsToInt :: Perms -> Int
