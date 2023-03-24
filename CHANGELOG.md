@@ -12,6 +12,11 @@ Bugfixes:
 
 Other improvements:
 
+## [v8.2.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v8.2.0) - 2023-03-23
+
+New features:
+- Add FFI for `access`, `copyFile` and `mkdtemp`  (#73 by @JordanMartinez)
+
 ## [v8.1.1](https://github.com/purescript-node/purescript-node-fs/releases/tag/v8.1.1) - 2022-10-24
 
 Other improvements:
