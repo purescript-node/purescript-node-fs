@@ -1,12 +1,12 @@
 module Node.FS
-  ( FileDescriptor(..)
-  , FileMode(..)
+  ( FileDescriptor
+  , FileMode
   , SymlinkType(..)
   , symlinkTypeToNode
-  , BufferLength(..)
-  , BufferOffset(..)
-  , ByteCount(..)
-  , FilePosition(..)
+  , BufferLength
+  , BufferOffset
+  , ByteCount
+  , FilePosition
   , module Exports
   ) where
 

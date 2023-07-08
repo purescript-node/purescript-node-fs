@@ -1,13 +1,13 @@
 module Node.FS.Stream
   ( createWriteStream
   , fdCreateWriteStream
-  , WriteStreamOptions()
+  , WriteStreamOptions
   , defaultWriteStreamOptions
   , createWriteStreamWith
   , fdCreateWriteStreamWith
   , createReadStream
   , fdCreateReadStream
-  , ReadStreamOptions()
+  , ReadStreamOptions
   , defaultReadStreamOptions
   , createReadStreamWith
   , fdCreateReadStreamWith
