@@ -40,9 +40,7 @@ import Partial.Unsafe (unsafePartial)
 -- | intersection respectively.
 newtype Perm = Perm { r :: Boolean, w :: Boolean, x :: Boolean }
 
-instance eqPerm :: Eq Perm where
-  eq (Perm { r: r1, w: w1, x: x1 }) (Perm { r: r2, w: w2, x: x2 }) =
-    r1 == r2 && w1 == w2 && x1 == x2
+derive newtype instance eqPerm :: Eq Perm
 
 instance ordPerm :: Ord Perm where
   compare (Perm { r: r1, w: w1, x: x1 }) (Perm { r: r2, w: w2, x: x2 }) =
@@ -101,9 +99,7 @@ all = one
 -- | file owner, the group, and any other users.
 newtype Perms = Perms { u :: Perm, g :: Perm, o :: Perm }
 
-instance eqPerms :: Eq Perms where
-  eq (Perms { u: u1, g: g1, o: o1 }) (Perms { u: u2, g: g2, o: o2 }) =
-    u1 == u2 && g1 == g2 && o1 == o2
+derive newtype instance eqPerms :: Eq Perms
 
 instance ordPerms :: Ord Perms where
   compare (Perms { u: u1, g: g1, o: o1 }) (Perms { u: u2, g: g2, o: o2 }) =
