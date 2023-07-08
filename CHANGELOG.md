@@ -5,14 +5,14 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
-- Update `node-buffer` to next breaking release: `v9.0.0` (#74 by @JordanMartinez)
-- Update `node-streams` to next breaking release: `TODO` (#74 by @JordanMartinez)
 
 New features:
 
 Bugfixes:
 
 Other improvements:
+- Update `node-buffer` to next breaking release: `v9.0.0` (#74 by @JordanMartinez)
+- Update `node-streams` to next breaking release: `TODO` (#74 by @JordanMartinez)
 - Update CI actions to v3 (#74 by @JordanMartinez)
 - Update CI node to `lts/*` (#74 by @JordanMartinez)
 - Enforce `purs-tidy` format check in CI (#74 by @JordanMartinez)
