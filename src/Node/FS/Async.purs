@@ -1,5 +1,5 @@
 module Node.FS.Async
-  ( Callback(..)
+  ( Callback
   , access
   , access'
   , copyFile

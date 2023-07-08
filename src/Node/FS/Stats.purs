@@ -1,6 +1,6 @@
 module Node.FS.Stats
   ( Stats(..)
-  , StatsObj(..)
+  , StatsObj
   , isFile
   , isDirectory
   , isBlockDevice

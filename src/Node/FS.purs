@@ -1,12 +1,12 @@
 module Node.FS
-  ( FileDescriptor(..)
-  , FileMode(..)
+  ( FileDescriptor
+  , FileMode
   , SymlinkType(..)
   , symlinkTypeToNode
-  , BufferLength(..)
-  , BufferOffset(..)
-  , ByteCount(..)
-  , FilePosition(..)
+  , BufferLength
+  , BufferOffset
+  , ByteCount
+  , FilePosition
   , module Exports
   ) where
 
@@ -38,8 +38,4 @@ instance showSymlinkType :: Show SymlinkType where
   show DirLink = "DirLink"
   show JunctionLink = "JunctionLink"
 
-instance eqSymlinkType :: Eq SymlinkType where
-  eq FileLink FileLink = true
-  eq DirLink DirLink = true
-  eq JunctionLink JunctionLink = true
-  eq _ _ = false
+derive instance eqSymlinkType :: Eq SymlinkType

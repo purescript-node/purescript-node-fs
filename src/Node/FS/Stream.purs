@@ -1,13 +1,13 @@
 module Node.FS.Stream
   ( createWriteStream
   , fdCreateWriteStream
-  , WriteStreamOptions()
+  , WriteStreamOptions
   , defaultWriteStreamOptions
   , createWriteStreamWith
   , fdCreateWriteStreamWith
   , createReadStream
   , fdCreateReadStream
-  , ReadStreamOptions()
+  , ReadStreamOptions
   , defaultReadStreamOptions
   , createReadStreamWith
   , fdCreateReadStreamWith
@@ -15,8 +15,7 @@ module Node.FS.Stream
 
 import Prelude
 
-import Data.Maybe (Maybe(..))
-import Data.Nullable (Nullable, toNullable)
+import Data.Nullable (Nullable, notNull, null)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn2, runEffectFn2)
 import Node.FS (FileDescriptor)
@@ -33,12 +32,6 @@ readWrite :: Perms
 readWrite = Perms.mkPerms rw rw rw
   where
   rw = Perms.read + Perms.write
-
-null :: forall a. Nullable a
-null = toNullable Nothing
-
-nonnull :: forall a. a -> Nullable a
-nonnull = toNullable <<< Just
 
 -- | Create a Writable stream which writes data to the specified file, using
 -- | the default options.
@@ -72,7 +65,7 @@ createWriteStreamWith
   -> Effect (Writable ())
 createWriteStreamWith opts file = runEffectFn2
   createWriteStreamImpl
-  (nonnull file)
+  (notNull file)
   { mode: Perms.permsToInt opts.perms
   , flags: fileFlagsToNode opts.flags
   }
@@ -124,7 +117,7 @@ createReadStreamWith
   -> Effect (Readable ())
 createReadStreamWith opts file = runEffectFn2
   createReadStreamImpl
-  (nonnull file)
+  (notNull file)
   { mode: Perms.permsToInt opts.perms
   , flags: fileFlagsToNode opts.flags
   , autoClose: opts.autoClose
