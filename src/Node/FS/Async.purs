@@ -57,7 +57,7 @@ import Node.Encoding (Encoding(..), encodingToNode)
 import Node.FS (FileDescriptor, ByteCount, FilePosition, BufferLength, BufferOffset, FileMode, SymlinkType, symlinkTypeToNode)
 import Node.FS.Constants (FileFlags, fileFlagsToNode, AccessMode, CopyMode, defaultAccessMode, defaultCopyMode)
 import Node.FS.Perms (Perms, permsToString, all, mkPerms)
-import Node.FS.Stats (StatsObj, Stats(..))
+import Node.FS.Stats (Stats)
 import Node.Path (FilePath)
 
 type JSCallback a = EffectFn2 (Nullable Error) a Unit
@@ -99,8 +99,8 @@ foreign import renameImpl :: EffectFn3 FilePath FilePath (JSCallback Unit) Unit
 foreign import truncateImpl :: EffectFn3 FilePath Int (JSCallback Unit) Unit
 foreign import chownImpl :: EffectFn4 FilePath Int Int (JSCallback Unit) Unit
 foreign import chmodImpl :: EffectFn3 FilePath String (JSCallback Unit) Unit
-foreign import statImpl :: EffectFn2 FilePath (JSCallback StatsObj) Unit
-foreign import lstatImpl :: EffectFn2 FilePath (JSCallback StatsObj) Unit
+foreign import statImpl :: EffectFn2 FilePath (JSCallback Stats) Unit
+foreign import lstatImpl :: EffectFn2 FilePath (JSCallback Stats) Unit
 foreign import linkImpl :: EffectFn3 FilePath FilePath (JSCallback Unit) Unit
 foreign import symlinkImpl :: EffectFn4 FilePath FilePath String (JSCallback Unit) Unit
 foreign import readlinkImpl :: EffectFn2 FilePath (JSCallback FilePath) Unit
@@ -157,7 +157,7 @@ stat
   :: FilePath
   -> Callback Stats
   -> Effect Unit
-stat file cb = runEffectFn2 statImpl file (handleCallback $ cb <<< map Stats)
+stat file cb = runEffectFn2 statImpl file (handleCallback $ cb)
 
 -- | Gets file or symlink statistics. `lstat` is identical to `stat`, except
 -- | that if the `FilePath` is a symbolic link, then the link itself is stat-ed,
@@ -166,7 +166,7 @@ lstat
   :: FilePath
   -> Callback Stats
   -> Effect Unit
-lstat file cb = runEffectFn2 lstatImpl file (handleCallback $ cb <<< map Stats)
+lstat file cb = runEffectFn2 lstatImpl file (handleCallback $ cb)
 
 -- | Creates a link to an existing file.
 link

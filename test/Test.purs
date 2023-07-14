@@ -2,7 +2,7 @@ module Test where
 
 import Prelude
 
-import Data.Either (Either(..), either, isRight)
+import Data.Either (Either(..), either)
 import Data.Maybe (Maybe(..), isNothing)
 import Data.Traversable (for_, traverse)
 import Effect (Effect)

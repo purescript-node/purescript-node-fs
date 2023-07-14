@@ -58,7 +58,7 @@ import Node.Encoding (Encoding(..), encodingToNode)
 import Node.FS (FileDescriptor, ByteCount, FilePosition, BufferLength, BufferOffset, FileMode, SymlinkType, symlinkTypeToNode)
 import Node.FS.Constants (AccessMode, CopyMode, FileFlags, defaultAccessMode, defaultCopyMode, fileFlagsToNode)
 import Node.FS.Perms (Perms, permsToString, all, mkPerms)
-import Node.FS.Stats (StatsObj, Stats(..))
+import Node.FS.Stats (Stats)
 import Node.Path (FilePath)
 
 access :: FilePath -> Effect (Maybe Error)
@@ -90,8 +90,8 @@ foreign import renameSyncImpl :: EffectFn2 FilePath FilePath Unit
 foreign import truncateSyncImpl :: EffectFn2 FilePath Int Unit
 foreign import chownSyncImpl :: EffectFn3 FilePath Int Int Unit
 foreign import chmodSyncImpl :: EffectFn2 FilePath String Unit
-foreign import statSyncImpl :: EffectFn1 FilePath StatsObj
-foreign import lstatSyncImpl :: EffectFn1 FilePath StatsObj
+foreign import statSyncImpl :: EffectFn1 FilePath Stats
+foreign import lstatSyncImpl :: EffectFn1 FilePath Stats
 foreign import linkSyncImpl :: EffectFn2 FilePath FilePath Unit
 foreign import symlinkSyncImpl :: EffectFn3 FilePath FilePath String Unit
 foreign import readlinkSyncImpl :: EffectFn1 FilePath FilePath
@@ -142,7 +142,7 @@ chmod file perms = runEffectFn2 chmodSyncImpl file (permsToString perms)
 stat
   :: FilePath
   -> Effect Stats
-stat file = map Stats $ runEffectFn1 statSyncImpl file
+stat file = runEffectFn1 statSyncImpl file
 
 -- | Gets file or symlink statistics. `lstat` is identical to `stat`, except
 -- | that if the `FilePath` is a symbolic link, then the link itself is stat-ed,
@@ -150,7 +150,7 @@ stat file = map Stats $ runEffectFn1 statSyncImpl file
 lstat
   :: FilePath
   -> Effect Stats
-lstat file = map Stats $ runEffectFn1 lstatSyncImpl file
+lstat file = runEffectFn1 lstatSyncImpl file
 
 -- | Creates a link to an existing file.
 link
