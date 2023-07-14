@@ -22,6 +22,24 @@ New features:
   getGid :: Stats -> Number
   getGid s = Stats.gid s
   ```
+- Update `[fd]createReadStream`/`[fd]createWriteStream` to allow more options (#77 by @JordanMartinez)
+
+  | Removes... | ...in favor of |
+  | - | - |
+  | `createReadStreamWith` | `createReadStream'` |
+  | `fdCreateReadStreamWith` | `fdCreateReadStream'` |
+  | `createWriteStreamWith` | `createWriteStream'` |
+  | `fdCreateWriteStreamWith` | `fdCreateWriteStream'` |
+  
+  In the new APIs, all options are exposed and may require converting 
+  PureScript values to JavaScript ones.
+  ```purs
+  filePath # createWriteStream'
+    { flags: fileFlagsToNode R
+    , encoding: encodingToNode UTF8
+    , mode: permsToInt Perms.all
+    }
+  ```
 
 Bugfixes:
 

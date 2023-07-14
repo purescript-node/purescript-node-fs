@@ -1,138 +1,152 @@
 module Node.FS.Stream
   ( createWriteStream
-  , fdCreateWriteStream
   , WriteStreamOptions
-  , defaultWriteStreamOptions
-  , createWriteStreamWith
-  , fdCreateWriteStreamWith
+  , createWriteStream'
+  , fdCreateWriteStream
+  , fdCreateWriteStream'
   , createReadStream
-  , fdCreateReadStream
   , ReadStreamOptions
-  , defaultReadStreamOptions
-  , createReadStreamWith
-  , fdCreateReadStreamWith
+  , createReadStream'
+  , fdCreateReadStream
+  , fdCreateReadStream'
   ) where
 
-import Prelude
-
-import Data.Nullable (Nullable, notNull, null)
 import Effect (Effect)
-import Effect.Uncurried (EffectFn2, runEffectFn2)
+import Effect.Uncurried (EffectFn1, EffectFn2, runEffectFn1, runEffectFn2)
 import Node.FS (FileDescriptor)
-import Node.FS.Constants (FileFlags(..), fileFlagsToNode)
-import Node.FS.Perms (Perms)
-import Node.FS.Perms as Perms
 import Node.Path (FilePath)
 import Node.Stream (Readable, Writable)
-
-foreign import createReadStreamImpl :: forall opts. EffectFn2 (Nullable FilePath) { | opts } (Readable ())
-foreign import createWriteStreamImpl :: forall opts. EffectFn2 (Nullable FilePath) { | opts } (Writable ())
-
-readWrite :: Perms
-readWrite = Perms.mkPerms rw rw rw
-  where
-  rw = Perms.read + Perms.write
+import Prim.Row as Row
 
 -- | Create a Writable stream which writes data to the specified file, using
 -- | the default options.
-createWriteStream
-  :: FilePath
+createWriteStream :: FilePath -> Effect (Writable ())
+createWriteStream f = runEffectFn1 createWriteStreamImpl f
+
+foreign import createWriteStreamImpl :: EffectFn1 (FilePath) (Writable ())
+
+type WriteStreamOptions =
+  ( flags :: String
+  , encoding :: String
+  , mode :: Int
+  , autoClose :: Boolean
+  , emitClose :: Boolean
+  , start :: Int
+  )
+
+-- | Create a Writable stream which writes data to the specified file.
+-- | Unused options should not be specified. Some options
+-- | (e.g. `flags`, `encoding`, and `mode`) should convert their 
+-- | PureScript values to the corresponding JavaScript ones:
+-- | ```
+-- | filePath # createWriteStream'
+-- |   { flags: fileFlagsToNode R
+-- |   , encoding: encodingToNode UTF8
+-- |   , mode: permsToInt Perms.all
+-- |   }
+-- | ```
+createWriteStream'
+  :: forall r trash
+   . Row.Union r trash WriteStreamOptions
+  => FilePath
+  -> { | r }
   -> Effect (Writable ())
-createWriteStream = createWriteStreamWith defaultWriteStreamOptions
+createWriteStream' f opts = runEffectFn2 createWriteStreamOptsImpl f opts
+
+foreign import createWriteStreamOptsImpl :: forall r. EffectFn2 (FilePath) ({ | r }) ((Writable ()))
 
 -- | Create a Writable stream which writes data to the specified file
 -- | descriptor, using the default options.
-fdCreateWriteStream
-  :: FileDescriptor
+fdCreateWriteStream :: FileDescriptor -> Effect (Writable ())
+fdCreateWriteStream f = runEffectFn1 fdCreateWriteStreamImpl f
+
+foreign import fdCreateWriteStreamImpl :: EffectFn1 (FileDescriptor) (Writable ())
+
+-- | Create a Writable stream which writes data to the specified file descriptor.
+-- | Unused options should not be specified. Some options
+-- | (e.g. `flags`, `encoding`, and `mode`) should convert their 
+-- | PureScript values to the corresponding JavaScript ones:
+-- | ```
+-- | filePath # fdCreateWriteStream'
+-- |   { flags: fileFlagsToNode R
+-- |   , encoding: encodingToNode UTF8
+-- |   , mode: permsToInt Perms.all
+-- |   }
+-- | ```
+fdCreateWriteStream'
+  :: forall r trash
+   . Row.Union r trash WriteStreamOptions
+  => FileDescriptor
+  -> { | r }
   -> Effect (Writable ())
-fdCreateWriteStream = fdCreateWriteStreamWith defaultWriteStreamOptions
+fdCreateWriteStream' f opts = runEffectFn2 fdCreateWriteStreamOptsImpl f opts
 
-type WriteStreamOptions =
-  { flags :: FileFlags
-  , perms :: Perms
-  }
-
-defaultWriteStreamOptions :: WriteStreamOptions
-defaultWriteStreamOptions =
-  { flags: W
-  , perms: readWrite
-  }
-
--- | Like `createWriteStream`, but allows you to pass options.
-createWriteStreamWith
-  :: WriteStreamOptions
-  -> FilePath
-  -> Effect (Writable ())
-createWriteStreamWith opts file = runEffectFn2
-  createWriteStreamImpl
-  (notNull file)
-  { mode: Perms.permsToInt opts.perms
-  , flags: fileFlagsToNode opts.flags
-  }
-
--- | Like `fdCreateWriteStream`, but allows you to pass options.
-fdCreateWriteStreamWith
-  :: WriteStreamOptions
-  -> FileDescriptor
-  -> Effect (Writable ())
-fdCreateWriteStreamWith opts fd = runEffectFn2
-  createWriteStreamImpl
-  null
-  { fd
-  , mode: Perms.permsToInt opts.perms
-  , flags: fileFlagsToNode opts.flags
-  }
+foreign import fdCreateWriteStreamOptsImpl :: forall r. EffectFn2 (FileDescriptor) ({ | r }) (Writable ())
 
 -- | Create a Readable stream which reads data to the specified file, using
 -- | the default options.
-createReadStream
-  :: FilePath
+createReadStream :: FilePath -> Effect (Readable ())
+createReadStream p = runEffectFn1 createReadStreamImpl p
+
+foreign import createReadStreamImpl :: EffectFn1 (FilePath) (Readable ())
+
+type ReadStreamOptions =
+  ( flags :: String
+  , encoding :: String
+  , mode :: Int
+  , autoClose :: Boolean
+  , emitClose :: Boolean
+  , start :: Int
+  , end :: Int
+  , highWaterMark :: Int
+  )
+
+-- | Create a Readable stream which reads data from the specified file.
+-- | Unused options should not be specified. Some options
+-- | (e.g. `flags`, `encoding`, and `mode`) should convert their 
+-- | PureScript values to the corresponding JavaScript ones:
+-- | ```
+-- | filePath # createReadStream'
+-- |   { flags: fileFlagsToNode R
+-- |   , encoding: encodingToNode UTF8
+-- |   , mode: permsToInt Perms.all
+-- |   }
+-- | ```
+createReadStream'
+  :: forall r trash
+   . Row.Union r trash ReadStreamOptions
+  => FilePath
+  -> { | r }
   -> Effect (Readable ())
-createReadStream = createReadStreamWith defaultReadStreamOptions
+createReadStream' path opts = runEffectFn2 createReadStreamOptsImpl path opts
+
+foreign import createReadStreamOptsImpl :: forall r. EffectFn2 (FilePath) ({ | r }) ((Readable ()))
 
 -- | Create a Readable stream which reads data to the specified file
 -- | descriptor, using the default options.
-fdCreateReadStream
-  :: FileDescriptor
+fdCreateReadStream :: FileDescriptor -> Effect (Readable ())
+fdCreateReadStream f = runEffectFn1 fdCreateReadStreamImpl f
+
+foreign import fdCreateReadStreamImpl :: EffectFn1 (FileDescriptor) (Readable ())
+
+-- | Create a Readable stream which reads data to the specified file descriptor.
+-- | Unused options should not be specified. Some options
+-- | (e.g. `flags`, `encoding`, and `mode`) should convert their 
+-- | PureScript values to the corresponding JavaScript ones:
+-- | ```
+-- | filePath # fdCreateReadStream'
+-- |   { flags: fileFlagsToNode R
+-- |   , encoding: encodingToNode UTF8
+-- |   , mode: permsToInt Perms.all
+-- |   }
+-- | ```
+fdCreateReadStream'
+  :: forall r trash
+   . Row.Union r trash ReadStreamOptions
+  => FileDescriptor
+  -> { | r }
   -> Effect (Readable ())
-fdCreateReadStream = fdCreateReadStreamWith defaultReadStreamOptions
+fdCreateReadStream' f opts = runEffectFn2 fdCreateReadStreamOptsImpl f opts
 
-type ReadStreamOptions =
-  { flags :: FileFlags
-  , perms :: Perms
-  , autoClose :: Boolean
-  }
+foreign import fdCreateReadStreamOptsImpl :: forall r. EffectFn2 (FileDescriptor) ({ | r }) ((Readable ()))
 
-defaultReadStreamOptions :: ReadStreamOptions
-defaultReadStreamOptions =
-  { flags: R
-  , perms: readWrite
-  , autoClose: true
-  }
-
--- | Create a Readable stream which reads data from the specified file.
-createReadStreamWith
-  :: ReadStreamOptions
-  -> FilePath
-  -> Effect (Readable ())
-createReadStreamWith opts file = runEffectFn2
-  createReadStreamImpl
-  (notNull file)
-  { mode: Perms.permsToInt opts.perms
-  , flags: fileFlagsToNode opts.flags
-  , autoClose: opts.autoClose
-  }
-
--- | Create a Readable stream which reads data from the specified file descriptor.
-fdCreateReadStreamWith
-  :: ReadStreamOptions
-  -> FileDescriptor
-  -> Effect (Readable ())
-fdCreateReadStreamWith opts fd = runEffectFn2
-  createReadStreamImpl
-  null
-  { fd
-  , mode: Perms.permsToInt opts.perms
-  , flags: fileFlagsToNode opts.flags
-  , autoClose: opts.autoClose
-  }
