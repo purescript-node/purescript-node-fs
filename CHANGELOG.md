@@ -8,6 +8,20 @@ Breaking changes:
 
 New features:
 - Integrate `node-fs-aff` into library (#75 by @JordanMartinez)
+- Remove `StatsObj` and reimplement bindings to `Stats` object (#76 by @JordanMartinez)
+
+  Previously, one could write the following to get a value on the `Stats` object:
+  ```purs
+  getGid :: Stats -> Number
+  getGid (Stats obj) = obj.gid
+  ```
+
+  This record interface was removed as the underlying value is not a record
+  that can be copied and modified as such. Now, one must call the corresponding function:
+  ```purs
+  getGid :: Stats -> Number
+  getGid s = Stats.gid s
+  ```
 
 Bugfixes:
 
