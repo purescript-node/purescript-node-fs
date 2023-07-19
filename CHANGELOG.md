@@ -5,9 +5,6 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
-
-New features:
-- Integrate `node-fs-aff` into library (#75 by @JordanMartinez)
 - Remove `StatsObj` and reimplement bindings to `Stats` object (#76 by @JordanMartinez)
 
   Previously, one could write the following to get a value on the `Stats` object:
@@ -40,6 +37,9 @@ New features:
     , mode: permsToInt Perms.all
     }
   ```
+
+New features:
+- Integrate `node-fs-aff` into library (#75 by @JordanMartinez)
 
 Bugfixes:
 
