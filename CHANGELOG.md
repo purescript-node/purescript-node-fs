@@ -12,6 +12,12 @@ New features:
 Bugfixes:
 
 Other improvements:
+
+## [v9.1.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v9.1.0) - 2023-07-26
+
+Bugfixes:
+- Update `node-streams` to `v9.0.0` to fix FFI issues (#78 by @JordanMartinez)
+
 ## [v9.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v9.0.0) - 2023-07-19
 
 Breaking changes:
