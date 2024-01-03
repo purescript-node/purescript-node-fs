@@ -204,7 +204,7 @@ rmdir' = toAff2 A.rmdir'
 -- | Deletes a file or directory.
 -- |
 rm :: FilePath -> Aff Unit
-rm = toAff1 A.rmdir
+rm = toAff1 A.rm
 
 -- |
 -- | Deletes a file or directory with options.
