@@ -13,6 +13,8 @@ Bugfixes:
 
 Other improvements:
 
+- (Internal) Added bower to dev dependencies (#84 by @artemisSystem)
+
 ## [v9.1.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v9.1.0) - 2023-07-26
 
 Bugfixes:
