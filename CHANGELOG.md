@@ -9,11 +9,17 @@ Breaking changes:
 
 New features:
 
-- Add `lstat` to `Node.FS.Aff` (#85 by @artemisSystem)
-
 Bugfixes:
 
 Other improvements:
+
+## [v9.2.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v9.2.0) - 2024-06-23
+
+New features:
+- Add `lstat` to `Node.FS.Aff` (#85 by @artemisSystem)
+
+Bugfixes:
+- Fixed internal reference to `rmdir` that should have been `rm` (#83 by @MonoidMusician)
 
 ## [v9.1.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v9.1.0) - 2023-07-26
 
