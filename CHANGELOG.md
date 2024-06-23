@@ -9,6 +9,8 @@ Breaking changes:
 
 New features:
 
+- Add `lstat` to `Node.FS.Aff` (#85 by @artemisSystem)
+
 Bugfixes:
 
 Other improvements:

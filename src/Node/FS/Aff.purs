@@ -10,6 +10,7 @@ module Node.FS.Aff
   , chown
   , chmod
   , stat
+  , lstat
   , link
   , symlink
   , readlink
@@ -146,6 +147,12 @@ chmod = toAff2 A.chmod
 -- |
 stat :: FilePath -> Aff Stats
 stat = toAff1 A.stat
+
+-- | Gets file or symlink statistics. `lstat` is identical to `stat`, except
+-- | that if the `FilePath` is a symbolic link, then the link itself is stat-ed,
+-- | not the file that it refers to.
+lstat :: FilePath -> Aff Stats
+lstat = toAff1 A.lstat
 
 -- |
 -- | Creates a link to an existing file.
