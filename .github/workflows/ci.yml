@@ -10,31 +10,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: purescript-contrib/setup-purescript@main
         with:
-          purescript: "unstable"
+          purescript: "latest"
           purs-tidy: "latest"
+          spago: "unstable"
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
 
-      - name: Install dependencies
-        run: |
-          npm install -g bower
-          npm install
-          bower install --production
-
       - name: Build source
-        run: npm run-script build
+        run: spago build --censor-stats --strict --pedantic-packages
 
       - name: Run tests
-        run: |
-          bower install
-          npm run-script test --if-present
+        run: spago test --censor-stats --strict --pedantic-packages
 
-      - name: Check formatting
-        run: |
-          purs-tidy check src test
+      - name: Verify formatting
+        run: purs-tidy check src test

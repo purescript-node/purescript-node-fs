@@ -1,4 +1,4 @@
-module TestAsync where
+module Test.Node.FS.Async where
 
 import Prelude (Unit, show, bind, discard, (<>), ($))
 import Data.Either (Either(..))
@@ -15,8 +15,8 @@ import Node.Buffer as B
 main :: Effect Unit
 main = do
   let
-    path1 = FP.concat ([ "test", "TestAsync.purs" ])
-    path2 = FP.concat ([ "test", "TestAsync.purs.partial" ])
+    path1 = FP.concat ([ "test", "Test", "Node", "FS", "Async.purs" ])
+    path2 = FP.concat ([ "test", "Test", "Node", "FS", "Async.purs.partial" ])
 
   buf <- B.create 1000
 

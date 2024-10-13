@@ -2,12 +2,48 @@
 
 Notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
 ## [Unreleased]
 
 Breaking changes:
 
 New features:
+
+- Add functions to `Node.FS.Async`, `Node.FS.Aff`, `Node.FS.Sync`
+
+  - readdir'
+  - readdirBuffer
+  - readdirBuffer'
+  - readdirDirent
+  - readdirDirent'
+  - readdirDirentBuffer
+  - readdirDirentBuffer'
+  - cp
+  - cp'
+  - fchmod
+  - fchown
+  - fdatasync
+  - fstat
+  - fsync
+  - ftruncate
+  - futimes
+  - glob
+  - glob'
+  - globDirent
+  - globDirent'
+  - lchmod
+  - lchown
+  - lutimes
+  - opendir
+  - opendir'
+  - readv
+  - statfs
+  - writev
+
+- Deprecate `Node.FS.Sync.fdFlush`, `Node.FS.Sync.fsync` should be used instead
+
+- Add modules `Dir`, `Dir.Aff`, `Dirent`
+
+- Fix tests - it was creating lot of `./test/fixturesASDFSDF` directories, now - create in `tmp` like `./tmp/test/fixturesASDFSDF`
 
 Bugfixes:
 
@@ -16,22 +52,27 @@ Other improvements:
 ## [v9.2.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v9.2.0) - 2024-06-23
 
 New features:
+
 - Add `lstat` to `Node.FS.Aff` (#85 by @artemisSystem)
 
 Bugfixes:
+
 - Fixed internal reference to `rmdir` that should have been `rm` (#83 by @MonoidMusician)
 
 ## [v9.1.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v9.1.0) - 2023-07-26
 
 Bugfixes:
+
 - Update `node-streams` to `v9.0.0` to fix FFI issues (#78 by @JordanMartinez)
 
 ## [v9.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v9.0.0) - 2023-07-19
 
 Breaking changes:
+
 - Remove `StatsObj` and reimplement bindings to `Stats` object (#76 by @JordanMartinez)
 
   Previously, one could write the following to get a value on the `Stats` object:
+
   ```purs
   getGid :: Stats -> Number
   getGid (Stats obj) = obj.gid
@@ -39,21 +80,24 @@ Breaking changes:
 
   This record interface was removed as the underlying value is not a record
   that can be copied and modified as such. Now, one must call the corresponding function:
+
   ```purs
   getGid :: Stats -> Number
   getGid s = Stats.gid s
   ```
+
 - Update `[fd]createReadStream`/`[fd]createWriteStream` to allow more options (#77 by @JordanMartinez)
 
-  | Removes... | ...in favor of |
-  | - | - |
-  | `createReadStreamWith` | `createReadStream'` |
-  | `fdCreateReadStreamWith` | `fdCreateReadStream'` |
-  | `createWriteStreamWith` | `createWriteStream'` |
+  | Removes...                | ...in favor of         |
+  | ------------------------- | ---------------------- |
+  | `createReadStreamWith`    | `createReadStream'`    |
+  | `fdCreateReadStreamWith`  | `fdCreateReadStream'`  |
+  | `createWriteStreamWith`   | `createWriteStream'`   |
   | `fdCreateWriteStreamWith` | `fdCreateWriteStream'` |
-  
-  In the new APIs, all options are exposed and may require converting 
+
+  In the new APIs, all options are exposed and may require converting
   PureScript values to JavaScript ones.
+
   ```purs
   filePath # createWriteStream'
     { flags: fileFlagsToNode R
@@ -63,11 +107,13 @@ Breaking changes:
   ```
 
 New features:
+
 - Integrate `node-fs-aff` into library (#75 by @JordanMartinez)
 
 Bugfixes:
 
 Other improvements:
+
 - Update `node-buffer` to next breaking release: `v9.0.0` (#74 by @JordanMartinez)
 - Update `node-streams` to next breaking release: `TODO` (#74 by @JordanMartinez)
 - Update CI actions to v3 (#74 by @JordanMartinez)
@@ -77,16 +123,19 @@ Other improvements:
 ## [v8.2.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v8.2.0) - 2023-03-23
 
 New features:
-- Add FFI for `access`, `copyFile` and `mkdtemp`  (#73 by @JordanMartinez)
+
+- Add FFI for `access`, `copyFile` and `mkdtemp` (#73 by @JordanMartinez)
 
 ## [v8.1.1](https://github.com/purescript-node/purescript-node-fs/releases/tag/v8.1.1) - 2022-10-24
 
 Other improvements:
+
 - Use `EffectFn` throughout instead of unsafe `mkEffect` utility (#70 by @colinwahl)
 
 ## [v8.1.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v8.1.0) - 2022-06-10
 
 New features:
+
 - Add `lstat` (#66 by @artemisSystem)
 - Add rmdir', which takes an take options arg (#67 by @wclr)
 - Added rm and rm' version with and without options arg (#67 by @wclr)
@@ -94,11 +143,13 @@ New features:
 ## [v8.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v8.0.0) - 2022-04-29
 
 Breaking changes:
+
 - Remove `Async.exists` (#61 by @sigma-andex)
 - Update `mkdir` to take an options record arg, exposing `recursive` option (#53, #55, #58 by @JordanMartinez)
   To get back the old behavior of `mkdir'`, you would call `mkdir' { recursive: false, mode: mkPerms all all all }`
 
 New features:
+
 - Update project and deps to PureScript v0.15.0 (#59 by @JordanMartinez, @thomashoneyman, @sigma-andex)
 - Remove duplicate `node-buffer` from bower.json (@thomashoneyman)
 
@@ -115,6 +166,7 @@ Due to an incorrectly-implemented breaking change, use v8.0.0
 Breaking changes:
 
 New features:
+
 - Add bindings to `mkdir(path, { recursive: true })` via `mkdirRecursive` (#53, #55 by @JordanMartinez)
 
 Bugfixes:
@@ -124,18 +176,22 @@ Other improvements:
 ## [v6.1.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v6.1.0) - 2021-05-06
 
 New features:
+
 - Exported `mkPerm` (#42 by @JordanMartinez)
 
 Other improvements:
+
 - Fixed warnings revealed by v0.14.1 PS release (#42 by @JordanMartinez)
 
 ## [v6.0.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v6.0.0) - 2021-02-26
 
 Breaking changes:
+
 - Added support for PureScript 0.14 and dropped support for all previous versions (#46)
 - Dropped deprecated `globals` dependency (#47)
 
 Other improvements:
+
 - Migrated CI to GitHub Actions, updated installation instructions to use Spago, and migrated from `jshint` to `eslint` (#45)
 - Added a changelog and pull request template (#49)
 
@@ -230,6 +286,7 @@ Fix type of `Async.exists`.
 ## [v0.4.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v0.4.0) - 2015-02-21
 
 **This release requires PureScript v0.6.8 or later**
+
 - Updated dependencies
 
 ## [v0.3.0](https://github.com/purescript-node/purescript-node-fs/releases/tag/v0.3.0) - 2015-01-29

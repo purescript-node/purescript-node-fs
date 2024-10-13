@@ -7,7 +7,7 @@ import Data.Function.Uncurried (Fn2, runFn2)
 -- | the mode parameter passed to `access` and `accessSync`.
 foreign import data AccessMode :: Type
 
--- | the file is visible to the calling process. 
+-- | the file is visible to the calling process.
 -- | This is useful for determining if a file exists, but says nothing about rwx permissions. Default if no mode is specified.
 foreign import f_OK :: AccessMode
 
@@ -25,6 +25,9 @@ defaultAccessMode = f_OK :: AccessMode
 -- | A constant used in `copyFile`.
 foreign import data CopyMode :: Type
 
+-- | By default, `dest` is overwritten if it already exists.
+foreign import copyFile_NO_FLAGS :: CopyMode
+
 -- | If present, the copy operation will fail with an error if the destination path already exists.
 foreign import copyFile_EXCL :: CopyMode
 
@@ -34,7 +37,7 @@ foreign import copyFile_FICLONE :: CopyMode
 -- |  	If present, the copy operation will attempt to create a copy-on-write reflink. If the underlying platform does not support copy-on-write, then the operation will fail with an error.
 foreign import copyFile_FICLONE_FORCE :: CopyMode
 
-defaultCopyMode = copyFile_EXCL :: CopyMode
+defaultCopyMode = copyFile_NO_FLAGS :: CopyMode
 
 foreign import appendCopyMode :: Fn2 CopyMode CopyMode CopyMode
 

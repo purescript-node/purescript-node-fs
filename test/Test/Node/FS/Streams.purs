@@ -1,4 +1,4 @@
-module Test.Streams where
+module Test.Node.FS.Streams where
 
 import Prelude
 
@@ -17,13 +17,13 @@ main = do
 
   log "Testing streams"
 
-  r <- createReadStream (fp [ "test", "Streams.purs" ])
+  r <- createReadStream (fp [ "test", "Test", "Node", "FS", "Streams.purs" ])
   w <- createWriteStream (fp [ "tmp", "Streams.purs" ])
 
   _ <- Stream.pipe r w
 
   r # on_ Stream.endH do
-    src <- Sync.readTextFile UTF8 (fp [ "test", "Streams.purs" ])
+    src <- Sync.readTextFile UTF8 (fp [ "test", "Test", "Node", "FS", "Streams.purs" ])
     dst <- Sync.readTextFile UTF8 (fp [ "tmp", "Streams.purs" ])
 
     if src == dst then log "all good"

@@ -1,4 +1,4 @@
-module Test where
+module Test.Node.FS.Sync where
 
 import Prelude
 
@@ -8,17 +8,20 @@ import Data.Traversable (for_, traverse)
 import Effect (Effect)
 import Effect.Console (log)
 import Effect.Exception (Error, catchException, error, message, throw, throwException, try)
+import Effect.Exception as Error
 import Node.Buffer as Buffer
 import Node.Encoding (Encoding(..))
 import Node.FS (FileFlags(..), SymlinkType(..))
 import Node.FS.Async as A
 import Node.FS.Constants (copyFile_EXCL, r_OK, w_OK)
+import Node.FS.Options (rmOptionsDefault)
 import Node.FS.Perms (mkPerms, permsAll)
 import Node.FS.Perms as Perms
 import Node.FS.Stats (statusChangedTime, accessedTime, modifiedTime, isSymbolicLink, isSocket, isFIFO, isCharacterDevice, isBlockDevice, isDirectory, isFile)
 import Node.FS.Sync (chmod)
 import Node.FS.Sync as S
 import Node.Path as Path
+import Test.Assert (assertEqual')
 import Unsafe.Coerce (unsafeCoerce)
 
 -- Cheat to allow `main` to type check. See also issue #5 in
@@ -34,10 +37,10 @@ main :: Effect Unit
 main = do
   let fp = Path.concat
 
-  e <- S.exists (fp [ "test", "Test.purs" ])
+  e <- S.exists (fp [ "test", "Test", "Node", "FS", "Sync.purs" ])
   log $ "Test.purs exists? " <> show e
 
-  file <- S.readTextFile UTF8 (fp [ "test", "Test.purs" ])
+  file <- S.readTextFile UTF8 (fp [ "test", "Test", "Node", "FS", "Sync.purs" ])
   log "\n\nreadTextFile sync result:"
   log $ file
 
@@ -80,6 +83,7 @@ main = do
   log "statusChangedTime:"
   log $ show $ statusChangedTime stats
 
+  S.rm' (fp [ "tmp", "TestSymlink.js" ]) (rmOptionsDefault { force = true })
   S.symlink (fp [ "tmp", "Test1.js" ]) (fp [ "tmp", "TestSymlink.js" ]) FileLink
 
   lstats <- S.lstat (fp [ "tmp", "TestSymlink.js" ])
@@ -97,16 +101,16 @@ main = do
       log "\n\ntruncate result:"
       either (log <<< show) (log <<< show) y
 
-  A.readFile (fp [ "test", "Test.purs" ]) $ \mbuf -> do
+  A.readFile (fp [ "test", "Test", "Node", "FS", "Sync.purs" ]) $ \mbuf -> do
     buf <- traverse Buffer.freeze mbuf
     log "\n\nreadFile result:"
     either (log <<< show) (log <<< show) buf
 
-  A.readTextFile UTF8 (fp [ "test", "Test.purs" ]) $ \x -> do
+  A.readTextFile UTF8 (fp [ "test", "Test", "Node", "FS", "Sync.purs" ]) $ \x -> do
     log "\n\nreadTextFile result:"
     either (log <<< show) log x
 
-  A.stat (fp [ "test", "Test.purs" ]) $ \x -> do
+  A.stat (fp [ "test", "Test", "Node", "FS", "Sync.purs" ]) $ \x -> do
     log "\n\nA.stat:"
     case x of
       Left err -> log $ "Error:" <> show err
@@ -150,12 +154,12 @@ main = do
   let fdFile = fp [ "tmp", "FD.json" ]
   fd0 <- S.fdOpen fdFile W (Just 420)
   buf0 <- Buffer.fromString "[ 42 ]" UTF8
-  bytes0 <- S.fdAppend fd0 buf0
-  S.fdFlush fd0
+  _bytes0 <- S.fdAppend fd0 buf0
+  S.fsync fd0
   S.fdClose fd0
   fd1 <- S.fdOpen fdFile R Nothing
   buf1 <- Buffer.create =<< Buffer.size buf0
-  bytes1 <- S.fdNext fd1 buf1
+  _bytes2 <- S.fdNext fd1 buf1
   S.fdClose fd1
 
   log "statSync on a non-existing file should be catchable"
@@ -182,7 +186,7 @@ main = do
     Nothing -> throw $ "`access \"" <> readableFixturePath <> "\" W_OK` should produce error"
 
   log "copy tests"
-  let outerTmpDir = "./test/node-fs-tests"
+  let outerTmpDir = "./tmp/test/node-fs-tests"
   S.mkdir' outerTmpDir { recursive: true, mode: permsAll }
   tempDir <- S.mkdtemp outerTmpDir
   S.mkdir' tempDir { recursive: true, mode: permsAll }
@@ -190,9 +194,30 @@ main = do
   S.copyFile readableFixturePath destReadPath
   unlessM (S.exists destReadPath) do
     throw $ destReadPath <> " does not exist after copy"
-
   copyErr <- try $ S.copyFile' readableFixturePath destReadPath copyFile_EXCL
   case copyErr of
     Left _ -> pure unit
     Right _ -> throw $ destReadPath <> " already exists, but copying a file to there did not throw an error with COPYFILE_EXCL option"
 
+  log "copy file using cpFile: ok"
+  let destReadPath2 = Path.concat [ tempDir, "readable2.txt" ]
+  S.cpFile readableFixturePath destReadPath2
+  unlessM (S.exists destReadPath2) do
+    throw $ destReadPath2 <> " does not exist after copy"
+
+  log "copy dir using cpDir: ok"
+  S.cpDir (tempDir <> "/") (tempDir <> "2")
+
+  log "copy dir using cpFile: error - ERR_FS_EISDIR \"Recursive option not enabled\""
+  let
+    cpFileShouldThrow_from = tempDir <> "/"
+    cpFileShouldThrow_to = tempDir <> "3"
+  cpFileError <- try $ S.cpFile cpFileShouldThrow_from cpFileShouldThrow_to
+  case cpFileError of
+    Left cpFileError' -> do
+      let
+        cpFileError'_message = Error.message cpFileError'
+        cpFileError'_code = (unsafeCoerce cpFileError' :: { code :: String }).code
+      assertEqual' "cpDirError'_message" { actual: cpFileError'_message, expected: "Recursive option not enabled, cannot copy a directory: " <> cpFileShouldThrow_from }
+      assertEqual' "cpDirError'_code" { actual: cpFileError'_code, expected: "ERR_FS_EISDIR" }
+    Right _ -> throw $ "cpFileShouldThrow: should have failed " <> show { cpFileShouldThrow_from, cpFileShouldThrow_to }

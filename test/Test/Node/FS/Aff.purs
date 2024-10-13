@@ -1,4 +1,4 @@
-module TestAff where
+module Test.Node.FS.Aff where
 
 import Prelude
 

@@ -1,7 +1,7 @@
-export { 
-  accessSync as accessImpl,
-  copyFileSync as copyFileImpl,
-  mkdtempSync as mkdtempImpl,
+export {
+  accessSync as accessSyncImpl,
+  copyFileSync as copyFileSyncImpl,
+  mkdtempSync as mkdtempSyncImpl,
   renameSync as renameSyncImpl,
   truncateSync as truncateSyncImpl,
   chownSync as chownSyncImpl,
@@ -26,5 +26,20 @@ export {
   readSync as readSyncImpl,
   writeSync as writeSyncImpl,
   fsyncSync as fsyncSyncImpl,
-  closeSync as closeSyncImpl
+  closeSync as closeSyncImpl,
+  cpSync as cpSyncImpl,
+  fchmodSync as fchmodSyncImpl,
+  fchownSync as fchownSyncImpl,
+  fdatasyncSync as fdatasyncSyncImpl,
+  fstatSync as fstatSyncImpl,
+  ftruncateSync as ftruncateSyncImpl,
+  futimesSync as futimesSyncImpl,
+  globSync as globSyncImpl,
+  lchmodSync as lchmodSyncImpl,
+  lchownSync as lchownSyncImpl,
+  lutimesSync as lutimesSyncImpl,
+  opendirSync as opendirSyncImpl,
+  readvSync as readvSyncImpl,
+  statfsSync as statfsSyncImpl,
+  writevSync as writevSyncImpl
 } from "node:fs";

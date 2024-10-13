@@ -1,0 +1,44 @@
+package:
+  name: node-fs
+  publish:
+    license: MIT
+    version: 9.2.0
+    location:
+      githubOwner: purescript-node
+      githubRepo: purescript-node-fs
+  dependencies:
+    - aff: ">=8.0.0 <9.0.0"
+    - arrays: ">=7.3.0 <8.0.0"
+    - datetime: ">=6.1.0 <7.0.0"
+    - effect: ">=4.0.0 <5.0.0"
+    - either: ">=6.1.0 <7.0.0"
+    - enums: ">=6.0.1 <7.0.0"
+    - exceptions: ">=6.1.0 <7.0.0"
+    - foreign: ">=7.0.0 <8.0.0"
+    - functions: ">=6.0.0 <7.0.0"
+    - integers: ">=6.0.0 <7.0.0"
+    - js-date: ">=8.0.0 <9.0.0"
+    - maybe: ">=6.0.0 <7.0.0"
+    - node-buffer: ">=9.0.0 <10.0.0"
+    - node-path: ">=5.0.0 <6.0.0"
+    - node-streams: ">=9.0.0 <10.0.0"
+    - nullable: ">=6.0.0 <7.0.0"
+    - partial: ">=4.0.0 <5.0.0"
+    - prelude: ">=6.0.1 <7.0.0"
+    - refs: ">=6.0.0 <7.0.0"
+    - strings: ">=6.0.1 <7.0.0"
+    - tuples: ">=7.0.0 <8.0.0"
+    - unsafe-coerce: ">=6.0.0 <7.0.0"
+  test:
+    main: Test.Main
+    dependencies:
+      - aff
+      - arrays
+      - assert
+      - console
+      - foldable-traversable
+      - node-event-emitter
+workspace:
+  packageSet:
+    registry: 60.5.0
+  extraPackages: {}
