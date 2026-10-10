@@ -6,4 +6,4 @@
 /node_modules/
 /tmp/
 /output/
-package-lock.json
+/test/node-fs-tests*/
