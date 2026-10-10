@@ -24,5 +24,5 @@ export {
   open as openImpl,
   read as readImpl,
   write as writeImpl,
-  close as closeImpl
+  close as closeImpl,
 } from "node:fs";
